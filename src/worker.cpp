@@ -7,11 +7,11 @@
 
 int compute_fractal(int x, int y, int image_width, int image_height, int max_iterations)
 {
-    double zoom = 1.0;
+    double zoom = 3.0;
     double center_x = 0.0;
     double center_y = 0.0;
 
-    double fx = ((double)x / image_width - 0.5) * 3.5 / zoom + center_x;
+    double fx = ((double)x / image_width - 0.5) * 2.0 / zoom + center_x;
     double fy = ((double)y / image_height - 0.5) * 2.0 / zoom + center_y;
 
     double zx = 0, zy = 0;
