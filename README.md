@@ -10,5 +10,5 @@ make
 
 Running
 ```bash
-./fractal_mpi
+mpirun -np 8 ./fractal_mpi
 ```
