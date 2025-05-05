@@ -7,8 +7,8 @@
 
 int compute_fractal(int x, int y, int image_width, int image_height, int max_iterations)
 {
-    double zoom = 1.0; // Mayor valor = más zoom
-    double center_x = 0.0; // Explora parte izquierda del conjunto
+    double zoom = 1.0;
+    double center_x = 0.0;
     double center_y = 0.0;
 
     double fx = ((double)x / image_width - 0.5) * 3.5 / zoom + center_x;
@@ -88,6 +88,7 @@ void worker(
             MPI_Send(&task, sizeof(WorkerTask), MPI_BYTE, 0, Tag::RESULT, MPI_COMM_WORLD);
             MPI_Send(buffer.data(), buffer.size(), MPI_BYTE, 0, Tag::RESULT, MPI_COMM_WORLD);
             end = std::chrono::high_resolution_clock::now();
+
             // Calculate duration in microseconds
             auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
