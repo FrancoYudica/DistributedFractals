@@ -1,6 +1,5 @@
 # DistributedFractals
-
-![mandelbrot](https://github.com/user-attachments/assets/d8a8fe4d-d9f0-4ab2-972a-b426317072df)
+![mandelbrot](https://github.com/user-attachments/assets/0c468c27-a5c8-4965-afba-c9587f26a1de)
 
 Compiling
 ```bash
