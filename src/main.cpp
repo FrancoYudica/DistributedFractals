@@ -3,72 +3,68 @@
 #include "mpi/mpi.h"
 #include "settings/settings.h"
 
-void load_args(
-    int argc,
-    char** argv,
-    Settings& settings)
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+
+void print_help()
 {
-    for (int arg_index = 1; arg_index < argc; arg_index++) {
+    std::cout << "Fractal Renderer - Command Line Options\n";
+    std::cout << "----------------------------------------\n";
+    std::cout << "  -o,  --output       <path>     Output file path\n";
+    std::cout << "  -w,  --width        <int>      Image width in pixels\n";
+    std::cout << "  -h,  --height       <int>      Image height in pixels\n";
+    std::cout << "  -s,  --samples      <int>      Number of MSAA samples\n";
+    std::cout << "  -b,  --block_size   <int>      Size in pixels of the MPI image task\n";
+    std::cout << "  -z,  --zoom         <float>    Zoom level of camera\n";
+    std::cout << "  -cx, --camera_x     <float>    Camera X position\n";
+    std::cout << "  -cy, --camera_y     <float>    Camera Y position\n";
+    std::cout << "  -i,  --iterations   <int>      Max iterations for fractal\n";
+    std::cout << "  -t,  --type         <int>      Fractal type ID\n";
+    std::cout << "  -h, --help                  Show this help message\n";
+}
+
+void load_args(int argc, char** argv, Settings& settings)
+{
+    for (int arg_index = 1; arg_index < argc; ++arg_index) {
         const char* parameter = argv[arg_index];
 
-        // Ensures that parameters with values have their value
+        // Help command
+        if (!strcmp(parameter, "-h") || !strcmp(parameter, "--help")) {
+            print_help();
+            std::exit(0); // Exit after printing help
+        }
+
+        // Make sure there's a value for the parameter
         if (arg_index + 1 >= argc) {
-            std::cout << "Missing value of parameter \"" << parameter << "\"" << std::endl;
+            std::cout << "Missing value of parameter \"" << parameter << "\"\n";
             break;
         }
 
         const char* value = argv[++arg_index];
 
         if (!strcmp(parameter, "-o") || !strcmp(parameter, "--output")) {
-            strcpy(settings.output_path, value);
-        }
-
-        // Image width parameter
-        if (!strcmp(parameter, "-w") || !strcmp(parameter, "--width")) {
-            settings.image.width = atoi(value);
-        }
-        // Image height parameter
-        else if (!strcmp(parameter, "-h") || !strcmp(parameter, "--height")) {
-            settings.image.height = atoi(value);
-        }
-        // Image samples parameter
-        else if (!strcmp(parameter, "-s") || !strcmp(parameter, "--samples")) {
-            settings.image.multi_sample_anti_aliasing = atoi(value);
-        }
-
-        // Block size parameter
-        else if (!strcmp(parameter, "-b") || !strcmp(parameter, "--block_size")) {
-            settings.block_size = atoi(value);
-        }
-
-        // Camera Zoom
-        else if (!strcmp(parameter, "-z") || !strcmp(parameter, "--zoom")) {
-            settings.camera.zoom = atof(value);
-        }
-
-        // Camera X pos
-        else if (!strcmp(parameter, "-cx") || !strcmp(parameter, "--camera_x")) {
-            settings.camera.x = atof(value);
-        }
-
-        // Camera Y pos
-        else if (!strcmp(parameter, "-cy") || !strcmp(parameter, "--camera_y")) {
-            settings.camera.y = atof(value);
-        }
-
-        // Fractal Setting Max Iteration
-        else if (!strcmp(parameter, "-i") || !strcmp(parameter, "--iterations")) {
-            settings.fractal.max_iterations = atoi(value);
-        }
-
-        // Fractal Setting Type of Fractal Function
-        else if (!strcmp(parameter, "-t") || !strcmp(parameter, "--type")) {
-            settings.fractal.type = static_cast<FractalType>(atoi(value));
-        }
-
-        // Unrecognized parameter
-        else {
-            std::cout << "Unrecognized parameter \"" << parameter << "\"" << std::endl;
+            std::strcpy(settings.output_path, value);
+        } else if (!strcmp(parameter, "-w") || !strcmp(parameter, "--width")) {
+            settings.image.width = std::atoi(value);
+        } else if (!strcmp(parameter, "-h") || !strcmp(parameter, "--height")) {
+            settings.image.height = std::atoi(value);
+        } else if (!strcmp(parameter, "-s") || !strcmp(parameter, "--samples")) {
+            settings.image.multi_sample_anti_aliasing = std::atoi(value);
+        } else if (!strcmp(parameter, "-b") || !strcmp(parameter, "--block_size")) {
+            settings.block_size = std::atoi(value);
+        } else if (!strcmp(parameter, "-z") || !strcmp(parameter, "--zoom")) {
+            settings.camera.zoom = std::atof(value);
+        } else if (!strcmp(parameter, "-cx") || !strcmp(parameter, "--camera_x")) {
+            settings.camera.x = std::atof(value);
+        } else if (!strcmp(parameter, "-cy") || !strcmp(parameter, "--camera_y")) {
+            settings.camera.y = std::atof(value);
+        } else if (!strcmp(parameter, "-i") || !strcmp(parameter, "--iterations")) {
+            settings.fractal.max_iterations = std::atoi(value);
+        } else if (!strcmp(parameter, "-t") || !strcmp(parameter, "--type")) {
+            settings.fractal.type = static_cast<FractalType>(std::atoi(value));
+        } else {
+            std::cout << "Unrecognized parameter \"" << parameter << "\"\n";
         }
     }
 }
