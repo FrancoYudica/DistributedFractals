@@ -5,19 +5,19 @@
 #include <cstdint>
 #include <cmath>
 #include <chrono>
-#include "image_settings.h"
+#include "master.h"
 
 void master(
     int num_procs,
-    int block_size,
-    const ImageSettings& image_settings)
+    const Settings& settings)
 {
     std::chrono::time_point start = std::chrono::high_resolution_clock::now();
 
-    std::vector<uint8_t> image(image_settings.width * image_settings.height * 3);
-
-    int blocks_x = (image_settings.width + block_size - 1) / block_size;
-    int blocks_y = (image_settings.height + block_size - 1) / block_size;
+    std::vector<uint8_t> image(settings.image.width * settings.image.height * 3);
+    int width = settings.image.width, height = settings.image.height;
+    int block_size = settings.block_size;
+    int blocks_x = (width + settings.block_size - 1) / block_size;
+    int blocks_y = (height + block_size - 1) / block_size;
     int block_count = blocks_x * blocks_y;
 
     std::vector<WorkerTask> worker_tasks;
@@ -27,8 +27,8 @@ void master(
         for (int bx = 0; bx < blocks_x; ++bx) {
             int x = bx * block_size;
             int y = by * block_size;
-            int w = std::min(block_size, image_settings.width - x);
-            int h = std::min(block_size, image_settings.height - y);
+            int w = std::min(block_size, width - x);
+            int h = std::min(block_size, height - y);
             worker_tasks.push_back(WorkerTask { x, y, w, h });
         }
     }
@@ -65,7 +65,7 @@ void master(
             for (int j = 0; j < result.height; ++j) {
                 for (int i = 0; i < result.width; ++i) {
                     int src_idx = (j * result.width + i) * 3;
-                    int dst_idx = ((result.y + j) * image_settings.width + (result.x + i)) * 3;
+                    int dst_idx = ((result.y + j) * width + (result.x + i)) * 3;
                     image[dst_idx] = buffer[src_idx];
                     image[dst_idx + 1] = buffer[src_idx + 1];
                     image[dst_idx + 2] = buffer[src_idx + 2];
@@ -84,5 +84,5 @@ void master(
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     std::cout << "Computation took: " << duration.count() << " ms\n";
 
-    save_image("mandelbrot.png", image.data(), image_settings.width, image_settings.height);
+    save_image(settings.output_path, image.data(), width, height);
 }

@@ -1,18 +1,12 @@
 #include "master.h"
 #include "worker.h"
 #include "mpi/mpi.h"
-#include "image_settings.h"
-#include "camera.h"
-#include "fractal.h"
+#include "settings/settings.h"
 
 void load_args(
     int argc,
     char** argv,
-
-    ImageSettings& image_settings,
-    int& block_size,
-    Camera& camera,
-    FractalSettings& fractal_settings)
+    Settings& settings)
 {
     for (int arg_index = 1; arg_index < argc; arg_index++) {
         const char* parameter = argv[arg_index];
@@ -25,47 +19,51 @@ void load_args(
 
         const char* value = argv[++arg_index];
 
+        if (!strcmp(parameter, "-o") || !strcmp(parameter, "--output")) {
+            strcpy(settings.output_path, value);
+        }
+
         // Image width parameter
         if (!strcmp(parameter, "-w") || !strcmp(parameter, "--width")) {
-            image_settings.width = atoi(value);
+            settings.image.width = atoi(value);
         }
         // Image height parameter
         else if (!strcmp(parameter, "-h") || !strcmp(parameter, "--height")) {
-            image_settings.height = atoi(value);
+            settings.image.height = atoi(value);
         }
         // Image samples parameter
         else if (!strcmp(parameter, "-s") || !strcmp(parameter, "--samples")) {
-            image_settings.multi_sample_anti_aliasing = atoi(value);
+            settings.image.multi_sample_anti_aliasing = atoi(value);
         }
 
         // Block size parameter
         else if (!strcmp(parameter, "-b") || !strcmp(parameter, "--block_size")) {
-            block_size = atoi(value);
+            settings.block_size = atoi(value);
         }
 
         // Camera Zoom
         else if (!strcmp(parameter, "-z") || !strcmp(parameter, "--zoom")) {
-            camera.zoom = atof(value);
+            settings.camera.zoom = atof(value);
         }
 
         // Camera X pos
         else if (!strcmp(parameter, "-cx") || !strcmp(parameter, "--camera_x")) {
-            camera.x = atof(value);
+            settings.camera.x = atof(value);
         }
 
         // Camera Y pos
         else if (!strcmp(parameter, "-cy") || !strcmp(parameter, "--camera_y")) {
-            camera.y = atof(value);
+            settings.camera.y = atof(value);
         }
 
         // Fractal Setting Max Iteration
         else if (!strcmp(parameter, "-i") || !strcmp(parameter, "--iterations")) {
-            fractal_settings.max_iterations = atoi(value);
+            settings.fractal.max_iterations = atoi(value);
         }
 
         // Fractal Setting Type of Fractal Function
         else if (!strcmp(parameter, "-t") || !strcmp(parameter, "--type")) {
-            fractal_settings.type = static_cast<FractalType>(atoi(value));
+            settings.fractal.type = static_cast<FractalType>(atoi(value));
         }
 
         // Unrecognized parameter
@@ -78,11 +76,7 @@ void load_args(
 int main(int argc, char** argv)
 {
 
-    ImageSettings image_settings;
-    Camera camera;
-    FractalSettings fractal_settings;
-    int block_size;
-    block_size = 64;
+    Settings settings;
 
     MPI_Init(&argc, &argv);
 
@@ -91,28 +85,33 @@ int main(int argc, char** argv)
     MPI_Comm_size(MPI_COMM_WORLD, &num_procs);
 
     if (rank == 0) {
-        load_args(argc, argv, image_settings, block_size, camera, fractal_settings);
-        std::cout << "Settings - Image resolution(" << image_settings.width << "x" << image_settings.height
-                  << ") Block size(" << block_size << ") Zoom(" << camera.zoom << ") Camera(" << camera.x << ", " << camera.y
-                  << ") Max Iterations(" << fractal_settings.max_iterations << ") Type(" << fractal_settings.type << ")\n";
+        load_args(argc, argv, settings);
+
+        std::cout << "Settings - Image resolution(" << settings.image.width << "x" << settings.image.height
+                  << ") Block size(" << settings.block_size << ") Zoom(" << settings.camera.zoom << ") Camera(" << settings.camera.x << ", " << settings.camera.y
+                  << ") Max Iterations(" << settings.fractal.max_iterations << ") Type(" << settings.fractal.type << ")\n";
     }
 
     // Broadcasts arguments to workers
-    MPI_Bcast(&image_settings.width, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&image_settings.height, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&image_settings.multi_sample_anti_aliasing, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&block_size, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&settings.image.width, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&settings.image.height, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&settings.image.multi_sample_anti_aliasing, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&settings.block_size, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-    MPI_Bcast(&camera, sizeof(Camera), MPI_BYTE, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&fractal_settings, sizeof(FractalSettings), MPI_BYTE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&settings.camera, sizeof(Camera), MPI_BYTE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&settings.fractal, sizeof(FractalSettings), MPI_BYTE, 0, MPI_COMM_WORLD);
 
     // Runs Master/Worker functions
     if (rank == 0) {
-        master(num_procs, block_size, image_settings);
+        master(num_procs, settings);
     }
 
     else {
-        worker(rank, image_settings, camera, fractal_settings);
+        worker(
+            rank,
+            settings.image,
+            settings.camera,
+            settings.fractal);
     }
 
     MPI_Finalize();

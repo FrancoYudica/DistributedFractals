@@ -1,6 +1,5 @@
 #pragma once
-#include "image_settings.h"
-#include "camera.h"
+#include "settings/settings.h"
 #include "fractal.h"
 
 void worker(

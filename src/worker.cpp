@@ -1,12 +1,11 @@
 #include "worker_task.h"
-#include "camera.h"
 #include <mpi/mpi.h>
 #include <vector>
 #include <cstdint>
 #include <cmath>
 #include <chrono>
 #include "fractal.h"
-#include "image_settings.h"
+#include "worker.h"
 
 #include <random>
 
