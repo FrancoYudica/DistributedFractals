@@ -33,6 +33,7 @@ add_executable(fractal_mpi
     src/main.cpp
     src/master.cpp
     src/worker.cpp
+    src/fractal.cpp
 )
 
 # Finds MPI
