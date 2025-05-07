@@ -26,45 +26,45 @@ void load_args(
         const char* value = argv[++arg_index];
 
         // Image width parameter
-        if (!strcmp(parameter, "-w")) {
+        if (!strcmp(parameter, "-w") || !strcmp(parameter, "--width")) {
             image_settings.width = atoi(value);
         }
         // Image height parameter
-        else if (!strcmp(parameter, "-h")) {
+        else if (!strcmp(parameter, "-h") || !strcmp(parameter, "--height")) {
             image_settings.height = atoi(value);
         }
         // Image samples parameter
-        else if (!strcmp(parameter, "-s")) {
+        else if (!strcmp(parameter, "-s") || !strcmp(parameter, "--samples")) {
             image_settings.multi_sample_anti_aliasing = atoi(value);
         }
 
         // Block size parameter
-        else if (!strcmp(parameter, "-b")) {
+        else if (!strcmp(parameter, "-b") || !strcmp(parameter, "--block_size")) {
             block_size = atoi(value);
         }
 
-        // Camara Zoom
-        else if (!strcmp(parameter, "-zoom")) {
+        // Camera Zoom
+        else if (!strcmp(parameter, "-z") || !strcmp(parameter, "--zoom")) {
             camera.zoom = atof(value);
         }
 
-        // Camara X pos
-        else if (!strcmp(parameter, "-cx")) {
+        // Camera X pos
+        else if (!strcmp(parameter, "-cx") || !strcmp(parameter, "--camera_x")) {
             camera.x = atof(value);
         }
 
-        // Camara Y pos
-        else if (!strcmp(parameter, "-cy")) {
+        // Camera Y pos
+        else if (!strcmp(parameter, "-cy") || !strcmp(parameter, "--camera_y")) {
             camera.y = atof(value);
         }
 
         // Fractal Setting Max Iteration
-        else if (!strcmp(parameter, "-iter")) {
+        else if (!strcmp(parameter, "-i") || !strcmp(parameter, "--iterations")) {
             fractal_settings.max_iterations = atoi(value);
         }
 
         // Fractal Setting Type of Fractal Function
-        else if (!strcmp(parameter, "-type")) {
+        else if (!strcmp(parameter, "-t") || !strcmp(parameter, "--type")) {
             fractal_settings.type = static_cast<FractalType>(atoi(value));
         }
 

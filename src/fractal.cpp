@@ -9,9 +9,9 @@ int compute_mandelbrot(
     double zx = 0, zy = 0;
     int iter = 0;
     while (zx * zx + zy * zy < 4.0 && iter < settings.max_iterations) {
-        double tmp = zx * zx - zy * zy + world_x;
+        double xtemp = zx * zx - zy * zy + world_x;
         zy = 2.0 * zx * zy + world_y;
-        zx = tmp;
+        zx = xtemp;
         iter++;
     }
     return iter;
@@ -22,9 +22,10 @@ int compute_julia(
     double world_y,
     const FractalSettings& settings)
 {
-    // Constant C = -0.225 - 0.70i
-    const double Cx = -0.225;
-    const double Cy = -0.70;
+    // Z(n+1) = Z(n)^2 + C
+    // Constant C = Cx + Cyi
+    const double Cx = settings.julia_settings.Cx;
+    const double Cy = settings.julia_settings.Cy;
 
     double zx = world_x, zy = world_y;
     int iter = 0;
