@@ -6,6 +6,13 @@ public:
     double x, y;
     double zoom;
 
+    Camera()
+        : x(0.0)
+        , y(0.0)
+        , zoom(1.0)
+    {
+    }
+
     void to_world(
         double screen_normalized_x,
         double screen_normalized_y,

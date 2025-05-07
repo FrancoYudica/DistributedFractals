@@ -12,8 +12,7 @@ void load_args(
     ImageSettings& image_settings,
     int& block_size,
     Camera& camera,
-    FractalSettings& fractal_settings
-   )
+    FractalSettings& fractal_settings)
 {
     for (int arg_index = 1; arg_index < argc; arg_index++) {
         const char* parameter = argv[arg_index];
@@ -55,7 +54,7 @@ void load_args(
         }
 
         // Camara Y pos
-         else if (!strcmp(parameter, "-cy")) {
+        else if (!strcmp(parameter, "-cy")) {
             camera.y = atof(value);
         }
 
@@ -68,7 +67,7 @@ void load_args(
         else if (!strcmp(parameter, "-type")) {
             fractal_settings.type = static_cast<FractalType>(atoi(value));
         }
-        
+
         // Unrecognized parameter
         else {
             std::cout << "Unrecognized parameter \"" << parameter << "\"" << std::endl;
