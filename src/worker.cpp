@@ -92,19 +92,10 @@ void render_block(
 
 void worker(
     int rank,
-    const ImageSettings& image_settings)
+    const ImageSettings& image_settings,
+    const Camera& camera,
+    const FractalSettings& fractal_settings)
 {
-
-    // TODO: Set this as parameter
-    Camera camera;
-    camera.zoom = 1.0;
-    camera.x = -0.5;
-    camera.y = 0.0;
-
-    // TODO: Set this as parameter
-    FractalSettings fractal_settings;
-    fractal_settings.max_iterations = 512;
-    fractal_settings.type = FRACTAL_MANDELBROT;
 
     std::chrono::time_point start = std::chrono::high_resolution_clock::now();
     std::chrono::time_point end = std::chrono::high_resolution_clock::now();

@@ -2,13 +2,18 @@
 #include "worker.h"
 #include "mpi/mpi.h"
 #include "image_settings.h"
+#include "camera.h"
+#include "fractal.h"
 
 void load_args(
     int argc,
     char** argv,
 
     ImageSettings& image_settings,
-    int& block_size)
+    int& block_size,
+    Camera& camera,
+    FractalSettings& fractal_settings
+   )
 {
     for (int arg_index = 1; arg_index < argc; arg_index++) {
         const char* parameter = argv[arg_index];
@@ -38,6 +43,32 @@ void load_args(
         else if (!strcmp(parameter, "-b")) {
             block_size = atoi(value);
         }
+
+        // Camara Zoom
+        else if (!strcmp(parameter, "-zoom")) {
+            camera.zoom = atof(value);
+        }
+
+        // Camara X pos
+        else if (!strcmp(parameter, "-cx")) {
+            camera.x = atof(value);
+        }
+
+        // Camara Y pos
+         else if (!strcmp(parameter, "-cy")) {
+            camera.y = atof(value);
+        }
+
+        // Fractal Setting Max Iteration
+        else if (!strcmp(parameter, "-iter")) {
+            fractal_settings.max_iterations = atoi(value);
+        }
+
+        // Fractal Setting Type of Fractal Function
+        else if (!strcmp(parameter, "-type")) {
+            fractal_settings.type = static_cast<FractalType>(atoi(value));
+        }
+        
         // Unrecognized parameter
         else {
             std::cout << "Unrecognized parameter \"" << parameter << "\"" << std::endl;
@@ -49,6 +80,8 @@ int main(int argc, char** argv)
 {
 
     ImageSettings image_settings;
+    Camera camera;
+    FractalSettings fractal_settings;
     int block_size;
     block_size = 64;
 
@@ -58,10 +91,11 @@ int main(int argc, char** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &num_procs);
 
-    // Loads console arguments
     if (rank == 0) {
-        load_args(argc, argv, image_settings, block_size);
-        std::cout << "Settings - Image resolution(" << image_settings.width << "x" << image_settings.height << ") Block size(" << block_size << ")" << std::endl;
+        load_args(argc, argv, image_settings, block_size, camera, fractal_settings);
+        std::cout << "Settings - Image resolution(" << image_settings.width << "x" << image_settings.height
+                  << ") Block size(" << block_size << ") Zoom(" << camera.zoom << ") Camera(" << camera.x << ", " << camera.y
+                  << ") Max Iterations(" << fractal_settings.max_iterations << ") Type(" << fractal_settings.type << ")\n";
     }
 
     // Broadcasts arguments to workers
@@ -70,13 +104,16 @@ int main(int argc, char** argv)
     MPI_Bcast(&image_settings.multi_sample_anti_aliasing, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&block_size, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
+    MPI_Bcast(&camera, sizeof(Camera), MPI_BYTE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&fractal_settings, sizeof(FractalSettings), MPI_BYTE, 0, MPI_COMM_WORLD);
+
     // Runs Master/Worker functions
     if (rank == 0) {
         master(num_procs, block_size, image_settings);
     }
 
     else {
-        worker(rank, image_settings);
+        worker(rank, image_settings, camera, fractal_settings);
     }
 
     MPI_Finalize();
