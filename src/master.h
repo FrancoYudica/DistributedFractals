@@ -1,7 +1,7 @@
 #pragma once
+#include "image_settings.h"
 
 void master(
     int num_procs,
-    int image_width,
-    int image_height,
-    int block_size);
+    int block_size,
+    const ImageSettings& image_settings);

@@ -1,6 +1,6 @@
 #pragma once
+#include "image_settings.h"
 
 void worker(
     int rank,
-    int image_width,
-    int image_height);
+    const ImageSettings& img_settings);

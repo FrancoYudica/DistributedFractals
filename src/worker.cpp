@@ -6,25 +6,37 @@
 #include <cmath>
 #include <chrono>
 #include "fractal.h"
+#include "image_settings.h"
 
-void apply_color_map(uint8_t& r, uint8_t& g, uint8_t& b, int iter, int max_iter)
+#include <random>
+
+// Initialize the random number generator once
+std::random_device rd;
+std::mt19937 gen(rd()); // Mersenne Twister RNG
+
+// Uniform distribution between 0 and 1
+std::uniform_real_distribution<> dist(0.0, 1.0);
+
+void apply_color_map(float& r, float& g, float& b, int iter, int max_iter)
 {
     double t = (double)iter / max_iter;
-    r = (uint8_t)(9 * (1 - t) * t * t * t * 255);
-    g = (uint8_t)(15 * (1 - t) * (1 - t) * t * t * 255);
-    b = (uint8_t)(8.5 * (1 - t) * (1 - t) * (1 - t) * t * 255);
+    r = 9.0 * (1 - t) * t * t * t;
+    g = 15.0 * (1 - t) * (1 - t) * t * t;
+    b = 8.5 * (1 - t) * (1 - t) * (1 - t) * t;
 }
 
 void render_block(
     std::vector<uint8_t>& buffer,
-    int image_width,
-    int image_height,
+    const ImageSettings& image_settings,
     const FractalSettings& fractal_settings,
     const WorkerTask& task,
     const Camera& camera)
 {
 
     auto fractal_function = get_fractal_function(fractal_settings.type);
+
+    double pixel_size_x = 1.0 / image_settings.width;
+    double pixel_size_y = 1.0 / image_settings.height;
 
     // Computes the color for each subpixel of the partial image
     for (int j = 0; j < task.height; ++j) {
@@ -34,39 +46,64 @@ void render_block(
             int pixel_x = task.x + i;
             int pixel_y = task.y + j;
 
-            // Computes normalized coordinates in range [-1.0, 1.0]
-            double nx = ((double)pixel_x / image_width - 0.5) * 2.0;
-            double ny = ((double)pixel_y / image_height - 0.5) * 2.0;
+            float r = 0.0f, g = 0.0f, b = 0.0f;
 
-            // Computes world coordinates with camera
-            double wx, wy;
-            camera.to_world(nx, ny, wx, wy);
+            // Adds multi sample anti aliasing
+            for (int sample = 1; sample <= image_settings.multi_sample_anti_aliasing; sample++) {
 
-            int iter = fractal_function(wx, wy, fractal_settings);
+                // Random offset in [0, 1)
+                double random_offset_x = dist(gen);
+                double random_offset_y = dist(gen);
+
+                double sample_x = pixel_x + pixel_size_x * random_offset_x;
+                double sample_y = pixel_y + pixel_size_y * random_offset_y;
+
+                // Computes normalized coordinates in range [-1.0, 1.0]
+                double nx = ((double)sample_x / image_settings.width - 0.5) * 2.0;
+                double ny = ((double)sample_y / image_settings.height - 0.5) * 2.0;
+
+                // Computes world coordinates with camera
+                double wx, wy;
+                camera.to_world(nx, ny, wx, wy);
+                int iter = fractal_function(wx, wy, fractal_settings);
+
+                float sample_r, sample_g, sample_b;
+
+                apply_color_map(
+                    sample_r,
+                    sample_g,
+                    sample_b,
+                    iter,
+                    fractal_settings.max_iterations);
+
+                r += sample_r;
+                g += sample_g;
+                b += sample_b;
+            }
+
+            // Stores color into buffer by averaging the colors and mapping to [0, 255]
             int idx = (j * task.width + i) * 3;
-            apply_color_map(
-                buffer[idx],
-                buffer[idx + 1],
-                buffer[idx + 2],
-                iter,
-                fractal_settings.max_iterations);
+            buffer[idx] = r / image_settings.multi_sample_anti_aliasing * 255;
+            buffer[idx + 1] = g / image_settings.multi_sample_anti_aliasing * 255;
+            buffer[idx + 2] = b / image_settings.multi_sample_anti_aliasing * 255;
         }
     }
 }
 
 void worker(
     int rank,
-    int image_width,
-    int image_height)
+    const ImageSettings& image_settings)
 {
 
+    // TODO: Set this as parameter
     Camera camera;
     camera.zoom = 1.0;
     camera.x = -0.5;
     camera.y = 0.0;
 
+    // TODO: Set this as parameter
     FractalSettings fractal_settings;
-    fractal_settings.max_iterations = 256;
+    fractal_settings.max_iterations = 512;
     fractal_settings.type = FRACTAL_MANDELBROT;
 
     std::chrono::time_point start = std::chrono::high_resolution_clock::now();
@@ -94,7 +131,7 @@ void worker(
             std::vector<uint8_t> buffer(task.width * task.height * 3);
 
             // Renders the block into buffer
-            render_block(buffer, image_width, image_height, fractal_settings, task, camera);
+            render_block(buffer, image_settings, fractal_settings, task, camera);
 
             // Sends task and buffer with contents
             MPI_Send(&task, sizeof(WorkerTask), MPI_BYTE, 0, Tag::RESULT, MPI_COMM_WORLD);
