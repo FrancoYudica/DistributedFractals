@@ -8,6 +8,12 @@ enum FractalType {
 struct FractalSettings {
     int max_iterations;
     FractalType type;
+
+    FractalSettings()
+        : max_iterations(128)
+        , type(FRACTAL_MANDELBROT)
+    {
+    }
 };
 
 /// @brief Given the fractal type, returns a function that computes that fractal

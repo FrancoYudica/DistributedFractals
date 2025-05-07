@@ -10,6 +10,8 @@ struct ImageSettings {
 
     ImageSettings()
         : multi_sample_anti_aliasing(1)
+        , width(512)
+        , height(512)
     {
     }
 };
