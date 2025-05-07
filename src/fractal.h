@@ -2,7 +2,8 @@
 #include <functional>
 
 enum FractalType {
-    FRACTAL_MANDELBROT = 0
+    FRACTAL_MANDELBROT = 0,
+    FRACTAL_JULIA
 };
 
 struct FractalSettings {
