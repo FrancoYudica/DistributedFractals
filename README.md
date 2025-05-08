@@ -13,3 +13,7 @@ Running
 ```bash
 mpirun -np 8 ./fractal_mpi
 ```
+
+
+https://github.com/user-attachments/assets/634b76d2-0196-4b7e-9c76-ac6b2a20bc6a
+
