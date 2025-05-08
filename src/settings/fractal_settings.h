@@ -5,6 +5,9 @@ enum FractalType {
     FRACTAL_JULIA
 };
 
+enum ColorModeType {
+};
+
 struct JuliaSettings {
 
     // Julia set constant parameters
