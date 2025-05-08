@@ -16,9 +16,8 @@ std::mt19937 gen(rd()); // Mersenne Twister RNG
 // Uniform distribution between 0 and 1
 std::uniform_real_distribution<> dist(0.0, 1.0);
 
-void apply_color_map(float& r, float& g, float& b, int iter, int max_iter)
+void apply_color_map(float& r, float& g, float& b, float t)
 {
-    double t = (double)iter / max_iter;
     r = 9.0 * (1 - t) * t * t * t;
     g = 15.0 * (1 - t) * (1 - t) * t * t;
     b = 8.5 * (1 - t) * (1 - t) * (1 - t) * t;
@@ -64,7 +63,7 @@ void render_block(
                 // Computes world coordinates with camera
                 double wx, wy;
                 camera.to_world(nx, ny, wx, wy);
-                int iter = fractal_function(wx, wy, fractal_settings);
+                float t = fractal_function(wx, wy, fractal_settings);
 
                 float sample_r, sample_g, sample_b;
 
@@ -72,8 +71,7 @@ void render_block(
                     sample_r,
                     sample_g,
                     sample_b,
-                    iter,
-                    fractal_settings.max_iterations);
+                    t);
 
                 r += sample_r;
                 g += sample_g;
