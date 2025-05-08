@@ -11,15 +11,17 @@ def main():
     parser.add_argument('--zoom_start', type=float, default=1.0, help='Starting zoom level')
     parser.add_argument('--zoom_end', type=float, default=10.0, help='Ending zoom level')
     parser.add_argument('--zoom_steps', type=int, default=5, help='Number of zoom steps')
-    parser.add_argument('--output_base', type=str, default='fractal', help='Base name for output images')
-
-    # Creates a directory to store the images
-    dir_name = f"images_{int(time.time())}"
-    os.mkdir(dir_name)
+    parser.add_argument('--output_folder', type=str, default='.', help='Base name for output images')
 
     args, cpp_args = parser.parse_known_args()
-    # Computes zoom levels to make a continous zoom
-    # This involves using a logaritmic zooming to compensate
+
+    # Creates a directory to store the images
+    dir_name = os.path.abspath(f"{args.output_folder}/images_{int(time.time())}")
+    os.mkdir(dir_name)
+    print(dir_name)
+
+    # Computes zoom levels to make a continuous zoom
+    # This involves using a logarithmic zooming to compensate
     log_zoom_start = math.log10(args.zoom_start)
     log_zoom_end = math.log10(args.zoom_end)
     zoom_levels = []
@@ -30,7 +32,7 @@ def main():
 
     # Saves as many images as zoom levels
     for i, zoom in enumerate(zoom_levels):
-        output_name = f"{dir_name}/{args.output_base}_zoom_{i}.png"
+        output_name = os.path.join(dir_name, f"fractal_zoom_{i}.png")
         command = [
             'mpirun', '-np', '8', args.program,
             '--zoom', str(zoom),
@@ -39,10 +41,9 @@ def main():
 
         print("Running:", ' '.join(command))
         subprocess.run(command, check=True)
-
     
-    command = f"ffmpeg -framerate 10 -i {dir_name}/fractal_zoom_%d.png -c:v libx264 -pix_fmt yuv420p fractal_animated_zoom.mp4 -y".split(" ")
-    print("Running ffmpeg to convert to video")
+    command = f"ffmpeg -framerate 10 -i {dir_name}/fractal_zoom_%d.png -c:v libx264 -pix_fmt yuv420p {os.path.join(dir_name, "fractal_zoom.mp4")} -y".split(" ")
+    print("Running ffmpeg to convert to video. {}")
     subprocess.run(command, check=True)
 
 if __name__ == '__main__':
