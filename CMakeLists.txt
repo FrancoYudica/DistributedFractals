@@ -5,9 +5,6 @@ project(fractal_mpi CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Force static build for zlib
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build static libraries" FORCE)
-
 option(BUILD_TESTS "Build test executables" OFF)
 
 # Habilitar FetchContent para descargar libpng
