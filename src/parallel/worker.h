@@ -1,6 +1,6 @@
 #pragma once
-#include "settings/settings.h"
-#include "fractal.h"
+#include "common/settings/settings.h"
+#include "common/fractal.h"
 
 void worker(
     int rank,

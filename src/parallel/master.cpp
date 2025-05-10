@@ -1,11 +1,11 @@
-#include "image_utils.h"
+#include "common/image_utils.h"
 #include "worker_task.h"
 #include <mpi/mpi.h>
 #include <vector>
 #include <cstdint>
 #include <cmath>
 #include <chrono>
-#include "master.h"
+#include "parallel/master.h"
 
 void master(
     int num_procs,
@@ -72,6 +72,7 @@ void master(
                 }
             }
             ++completed_task_count;
+            std::cout << "Worker " << source << " completed task. " << 100.0 * (float)completed_task_count / worker_tasks.size() << "%" << std::endl;
         }
     }
 

@@ -5,6 +5,9 @@ project(fractal_mpi CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Force static build for zlib
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build static libraries" FORCE)
+
 option(BUILD_TESTS "Build test executables" OFF)
 
 # Habilitar FetchContent para descargar libpng
@@ -29,19 +32,33 @@ set(SKIP_INSTALL_ALL ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(libpng)
 
 # Adds executable
-add_executable(fractal_mpi
-    src/main.cpp
-    src/master.cpp
-    src/worker.cpp
-    src/fractal.cpp
-    src/color_mode.cpp
-)
+set(
+    COMMON_SOURCES 
+    src/common/color_mode.cpp
+    src/common/fractal.cpp
+    src/common/renderer.cpp)
+
 
 # Finds MPI
 find_package(MPI REQUIRED)
 
-target_include_directories(fractal_mpi PRIVATE ${MPI_CXX_INCLUDE_PATH})
+add_executable(
+    fractal_mpi 
+    src/parallel/main.cpp 
+    src/parallel/master.cpp 
+    src/parallel/worker.cpp 
+    ${COMMON_SOURCES})
+
+target_include_directories(fractal_mpi PRIVATE src)
 target_link_libraries(fractal_mpi PRIVATE MPI::MPI_CXX png zlib)
+
+add_executable(
+    sequential 
+    src/sequential/main.cpp 
+    ${COMMON_SOURCES})
+
+target_include_directories(sequential PRIVATE src)
+target_link_libraries(sequential PRIVATE MPI::MPI_CXX png zlib)
 
 
 if(BUILD_TESTS)

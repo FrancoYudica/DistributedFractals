@@ -1,13 +1,7 @@
-#include "worker_task.h"
-#include <mpi/mpi.h>
-#include <vector>
-#include <cstdint>
-#include <cmath>
-#include <chrono>
-#include "fractal.h"
-#include "worker.h"
-#include "color_mode.h"
+#include "renderer.h"
 #include <random>
+#include "fractal.h"
+#include "color_mode.h"
 
 // Initialize the random number generator once
 std::random_device rd;
@@ -20,8 +14,11 @@ void render_block(
     std::vector<uint8_t>& buffer,
     const ImageSettings& image_settings,
     const FractalSettings& fractal_settings,
-    const WorkerTask& task,
-    const Camera& camera)
+    const Camera& camera,
+    int x,
+    int y,
+    int width,
+    int height)
 {
 
     auto fractal_function = get_fractal_function(fractal_settings.type);
@@ -31,12 +28,12 @@ void render_block(
     double pixel_size_y = 1.0 / image_settings.height;
 
     // Computes the color for each subpixel of the partial image
-    for (int j = 0; j < task.height; ++j) {
-        for (int i = 0; i < task.width; ++i) {
+    for (int j = 0; j < height; ++j) {
+        for (int i = 0; i < width; ++i) {
 
             // Computes pixel coordinate [0, image_size - 1]
-            int pixel_x = task.x + i;
-            int pixel_y = task.y + j;
+            int pixel_x = x + i;
+            int pixel_y = y + j;
 
             float r = 0.0f, g = 0.0f, b = 0.0f;
 
@@ -73,61 +70,10 @@ void render_block(
             }
 
             // Stores color into buffer by averaging the colors and mapping to [0, 255]
-            int idx = (j * task.width + i) * 3;
+            int idx = (j * width + i) * 3;
             buffer[idx] = r / image_settings.multi_sample_anti_aliasing * 255;
             buffer[idx + 1] = g / image_settings.multi_sample_anti_aliasing * 255;
             buffer[idx + 2] = b / image_settings.multi_sample_anti_aliasing * 255;
-        }
-    }
-}
-
-void worker(
-    int rank,
-    const ImageSettings& image_settings,
-    const Camera& camera,
-    const FractalSettings& fractal_settings)
-{
-
-    std::chrono::time_point start = std::chrono::high_resolution_clock::now();
-    std::chrono::time_point end = std::chrono::high_resolution_clock::now();
-
-    while (true) {
-
-        MPI_Status status;
-
-        // Sends task request to master
-        MPI_Send(NULL, 0, MPI_BYTE, 0, Tag::REQUEST, MPI_COMM_WORLD);
-
-        // Waits until a message with any tag is received
-        MPI_Probe(0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-
-        // When the tag is task, master sent task
-        if (status.MPI_TAG == Tag::TASK) {
-            // Get start time
-            start = std::chrono::high_resolution_clock::now();
-
-            WorkerTask task;
-            MPI_Recv(&task, sizeof(WorkerTask), MPI_BYTE, 0, Tag::TASK, MPI_COMM_WORLD, &status);
-
-            // Creates a buffer to store the partial image pixels
-            std::vector<uint8_t> buffer(task.width * task.height * 3);
-
-            // Renders the block into buffer
-            render_block(buffer, image_settings, fractal_settings, task, camera);
-
-            // Sends task and buffer with contents
-            MPI_Send(&task, sizeof(WorkerTask), MPI_BYTE, 0, Tag::RESULT, MPI_COMM_WORLD);
-            MPI_Send(buffer.data(), buffer.size(), MPI_BYTE, 0, Tag::RESULT, MPI_COMM_WORLD);
-            end = std::chrono::high_resolution_clock::now();
-
-            // Calculate duration in microseconds
-            auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-
-            std::cout << "Execution time: " << duration.count() << " microseconds\n";
-
-        } else if (status.MPI_TAG == Tag::TERMINATE) {
-            MPI_Recv(NULL, 0, MPI_BYTE, 0, Tag::TERMINATE, MPI_COMM_WORLD, &status);
-            break;
         }
     }
 }
