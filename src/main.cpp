@@ -21,7 +21,10 @@ void print_help()
     std::cout << "  -cy, --camera_y     <float>    Camera Y position\n";
     std::cout << "  -i,  --iterations   <int>      Max iterations for fractal\n";
     std::cout << "  -t,  --type         <int>      Fractal type ID\n";
-    std::cout << "  -h, --help                  Show this help message\n";
+    std::cout << "  --color_mode        <int>      Color mode type ID\n";
+    std::cout << "  --julia-cx          <float>    Real component of Julia set C constant\n";
+    std::cout << "  --julia-cy          <float>    Imaginary component of Julia set C constant\n";
+    std::cout << "  --help                         Show this help message\n";
 }
 
 void load_args(int argc, char** argv, Settings& settings)
@@ -30,7 +33,7 @@ void load_args(int argc, char** argv, Settings& settings)
         const char* parameter = argv[arg_index];
 
         // Help command
-        if (!strcmp(parameter, "-h") || !strcmp(parameter, "--help")) {
+        if (!strcmp(parameter, "--help")) {
             print_help();
             std::exit(0); // Exit after printing help
         }
@@ -62,7 +65,23 @@ void load_args(int argc, char** argv, Settings& settings)
         } else if (!strcmp(parameter, "-i") || !strcmp(parameter, "--iterations")) {
             settings.fractal.max_iterations = std::atoi(value);
         } else if (!strcmp(parameter, "-t") || !strcmp(parameter, "--type")) {
-            settings.fractal.type = static_cast<FractalType>(std::atoi(value));
+            int fractal_type = std::atoi(value);
+            if (fractal_type >= (int)FractalType::INVALID_LAST) {
+                std::cout << "Trying to assign an invalid color mode value" << std::endl;
+            } else {
+                settings.fractal.type = static_cast<FractalType>(fractal_type);
+            }
+        } else if (!strcmp(parameter, "--color_mode")) {
+            int color_mode = std::atoi(value);
+            if (color_mode >= (int)ColorMode::INVALID_LAST) {
+                std::cout << "Trying to assign an invalid color mode value" << std::endl;
+            } else {
+                settings.fractal.color_mode = static_cast<ColorMode>(color_mode);
+            }
+        } else if (!strcmp(parameter, "--julia-cx")) {
+            settings.fractal.julia_settings.Cx = atof(value);
+        } else if (!strcmp(parameter, "--julia-cy")) {
+            settings.fractal.julia_settings.Cy = atof(value);
         } else {
             std::cout << "Unrecognized parameter \"" << parameter << "\"\n";
         }

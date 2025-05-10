@@ -6,22 +6,15 @@
 #include <chrono>
 #include "fractal.h"
 #include "worker.h"
-
+#include "color_mode.h"
 #include <random>
 
 // Initialize the random number generator once
 std::random_device rd;
-std::mt19937 gen(rd()); // Mersenne Twister RNG
+std::mt19937 gen(rd());
 
 // Uniform distribution between 0 and 1
 std::uniform_real_distribution<> dist(0.0, 1.0);
-
-void apply_color_map(float& r, float& g, float& b, float t)
-{
-    r = 9.0 * (1 - t) * t * t * t;
-    g = 15.0 * (1 - t) * (1 - t) * t * t;
-    b = 8.5 * (1 - t) * (1 - t) * (1 - t) * t;
-}
 
 void render_block(
     std::vector<uint8_t>& buffer,
@@ -32,6 +25,7 @@ void render_block(
 {
 
     auto fractal_function = get_fractal_function(fractal_settings.type);
+    auto color_function = get_color_function(fractal_settings.color_mode);
 
     double pixel_size_x = 1.0 / image_settings.width;
     double pixel_size_y = 1.0 / image_settings.height;
@@ -67,11 +61,11 @@ void render_block(
 
                 float sample_r, sample_g, sample_b;
 
-                apply_color_map(
+                color_function(
+                    t,
                     sample_r,
                     sample_g,
-                    sample_b,
-                    t);
+                    sample_b);
 
                 r += sample_r;
                 g += sample_g;

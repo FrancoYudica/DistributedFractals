@@ -34,6 +34,7 @@ add_executable(fractal_mpi
     src/master.cpp
     src/worker.cpp
     src/fractal.cpp
+    src/color_mode.cpp
 )
 
 # Finds MPI

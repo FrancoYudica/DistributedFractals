@@ -2,10 +2,19 @@
 
 enum FractalType {
     FRACTAL_MANDELBROT = 0,
-    FRACTAL_JULIA
+    FRACTAL_JULIA,
+
+    // Used to tell the valid range of values
+    INVALID_LAST
 };
 
-enum ColorModeType {
+enum class ColorMode {
+    BLACK_WHITE,
+    GRAYSCALE,
+    BLUE_GREEN_RED,
+
+    // Used to tell the valid range of values
+    INVALID_LAST
 };
 
 struct JuliaSettings {
@@ -23,11 +32,13 @@ struct JuliaSettings {
 struct FractalSettings {
     int max_iterations;
     FractalType type;
+    ColorMode color_mode;
 
     JuliaSettings julia_settings;
 
     FractalSettings()
         : max_iterations(128)
+        , color_mode(ColorMode::BLUE_GREEN_RED)
         , type(FRACTAL_MANDELBROT)
     {
     }
