@@ -3,7 +3,7 @@
 **DistributedFractals** is a command-line application for rendering fractals (e.g., Mandelbrot and Julia sets) using CPU-based parallelism with MPI. It enables high-resolution image generation across multiple processing units, making it suitable for both local and distributed rendering setups.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/0c468c27-a5c8-4965-afba-c9587f26a1de" alt="Mandelbrot Set" width="45%"/>
+  <img src="https://github.com/user-attachments/assets/622866fd-3f48-4243-b9f9-58f7aa330c76" alt="Mandelbrot Set" width="45%"/>
   <img src="https://github.com/user-attachments/assets/ec467539-f3b3-4ea8-b981-d3363a5af00d" alt="Julia Set" width="45%"/>
 </p>
 
