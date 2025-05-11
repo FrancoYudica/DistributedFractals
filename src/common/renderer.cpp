@@ -26,6 +26,7 @@ void render_block(
 
     double pixel_size_x = 1.0 / image_settings.width;
     double pixel_size_y = 1.0 / image_settings.height;
+    double aspect_ratio = (double)image_settings.width / (double)image_settings.height;
 
     // Computes the color for each subpixel of the partial image
     for (int j = 0; j < height; ++j) {
@@ -48,7 +49,7 @@ void render_block(
                 double sample_y = pixel_y + pixel_size_y * random_offset_y;
 
                 // Computes normalized coordinates in range [-1.0, 1.0]
-                double nx = ((double)sample_x / image_settings.width - 0.5) * 2.0;
+                double nx = ((double)sample_x / image_settings.width - 0.5) * 2.0 * aspect_ratio;
                 double ny = ((double)sample_y / image_settings.height - 0.5) * 2.0;
 
                 // Computes world coordinates with camera
