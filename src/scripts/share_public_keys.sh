@@ -34,7 +34,7 @@ while IFS= read -r line || [ -n "$line" ]; do
     ip=$(echo "$line" | awk '{print $1}')
 
     echo "Sharing public key to mpi-user@$ip"
-    sshpass -p "$PASSWORD" -sshcopy-id -o StrictHostKeyChecking=no "mpi-user@$ip"
+    sshpass -p "$PASSWORD" ssh-copy-id -o StrictHostKeyChecking=no "mpi-user@$ip"
 
     if [ "$?" -ne 0 ]; then
         echo "Error copying to mpi-user@$ip"
