@@ -1,18 +1,25 @@
 #!/bin/bash
 # Script that shares the public key of this computer to all the listed nodes of the cluster
-# The list should be provided as an argument, with lines like: <ip> slots=x
+# Usage: ./script.sh hostfile password
 
 # Check for correct number of arguments
-if [ "$#" -ne 1 ]; then
-    echo "Usage: $0 hostfile"
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 hostfile password"
     exit 1
 fi
 
 HOSTFILE="$1"
+PASSWORD="$2"
 
 # Validate input file
 if [ ! -f "$HOSTFILE" ]; then
     echo "The file $HOSTFILE does not exist."
+    exit 1
+fi
+
+# Check if sshpass is installed
+if ! command -v sshpass &> /dev/null; then
+    echo "sshpass is not installed. Install it with: sudo apt install sshpass"
     exit 1
 fi
 
@@ -27,7 +34,7 @@ while IFS= read -r line || [ -n "$line" ]; do
     ip=$(echo "$line" | awk '{print $1}')
 
     echo "Sharing public key to mpi-user@$ip"
-    ssh-copy-id "mpi-user@$ip"
+    sshpass -p "$PASSWORD" -sshcopy-id -o StrictHostKeyChecking=no "mpi-user@$ip"
 
     if [ "$?" -ne 0 ]; then
         echo "Error copying to mpi-user@$ip"
