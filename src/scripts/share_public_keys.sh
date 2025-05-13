@@ -23,6 +23,16 @@ if ! command -v sshpass &> /dev/null; then
     exit 1
 fi
 
+# Ensure ~/.ssh exists and permissions are correct
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+
+# Generate SSH key if it doesn't exist
+if [ ! -f ~/.ssh/id_rsa ]; then
+    echo "Generating SSH key..."
+    ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
+fi
+
 # Loop through each line
 while IFS= read -r line || [ -n "$line" ]; do
     # Skip empty lines
@@ -32,13 +42,18 @@ while IFS= read -r line || [ -n "$line" ]; do
 
     # Extract the IP address (first field)
     ip=$(echo "$line" | awk '{print $1}')
+    echo "==> Processing $ip"
 
-    echo "Sharing public key to mpi-user@$ip"
+    # Add to known_hosts to avoid host verification prompt
+    ssh-keyscan -H "$ip" >> ~/.ssh/known_hosts 2>/dev/null
+
+    # Copy SSH key
+    echo "==> Sharing public key to mpi-user@$ip"
     sshpass -p "$PASSWORD" ssh-copy-id -o StrictHostKeyChecking=no "mpi-user@$ip"
 
     if [ "$?" -ne 0 ]; then
-        echo "Error copying to mpi-user@$ip"
+        echo "❌ Error copying to mpi-user@$ip"
     else
-        echo "Successfully copied to mpi-user@$ip"
+        echo "✅ Successfully copied to mpi-user@$ip"
     fi
 done < "$HOSTFILE"
