@@ -33,4 +33,9 @@ struct OutputSettings {
 
     OutputSetingsDiskData disk_data;
     OutputSettingsNetworkData network_data;
+
+    OutputSettings()
+        : mode(OutputSettingsMode::DISK)
+    {
+    }
 };
