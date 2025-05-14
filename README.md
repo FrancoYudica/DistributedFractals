@@ -20,8 +20,27 @@ This project explores the intersection of fractal rendering and distributed comp
 
 ---
 
+## Features
+- High-resolution fractal rendering using MPI-based parallelism
+- Support for Mandelbrot and Julia sets (extensible)
+- Adjustable rendering parameters via CLI
+- Interactive fractal exploration with zoom support
+- Multiple output modes: save to disk or stream via network
+
 ## 🛠️ Build Instructions
 
+> ⚠️ **Note**: This project currently supports **Linux only**. It relies on POSIX features and has not been tested on Windows or macOS.
+
+### Requirements
+
+- CMake >= 3.14
+- MPI implementation (e.g., MPICH or OpenMPI)
+  ```bash
+  sudo apt install openmpi-bin libopenmpi-dev openmpi-common
+  ```
+- C++17-compatible compiler
+
+### Compiling
 To compile the project:
 
 ```bash
@@ -33,10 +52,16 @@ make
 ## ▶️ Running the Application
 ### Parallel (MPI) Execution
 
-To run the distributed version with 8 processes:
 ```bash
+## To run the distributed version with 8 processes
 mpirun -np 8 ./fractal_mpi
 ```
+
+```bash
+## This renders a Mandelbrot image using 4 processes and saves it to mandelbrot.png.
+mpirun -np 4 ./fractal_mpi -w 1080 -h 720 -z 1 -cx -0.7 -cy 0.0 -i 64 -t 0 -s 4 -od mandelbrot.png
+```
+
 ### Sequential Version
 A non-MPI version is also available:
 ```bash
@@ -46,7 +71,7 @@ A non-MPI version is also available:
 ## Output mode
 After the image is generated, the program can output at the following modes:
 - **Disk**: Stores the generated image in the specified output filepath
-- **Network**: Connects to a remote server and sends the generated *.png* image buffer through TCP. Note that this involves a sever. A simple implementation of this server is located at `src/scripts/image_server.py`
+- **Network**: Connects to a remote server and sends the generated *.png* image buffer through TCP. Note that this involves a server. A simple implementation of this server is located at `src/scripts/image_server.py`
 
 
 ## ⚙️ Command-Line Arguments
@@ -90,3 +115,6 @@ python3 ./interactive_visualizer.py
 ```
 
 You can also specify the number of mpi processors with argument `--np <x>` and the rendering executable path `--executable_path <path>`.
+
+
+## Samples!
