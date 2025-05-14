@@ -22,6 +22,10 @@ This project explores the intersection of fractal rendering and distributed comp
 
 ## Features
 - High-resolution fractal rendering using MPI-based parallelism
+- Implements a master/worker architecture:
+    - The master process generates a queue of image blocks (tasks).
+    - Workers pull tasks dynamically as they finish their current ones, ensuring better load balancing.
+    - Each block contributes to a portion of the final image.
 - Support for Mandelbrot and Julia sets (extensible)
 - Adjustable rendering parameters via CLI
 - Interactive fractal exploration with zoom support
