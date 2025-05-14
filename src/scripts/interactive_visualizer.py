@@ -4,6 +4,7 @@
 # The camera parameters (x, y, zoom) are updated based on the selected region,
 # and the fractal image is regenerated using an external MPI-based program.
 # This visualizer creates a server, used to receive the generated image
+# Note that both, the server and the rendering program are executed locally
 import pygame
 import subprocess
 import argparse
