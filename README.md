@@ -43,11 +43,18 @@ A non-MPI version is also available:
 ./sequential
 ```
 
+## Output mode
+After the image is generated, the program can output in the following modes:
+- **Disk**: Stores the generated image in the specified output filepath
+- **Network**: Connects to a remote server and sends the generated *.png* image buffer through TCP. Note that this involves a sever. A simple implementation of this server is located at `src/scripts/image_server.py`
+
+
 ## ⚙️ Command-Line Arguments
 
 | Option                     | Description                                                |
 |----------------------------|------------------------------------------------------------|
-| `-o`, `--output <path>`    | Output image file path                                     |
+| `-od`, `--output_disk <opt filename>`    | Save output image to disk. Defaults to 'output.png' if no filename is provided|
+| `-on`, `--output_network <opt ip <opt port>>`      |Send output image over TCP. Defaults to IP 0.0.0.0 and port 5001 if not specified.|
 | `-w`, `--width <int>`      | Image width in pixels                                      |
 | `-h`, `--height <int>`     | Image height in pixels                                     |
 | `-s`, `--samples <int>`    | Number of MSAA samples                                     |

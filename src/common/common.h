@@ -9,7 +9,7 @@ void print_help()
     std::cout << "Fractal Renderer - Command Line Options\n";
     std::cout << "----------------------------------------\n";
     std::cout << "  -od, --output_disk       [opt filename]         Save output image to disk. Defaults to 'output.png' if no filename is provided.\n";
-    std::cout << "  -on, --output_network    [opt IP] [opt port]    Send output image over TCP. Defaults to IP 0.0.0.0 and port 5001 if not specified.\n";
+    std::cout << "  -on, --output_network    [opt IP [opt port]]    Send output image over TCP. Defaults to IP 0.0.0.0 and port 5001 if not specified.\n";
     std::cout << "  -w,  --width             <int>                  Image width in pixels\n";
     std::cout << "  -h,  --height            <int>                  Image height in pixels\n";
     std::cout << "  -s,  --samples           <int>                  Number of MSAA samples\n";

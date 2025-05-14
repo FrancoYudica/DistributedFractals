@@ -11,7 +11,7 @@ struct OutputSetingsDiskData {
     char output_path[1024];
 
     OutputSetingsDiskData()
-        : output_path("./fractal.png")
+        : output_path("./output.png")
     {
     }
 };
