@@ -118,3 +118,24 @@ You can also specify the number of mpi processors with argument `--np <x>` and t
 
 
 ## Samples!
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/40d67eec-7bf6-479b-9399-f4f84f9a52ef" alt="mandelbrot_sample_4" width="45%"/>
+  <img src="https://github.com/user-attachments/assets/2f84ac84-a359-4c5c-9d81-e06e43479957" alt="mandelbrot_sample3" width="45%"/>
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/3d94d4c9-8efd-4bc7-b4d9-68653f33ea39" alt="mandelbrot_sample2" width="45%"/>
+  <img src="https://github.com/user-attachments/assets/11713464-3240-471b-82e3-efc9ac077d0b" alt="mandelbrot_sample1" width="45%"/>
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/1fa634cd-6421-469d-b7dd-8860de59cff8" alt="mandelbrot_sample0" width="45%"/>
+  <img src="https://github.com/user-attachments/assets/cb0073a7-d29c-4abc-a5e3-036c7300dede" alt="julia_sample4" width="45%"/>
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/df66eed8-cbdd-41e8-897d-2a4832163b02" alt="julia_sample3" width="45%"/>
+  <img src="https://github.com/user-attachments/assets/f4d52548-35fd-4511-897d-92e1dd2b332a" alt="julia_sample1" width="45%"/>
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/7561da1e-d7db-4042-83b8-0a17f7ce16a9" alt="julia_sample0" width="45%"/>
+  <img src="https://github.com/user-attachments/assets/5131ed23-f094-4782-b4f5-3e360796d7fc" alt="julia_sample0" width="45%"/>
+</p>
+
