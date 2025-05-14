@@ -44,7 +44,7 @@ A non-MPI version is also available:
 ```
 
 ## Output mode
-After the image is generated, the program can output in the following modes:
+After the image is generated, the program can output at the following modes:
 - **Disk**: Stores the generated image in the specified output filepath
 - **Network**: Connects to a remote server and sends the generated *.png* image buffer through TCP. Note that this involves a sever. A simple implementation of this server is located at `src/scripts/image_server.py`
 
