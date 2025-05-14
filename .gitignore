@@ -1,3 +1,6 @@
+*.png
+
+# Folders
 .venv
 /.vscode
 /build

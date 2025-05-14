@@ -3,7 +3,8 @@
 #include <vector>
 #include "common/common.h"
 #include "common/renderer.h"
-#include "common/image_utils.h"
+#include <memory>
+#include "common/output_handler.h"
 
 int main(int argc, char** argv)
 {
@@ -29,11 +30,19 @@ int main(int argc, char** argv)
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
     std::cout << "Computation took: " << duration.count() << " ms\n";
-    save_image(
-        settings.output_path,
-        buffer.data(),
+
+    // Creates output handler based on the settings mode
+    std::shared_ptr<OutputHandler> output_handler = OutputHandler::factory_create(settings.output_settings.mode);
+
+    bool success = output_handler->save_output(
+        buffer,
         settings.image.width,
-        settings.image.height);
+        settings.image.height,
+        settings.output_settings);
+
+    if (!success) {
+        std::cout << "Unable to output image..." << std::endl;
+    }
 
     return 0;
 }

@@ -8,20 +8,21 @@ void print_help()
 {
     std::cout << "Fractal Renderer - Command Line Options\n";
     std::cout << "----------------------------------------\n";
-    std::cout << "  -o,  --output       <path>     Output file path\n";
-    std::cout << "  -w,  --width        <int>      Image width in pixels\n";
-    std::cout << "  -h,  --height       <int>      Image height in pixels\n";
-    std::cout << "  -s,  --samples      <int>      Number of MSAA samples\n";
-    std::cout << "  -b,  --block_size   <int>      Size in pixels of the MPI image task\n";
-    std::cout << "  -z,  --zoom         <float>    Zoom level of camera\n";
-    std::cout << "  -cx, --camera_x     <float>    Camera X position\n";
-    std::cout << "  -cy, --camera_y     <float>    Camera Y position\n";
-    std::cout << "  -i,  --iterations   <int>      Max iterations for fractal\n";
-    std::cout << "  -t,  --type         <int>      Fractal type ID\n";
-    std::cout << "  --color_mode        <int>      Color mode type ID\n";
-    std::cout << "  --julia-cx          <float>    Real component of Julia set C constant\n";
-    std::cout << "  --julia-cy          <float>    Imaginary component of Julia set C constant\n";
-    std::cout << "  --help                         Show this help message\n";
+    std::cout << "  -od, --output_disk       [opt filename]         Save output image to disk. Defaults to 'output.png' if no filename is provided.\n";
+    std::cout << "  -on, --output_network    [opt IP] [opt port]    Send output image over TCP. Defaults to IP 0.0.0.0 and port 5001 if not specified.\n";
+    std::cout << "  -w,  --width             <int>                  Image width in pixels\n";
+    std::cout << "  -h,  --height            <int>                  Image height in pixels\n";
+    std::cout << "  -s,  --samples           <int>                  Number of MSAA samples\n";
+    std::cout << "  -b,  --block_size        <int>                  Size in pixels of the MPI image task\n";
+    std::cout << "  -z,  --zoom              <float>                Zoom level of camera\n";
+    std::cout << "  -cx, --camera_x          <float>                Camera X position\n";
+    std::cout << "  -cy, --camera_y          <float>                Camera Y position\n";
+    std::cout << "  -i,  --iterations        <int>                  Max iterations for fractal\n";
+    std::cout << "  -t,  --type              <int>                  Fractal type ID\n";
+    std::cout << "  --color_mode             <int>                  Color mode type ID\n";
+    std::cout << "  --julia-cx               <float>                Real component of Julia set C constant\n";
+    std::cout << "  --julia-cy               <float>                Imaginary component of Julia set C constant\n";
+    std::cout << "  --help                                          Show this help message\n";
 }
 
 void load_args(int argc, char** argv, Settings& settings)
@@ -29,12 +30,39 @@ void load_args(int argc, char** argv, Settings& settings)
     for (int arg_index = 1; arg_index < argc; ++arg_index) {
         const char* parameter = argv[arg_index];
 
-        // Help command
+        // Help command -----------------------------------------------------------------------
         if (!strcmp(parameter, "--help")) {
             print_help();
             std::exit(0); // Exit after printing help
         }
 
+        // Arguments with multiple varying parameters -----------------------------------------
+        if (!strcmp(parameter, "-od") || !strcmp(parameter, "--output_disk")) {
+            settings.output_settings.mode = OutputSettingsMode::DISK;
+
+            if (arg_index + 1 < argc)
+                std::strcpy(settings.output_settings.disk_data.output_path, argv[++arg_index]);
+
+            continue;
+        }
+        if (!strcmp(parameter, "-on") || !strcmp(parameter, "--output_network")) {
+            settings.output_settings.mode = OutputSettingsMode::NETWORK;
+
+            // Check if next arguments look like IP and port
+            // If these start with -, it means that these weren't provided
+            if (arg_index + 1 < argc && argv[arg_index + 1][0] != '-') {
+                // First the IP
+                std::strcpy(settings.output_settings.network_data.ip, argv[++arg_index]);
+
+                // Check for optional port
+                if (arg_index + 1 < argc && argv[arg_index + 1][0] != '-') {
+                    settings.output_settings.network_data.port = std::atoi(argv[++arg_index]);
+                }
+            }
+            continue;
+        }
+
+        // Arguments with a single parameter ---------------------------------------------------
         // Make sure there's a value for the parameter
         if (arg_index + 1 >= argc) {
             std::cout << "Missing value of parameter \"" << parameter << "\"\n";
@@ -43,9 +71,7 @@ void load_args(int argc, char** argv, Settings& settings)
 
         const char* value = argv[++arg_index];
 
-        if (!strcmp(parameter, "-o") || !strcmp(parameter, "--output")) {
-            std::strcpy(settings.output_path, value);
-        } else if (!strcmp(parameter, "-w") || !strcmp(parameter, "--width")) {
+        if (!strcmp(parameter, "-w") || !strcmp(parameter, "--width")) {
             settings.image.width = std::atoi(value);
         } else if (!strcmp(parameter, "-h") || !strcmp(parameter, "--height")) {
             settings.image.height = std::atoi(value);

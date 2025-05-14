@@ -1,4 +1,3 @@
-#include "common/image_utils.h"
 #include "worker_task.h"
 #include <mpi/mpi.h>
 #include <vector>
@@ -6,6 +5,7 @@
 #include <cmath>
 #include <chrono>
 #include "parallel/master.h"
+#include "common/output_handler.h"
 
 void master(
     int num_procs,
@@ -85,5 +85,16 @@ void master(
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     std::cout << "Computation took: " << duration.count() << " ms\n";
 
-    save_image(settings.output_path, image.data(), width, height);
+    // Creates output handler based on the settings mode
+    std::shared_ptr<OutputHandler> output_handler = OutputHandler::factory_create(settings.output_settings.mode);
+
+    bool success = output_handler->save_output(
+        image,
+        settings.image.width,
+        settings.image.height,
+        settings.output_settings);
+
+    if (!success) {
+        std::cout << "Unable to output image..." << std::endl;
+    }
 }

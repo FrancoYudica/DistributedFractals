@@ -33,7 +33,8 @@ set(
     COMMON_SOURCES 
     src/common/color_mode.cpp
     src/common/fractal.cpp
-    src/common/renderer.cpp)
+    src/common/renderer.cpp
+    src/common/output_handler.cpp)
 
 
 # Finds MPI
