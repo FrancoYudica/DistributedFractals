@@ -68,3 +68,25 @@ After the image is generated, the program can output in the following modes:
 | `--julia-cx <float>`       | Real component of Julia set constant `C`                   |
 | `--julia-cy <float>`       | Imaginary component of Julia set constant `C`              |
 | `--help`                   | Display help message                                       |
+
+## Interactive visualizer
+A simple interactive visualizer is also included, built using Python and Pygame. This viewer allows users to explore the fractal image by zooming into selected regions. It accepts the same command-line arguments as the fractal renderer and passes them directly to the compiled executable. Therefore, make sure the renderer has already been built before running the visualizer.
+
+### Setup
+Creating python virtual environment
+```bash
+cd src/scripts
+python -m venv .venv
+source .venv/bin/activate
+```
+Installing pygame
+```bash
+pip install pygame
+```
+
+### Running
+```bash
+python3 ./interactive_visualizer.py
+```
+
+You can also specify the number of mpi processors with argument `--np <x>` and the rendering executable path `--executable_path <path>`.

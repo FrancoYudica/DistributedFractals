@@ -1,16 +1,20 @@
-# fractal_viewer.py
+# interactive_visualizer.py
 # Interactive fractal image viewer using MPI for generation and Pygame for display.
 # Users can click to zoom into specific areas of the fractal.
 # The camera parameters (x, y, zoom) are updated based on the selected region,
 # and the fractal image is regenerated using an external MPI-based program.
-
+# This visualizer creates a server, used to receive the generated image
 import pygame
 import subprocess
 import argparse
+import socket
+import threading
+import io
 
 FPS = 60
-IMAGE_PATH = "/tmp/fractal.png"
 ZOOM_BOX_SIZE = 64
+HOST = '0.0.0.0'  
+PORT = 5001       
 
 
 class Camera:
@@ -43,6 +47,44 @@ def compute_zoom(w1, w2) -> float:
         return float('inf') 
     return 2.0 / world_width
 
+def image_generated_callback(png_data):
+    global image
+    image_stream = io.BytesIO(png_data)
+    image = pygame.image.load(image_stream, "image.png")
+    print(camera)
+
+# Simple TCP server that accepts connections and expects 
+# a PNG formatted buffer image. 
+def run_server():
+    global done
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind((HOST, PORT))
+    server_socket.listen()
+    server_socket.settimeout(1.0)  # Set timeout for accept()
+
+    print(f"Server is listening on port {PORT}")
+    while not done:
+        try:
+            client_socket, _ = server_socket.accept()
+        except socket.timeout:
+            continue  # Just try again in the next loop iteration
+
+        # Handle the client
+        try:
+            data = b''
+            expected_size = int.from_bytes(client_socket.recv(4), byteorder='big')
+
+            while len(data) < expected_size:
+                packet = client_socket.recv(4096)
+                if not packet:
+                    break
+                data += packet
+
+            image_generated_callback(data)
+        finally:
+            client_socket.close()
+
+    server_socket.close()
 
 # Returns min, center and max points in screen coordinates
 def get_screen_points():
@@ -64,15 +106,15 @@ def pixel_to_ndc(pixel):
     )
 
 
-def generate_image(renderer_args, np):
+def generate_image(renderer_args, np, executable_path):
     command = [
-        'mpirun', '-np', str(np), "../../build/fractal_mpi",
+        'mpirun', '-np', str(np), executable_path,
+        '--output_network',
         '--zoom', str(camera.zoom),
         '-cx', str(camera.x),
         '-cy', str(camera.y),
         '--width', str(screen.get_width()),
-        '--height', str(screen.get_height()),
-        '--output', IMAGE_PATH
+        '--height', str(screen.get_height())
     ] + renderer_args
 
     print("Running:", ' '.join(command))
@@ -112,6 +154,7 @@ def render_camera_info():
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--np', type=int, default=4, help="Number of processors")
+parser.add_argument("--executable_path", type=str, default="../../build/fractal_mpi", help="Filepath of the rendering program")
 args, renderer_args = parser.parse_known_args()
 
 pygame.init()
@@ -120,22 +163,26 @@ font = pygame.font.SysFont(None, 24)
 is_holding = False
 camera = Camera()
 clock = pygame.time.Clock()
-screen = pygame.display.set_mode((960, 960))
-done = False
+screen = pygame.display.set_mode((720, 720))
 
 update_camera_from_selection(
     (0, 0),
     (screen.get_width() / 2, screen.get_height() / 2),
     (screen.get_width(), screen.get_height())
 )
+done = False
 
-generate_image(renderer_args, args.np)
-rendered_image = pygame.image.load(IMAGE_PATH)
+# Creates and starts server
+server_thread = threading.Thread(target=run_server)
+server_thread.start()
+
+image: pygame.Surface = None
+generate_image(renderer_args, args.np, args.executable_path)
 
 while not done:
 
     for event in pygame.event.get():
-        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_q):
+        if event.type == pygame.QUIT:
             done = True
         if event.type == pygame.VIDEORESIZE:
             screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
@@ -147,11 +194,11 @@ while not done:
             is_holding = False
 
             update_camera_from_selection(*get_screen_points())
-            generate_image(renderer_args, args.np)
-            rendered_image = pygame.image.load(IMAGE_PATH)
+            generate_image(renderer_args, args.np, args.executable_path)
 
     # Client rendering -------------------------------------------------------------------------
-    render_image_fit(rendered_image)
+    if image is not None:
+        render_image_fit(image)
 
     # Renders hint rect
     if is_holding:
@@ -162,5 +209,5 @@ while not done:
     pygame.display.flip()
     clock.tick(FPS)
 
-
 pygame.quit()
+server_thread.join()
