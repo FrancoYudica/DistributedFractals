@@ -76,7 +76,7 @@ A simple interactive visualizer is also included, built using Python and Pygame.
 Creating python virtual environment
 ```bash
 cd src/scripts
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 ```
 Installing pygame
