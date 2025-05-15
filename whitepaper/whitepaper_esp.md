@@ -55,6 +55,7 @@ $$
 Aunque simple, esta función exhibe una variedad de comportamientos interesantes dependiendo del punto de partida $z_0$
 
 Por ejemplo:
+
 $$
     Si |z_0| < 1, entonces f^n(z_0) → 0
 $$
