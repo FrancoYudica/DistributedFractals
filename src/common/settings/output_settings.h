@@ -2,7 +2,8 @@
 
 enum class OutputSettingsMode {
     DISK,
-    NETWORK
+    NETWORK,
+    DISABLED
 };
 
 struct OutputSetingsDiskData {

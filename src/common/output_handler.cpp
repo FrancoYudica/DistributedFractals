@@ -15,6 +15,9 @@ std::shared_ptr<OutputHandler> OutputHandler::factory_create(OutputSettingsMode 
     case OutputSettingsMode::NETWORK:
         return std::make_shared<NetworkOutputHandler>();
 
+    case OutputSettingsMode::DISABLED:
+        return std::make_shared<OutputHandler>();
+
     default:
         return nullptr;
     }

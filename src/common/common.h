@@ -62,6 +62,11 @@ void load_args(int argc, char** argv, Settings& settings)
             continue;
         }
 
+        if (!strcmp(parameter, "--output_disabled")) {
+            settings.output_settings.mode = OutputSettingsMode::DISABLED;
+            continue;
+        }
+
         // Arguments with a single parameter ---------------------------------------------------
         // Make sure there's a value for the parameter
         if (arg_index + 1 >= argc) {

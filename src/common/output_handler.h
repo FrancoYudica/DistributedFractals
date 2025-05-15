@@ -19,7 +19,9 @@ public:
         int width,
         int height,
         const OutputSettings& settings)
-        = 0;
+    {
+        return true;
+    };
 
     /// @brief Given the mode, returns the OutputHandler class
     static std::shared_ptr<OutputHandler> factory_create(OutputSettingsMode mode);
