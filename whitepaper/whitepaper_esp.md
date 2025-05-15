@@ -299,15 +299,3 @@ La función worker arranca enviando al maestro una petición de tarea y se bloqu
 **[8]** https://github.com/lucaszm7/Mandel2Us
 
 **[9]** https://github.com/Sudo-Rahman/Fractalium
-
-```
-
-```
-
-```
-
-```
-
-```
-
-```
