@@ -104,7 +104,29 @@ Al igual que en el caso del fractal de Julia, el criterio de escape se basa en s
 ### Coloreo de fractales
 Existen distintos métodos para colorear fractales, siendo el más básico el blanco y negro. En este esquema, los píxeles cuya posición, al ser utilizada como punto de partida en la iteración del fractal, tienden al infinito, se colorean de blanco. Por el contrario, aquellos que no divergen se colorean de negro.
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/2a7f7217-5f68-4112-9e7c-d65229a3cf2a" width="50%">
+</p>
+
+<p align="center"><b>Figura 1:</b> Representación en blanco y negro del conjunto de Mandelbrot.</p>
+
 Sin embargo, este método binario puede resultar limitado para visualizar la complejidad del sistema dinámico. Por ello, se utilizan técnicas más avanzadas como el coloreo por tiempo de escape (escape time coloring), donde se asignan colores según la cantidad de iteraciones que tarda un punto en escapar de un cierto radio. Esto permite generar imágenes con ricos gradientes de color que reflejan la velocidad de divergencia y destacan la estructura del borde del conjunto. [\[5\]](#fractal-rendering).
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/345a943e-b06d-4152-b39c-9befd2f7ffa9" width="50%">
+</p>
+
+<p align="center"><b>Figura 2:</b> Representación en escala de grises del conjunto de Mandelbrot.</p>
+
+
+Pero también es posible mapear el número de iteraciones a una paleta de colores. Nótese que los puntos pertenecientes al conjunto de Mandelbrot toman un color uniforme, ya que alcanzan el número máximo de iteraciones sin divergir.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/3a68cdb6-6754-487f-b32a-5d59af1536e5" width="50%">
+</p>
+
+<p align="center"><b>Figura 3:</b> Mapeo de iteraciones a paletea de colores del conjunto de Mandelbrot.</p>
+
+Es interesante observar que se produce un efecto de banding, claramente visible en la Figura 3, ya que los puntos divergentes con igual número de iteraciones toman el mismo color.
 
 ## Bibliografía
 **[1]** https://solarianprogrammer.com/2013/02/28/mandelbrot-set-cpp-11/
