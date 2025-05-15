@@ -16,6 +16,8 @@ Este trabajo presenta el desarrollo de una implementación paralela de renderiza
   - [Fractal Mandelbrot](#fracal-mandelbrot)
   - [Coloreo de fractales](#coloreo-de-fractales)
 - [Desarrollo](#desarrollo)
+  - [Sequencial](#secuencial)
+  - [Paralelo](#paralelo)
 - [Bibliografía](#bibliografía)
 
 ## Introducción
@@ -197,15 +199,19 @@ La solución paralela aprovecha la independencia de cada bloque de píxeles para
 
 Esta aproximación inicial ya demuestra mejoras en el tiempo total de cómputo, aunque revela un desbalanceo de carga cuando algunos bloques requieren más cómputo que otros, dejando procesos inactivos mientras otros siguen trabajando.
 
-- Tareas: 1-8
-- Nodo1: 0, 1, 2, 3 -> 0-1-2-3
-- Nodo2: 4, 5, 6, 7 -> 4----5----6---7
+Por ejemplo, si las ocho tareas tienen duraciones (en ms) [10, 10, 10, 10, 20, 30, 40, 50] y se reparten estáticamente en dos nodos:
 
-Para resolver este desbalanceo se implementó un balanceo de carga dinámico basado en demanda. En lugar de asignar bloques estáticamente, el maestro mantiene una cola de tareas y cada trabajador solicita un nuevo bloque tan pronto como finaliza el anterior. De este modo, el tiempo de inactividad de los procesos se reduce significativamente y se optimiza el uso de los recursos de cómputo.
+- **Nodo1** recibe las cuatro primeras tareas: 10 + 10 + 10 + 10 = 40 ms de trabajo y permanece inactivo los 100 ms restantes.
 
-- Tareas: 1-8
-- Nodo1: -> 0-1-2-3---7
-- Nodo2: -> 4----5----6
+- **Nodo2** recibe las cuatro últimas: 20 + 30 + 40 + 50 = 140 ms, completando todo el render en 140 ms.
+
+Para resolver este desbalanceo se implementó un balanceo de carga dinámico basado en demanda. En lugar de asignar bloques estáticamente, el maestro mantiene una cola de tareas y cada trabajador solicita un nuevo bloque tan pronto como finaliza el anterior. De este modo, el tiempo de inactividad de los procesos se reduce significativamente y se optimiza el uso de los recursos de cómputo. Con la misma serie de duraciones y balanceo dinámico:
+
+- **Nodo1** procesa: 10 + 10 + 10 + 10 + 50 = 90 ms.
+
+- **Nodo2** procesa: 20 + 30 + 40 = 90 ms,
+
+logrando que ambos nodos terminen en 90 ms y minimizando los períodos ociosos.
 
 ## Pseudocódigo de `master`
 
