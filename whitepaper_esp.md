@@ -16,7 +16,7 @@ Este trabajo presenta el desarrollo de una implementación paralela de renderiza
   - [Fractal Mandelbrot](#fracal-mandelbrot)
   - [Coloreo de fractales](#coloreo-de-fractales)
 - [Desarrollo](#desarrollo)
-  - [Sequencial](#secuencial)
+  - [Secuencial](#secuencial)
   - [Paralelo](#paralelo)
 - [Bibliografía](#bibliografía)
 
