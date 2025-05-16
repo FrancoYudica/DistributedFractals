@@ -18,6 +18,11 @@ Este trabajo presenta el desarrollo de una implementación paralela de renderiza
 - [Desarrollo](#desarrollo)
   - [Secuencial](#secuencial)
   - [Paralelo](#paralelo)
+  - [Parametros de Funcionamiento]()
+- [Diseño de Experimentos]()
+- [Resultados Obtenidos]()
+- [Analisis de los Resultados]()
+- [Conclusiones]()
 - [Bibliografía](#bibliografía)
 
 ## Introducción
@@ -59,9 +64,11 @@ Por ejemplo:
 $$
     Si |z_0| < 1, entonces f^n(z_0) → 0
 $$
+
 $$
     Si |z_0| > 1, entonces f^n(z_0) → ∞
 $$
+
 $$
     Si |z_0| = 1, entonces f^n(z_0) → 1
 $$
@@ -100,10 +107,10 @@ Está demostrado que si $∣z_n∣>2$, entonces la sucesión diverge (tiende a i
 El fractal de Mandelbrot es muy similar al de Julia, ya que también se trata de un fractal de tiempo de escape. La principal diferencia radica en la función recursiva y en los valores iniciales utilizados.
 
 La función que define al conjunto de Mandelbrot es:
+
 $$
 z_{n+1} = z_n^2 + p
 $$
-
 
 donde:
 
@@ -120,7 +127,6 @@ Existen distintos métodos para colorear fractales, siendo el más básico el bl
 
 ![](imgs/mandelbrot_black_white.png)
 
-
 <p align="center"><b>Figura 1:</b> Representación en blanco y negro del conjunto de Mandelbrot.</p>
 
 Sin embargo, este método binario puede resultar limitado para visualizar la complejidad del sistema dinámico. Por ello, se utilizan técnicas más avanzadas como el coloreo por tiempo de escape (escape time coloring), donde se asignan colores según la cantidad de iteraciones que tarda un punto en escapar de un cierto radio. Esto permite generar imágenes con ricos gradientes de color que reflejan la velocidad de divergencia y destacan la estructura del borde del conjunto. [\[5\]](#fractal-rendering).
@@ -132,7 +138,6 @@ Sin embargo, este método binario puede resultar limitado para visualizar la com
 Pero también es posible mapear el número de iteraciones a una paleta de colores. Nótese que los puntos pertenecientes al conjunto de Mandelbrot toman un color uniforme, ya que alcanzan el número máximo de iteraciones sin divergir.
 
 ![](imgs/mandelbrot_colored.png)
-
 
 <p align="center"><b>Figura 3:</b> Mapeo de iteraciones a paletea de colores del conjunto de Mandelbrot.</p>
 
@@ -276,6 +281,134 @@ FIN FUNCION
 ```
 
 La función worker arranca enviando al maestro una petición de tarea y se bloquea hasta recibir una respuesta. Cuando llega una tarea, el trabajador crea un búfer para la sección asignada, invoca render_block para rellenarlo con los píxeles fractales correspondientes y luego devuelve tanto la descripción de la tarea como su contenido al proceso maestro. Este ciclo de petición–procesamiento–envío se repite hasta que el maestro indica la terminación, momento en el cual el trabajador sale del bucle y finaliza su ejecución.
+
+## Parámetros de Funcionamiento
+
+En esta sección se describen en detalle los comandos de ejecución de la aplicación DistributedFractals, tanto en modo secuencial como distribuido, los parámetros de entrada disponibles y las condiciones necesarias del entorno para su correcto funcionamiento.
+
+### Requisitos y Condiciones del Entorno
+
+Para garantizar la reproducibilidad de los experimentos y el correcto funcionamiento de la plataforma de renderizado distribuido, el entorno de ejecución debe satisfacer los siguientes requisitos hardware, software y de configuración:
+
+- **Sistema Operativo**:
+  - Linux (distribuciones basadas Debian GNU/Linux)
+- **Herramientas de Construccion**:
+  - **CMAKE** version >= 3.14
+  - **Compilador C++** con soporte para estandar C++17 (p. ej., `g++ 7.5+, clang++ 8+` )
+- **Implementacion MPI**
+  - **MPICH** >= 3.2 o **OpenMPI** >= 4.0
+  - Variables de entorno configuradas ( `MPI_HOME`, `PATH`, `LD_LIBRARY_PATH`)
+  - Acceso a los binarios `mpirun` y/o `mpiexec`
+- **Bibliotecas de tiempo de ejecución**
+  - Librerías estándar de C++17 (`libstdc++`, `libm`)
+  - Librerías MPI (`openmpi-bin`, `openmpi-bin`, `openmpi-common`)
+
+### Instruccion de Construccion
+
+Previo a la ejecuccion, es necesario construir el ejecutable. Para ello, primero instalar las dependencias necesarias:
+
+```bash
+sudo apt install openmpi-bin openmpi-bin openmpi-common
+```
+
+Luego, dentro de la carpeta `DistributedFractals` ejecutar:
+
+```bash
+mkdir build
+cd build
+cmake ..
+make
+```
+
+### Ejecuccion Secuencial
+
+La versión secuencial de la aplicación permite generar imágenes fractales utilizando un único proceso de cómputo. El ejecutable asociado se denomina `sequential`.
+
+```bash
+./sequential [OPCIONES]
+```
+
+#### **Opciones Principales**
+
+- `-od, --output_disk <ruta>`
+  Guarda la imagen resultante en el sistema de archivos. Si no se especifica `<ruta>`, el nombre por defecto es `output.png`.
+- `-w, --width <int>`
+  Ancho de la imagen en píxeles (p.ej., 1920).
+- `-h, --height <int>`
+  Alto de la imagen en píxeles (p.ej., 1080).
+- `-z, --zoom <float>`
+  Nivel de zoom aplicado al fractal (valor ≥ 1.0).
+- `-cx, --camera_x <float>`
+  Coordenada X del centro de la cámara en el plano complejo.
+- `-cy, --camera_y <float>`
+  Coordenada Y del centro de la cámara en el plano complejo.
+- `-i, --iterations <int>`
+  Número máximo de iteraciones por píxel (p.ej., 512).
+- `-t, --type <int>`
+  Tipo de fractal: 0 = Mandelbrot, 1 = Julia, etc.
+- `--color_mode <int>`
+  Modo de coloreado según el número de iteraciones.
+- `--julia-cx <float>`
+  Componente real de la constante C para el conjunto de Julia.
+- `--help`
+  Muestra un mensaje de ayuda completo.
+
+### Ejecuccion Distribuida (MPI)
+
+La versión paralela aprovecha MPI para repartir bloques de cálculo entre varios procesos. El ejecutable se denomina `fractal_mpi`.
+
+```bash
+mpirun -np <N> ./fractal_mpi [OPCIONES]
+```
+
+donde `<N>` es el número de procesos MPI.
+
+#### **Ejemplo de Uso**
+
+```bash
+## Con 8 procesos MPI y parámetros personalizados
+mpirun -np 8 ./fractal_mpi \
+  -w 1080 -h 720 \
+  -z 1.5 \
+  -cx -0.7 -cy 0.0 \
+  -i 256 \
+  -t 0 \
+  -b 64 \
+  -s 4 \
+  -od mandelbrot_distribuido.png
+```
+
+#### **Opciones adicionales específicas para MPI**
+
+- `-b, --block_size <int>`
+  Tamaño (en píxeles) de cada bloque de tareas que envía el proceso maestro a los trabajadores (p.ej., 32, 64 o 128).
+- `-s, --samples <int>`
+  Número de muestras MSAA para antialiasing en cada bloque.
+
+Otras opciones (-w, -h, -z, etc.) tienen el mismo comportamiento que en la versión secuencial.
+
+### Parametros de Entrada
+
+La aplicación admite los siguientes parámetros de entrada, ya sean en ejecución secuencial o distribuida:
+| Parámetro | Descripción | Valor por defecto |
+| ------------------------- | --------------------------------------------------------------- | ----------------- |
+| `--width`, `-w` | Ancho de la imagen (píxeles) | 800 |
+| `--height`, `-h` | Alto de la imagen (píxeles) | 600 |
+| `--zoom`, `-z` | Nivel de zoom | 1.0 |
+| `--camera_x`, `-cx` | Posición X del centro de la cámara | 0.0 |
+| `--camera_y`, `-cy` | Posición Y del centro de la cámara | 0.0 |
+| `--iterations`, `-i` | Máximo número de iteraciones | 100 |
+| `--type`, `-t` | Identificador de tipo de fractal (0 = Mandelbrot, 1 = Julia, …) | 0 |
+| `--color_mode` | Modo de coloreado | 0 |
+| `--julia-cx` | Componente real de la constante $C$ (solo Julia) | 0.285 |
+| `--julia-cy` | Componente imaginaria de la constante $C$ (solo Julia) | 0.01 |
+| `--block_size`, `-b` | (MPI) Tamaño de bloque en píxeles | 64 |
+| `--samples`, `-s` | (MPI) Número de muestras MSAA | 1 |
+| `--output_disk`, `-od` | Ruta de salida para guardar la imagen en disco | `output.png` |
+| `--output_network`, `-on` | Dirección IP y puerto para envío por TCP | `0.0.0.0:5001` |
+| `--help` | Muestra la ayuda en pantalla | — |
+
+#### **Parametros de configuracion recomendados**
 
 ## Bibliografía
 
