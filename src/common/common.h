@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cstring>
 #include <cstdlib>
+#include <math.h>
 
 void print_help()
 {
@@ -82,6 +83,13 @@ void load_args(int argc, char** argv, Settings& settings)
             settings.image.height = std::atoi(value);
         } else if (!strcmp(parameter, "-s") || !strcmp(parameter, "--samples")) {
             settings.image.multi_sample_anti_aliasing = std::atoi(value);
+            int n_samples = std::sqrt(settings.image.multi_sample_anti_aliasing);
+
+            if (n_samples * n_samples != settings.image.multi_sample_anti_aliasing) {
+                std::cout << "Sample count must be a perfect square" << std::endl;
+                settings.image.multi_sample_anti_aliasing = 1;
+            }
+
         } else if (!strcmp(parameter, "-b") || !strcmp(parameter, "--block_size")) {
             settings.block_size = std::atoi(value);
         } else if (!strcmp(parameter, "-z") || !strcmp(parameter, "--zoom")) {
