@@ -18,11 +18,14 @@ Este trabajo presenta el desarrollo de una implementación paralela de renderiza
 - [Desarrollo](#desarrollo)
   - [Secuencial](#secuencial)
   - [Paralelo](#paralelo)
-  - [Parametros de Funcionamiento]()
-- [Diseño de Experimentos]()
-- [Resultados Obtenidos]()
-- [Analisis de los Resultados]()
-- [Conclusiones]()
+  - [Parametros de Funcionamiento](#parámetros-de-funcionamiento)
+- [Estudio Experimental](#estudio-experimental)
+  - [Hipotesis Experimentales](#hipotesis-experimentales)
+  - [Diseño de Experimentos](#diseños-de-experimentos)
+  - [Factores y variables de control experimentales](#factores-y-variables-de-control-experimentales)
+- [Resultados Obtenidos](#resultados-obtenidos)
+- [Analisis de los Resultados](#analisis-de-los-resultados)
+- [Conclusiones](#conclusiones)
 - [Bibliografía](#bibliografía)
 
 ## Introducción
@@ -194,7 +197,7 @@ El codigo secuencial desarrollado toma un acercamiento lineal al problema. El al
 
 ### Paralelo
 
-La solución paralela aprovecha la independencia de cada bloque de píxeles para ejecutar el renderizado de forma concurrente.Se adopta un esquema maestro–trabajador: el proceso maestro divide la imagen en bloques, asigna una division equitativa del cómputo, coordina las solicitudes de trabajo de los procesos esclavos y ensambla los resultados parciales en el búfer central.
+La solución paralela aprovecha la independencia de cada bloque de píxeles para ejecutar el renderizado de forma concurrente.Sin embargo, es importante notar la seccion no paralelizable, la inicializacion de los procesos con el metodo `MPI_INIT()`.Para el resto del codigo paralelizable, se adopta un esquema maestro–trabajador: el proceso maestro divide la imagen en bloques, asigna una division equitativa del cómputo, coordina las solicitudes de trabajo de los procesos esclavos y ensambla los resultados parciales en el búfer central.
 
 Esta aproximación inicial ya demuestra mejoras en el tiempo total de cómputo, aunque revela un desbalanceo de carga cuando algunos bloques requieren más cómputo que otros, dejando procesos inactivos mientras otros siguen trabajando.
 
@@ -409,6 +412,54 @@ La aplicación admite los siguientes parámetros de entrada, ya sean en ejecuci�
 | `--help` | Muestra la ayuda en pantalla | — |
 
 #### **Parametros de configuracion recomendados**
+
+## Estudio Experimental
+
+### Hipotesis Experimentales
+
+Para el diseños de experimentos se plantean las siguientes hipotesis a evaluar:
+
+1. **La ejecuccion en Paralelo va retornar un speedup logaritmico:**
+
+   Se espera que al incorporar paralelismo se obtenga un speedup notable; sin embargo, al agregar más procesos se vuelva notable el cuello de botella del proceso master para manejar un gran conjunto de nodos workers. Incluso no sería de extrañar observar una baja en el rendimiento a medida que se aumenten exponencialmente los procesos.
+
+2. **Relacion de tamaño de bloque con,**
+
+   - cantidad de procesos:
+     Se estima encontrar una relacion optima entre la cantidad de procesos y la cantidad de tareas en las que se divide la imagen (tamaño de imagen / tamaño de bloque). Nuevamente, basandonos en la teoría, a medida que tenemos una relacion de 1 a 1 de tareas por nodos, es esperable obtener un gran porcentaje de tiempo oscioso. Mientras que, al disminuir demasiado el tamaño de bloque podría generar una disminucion en la eficiencia del programa al aumentar significativamente los tiempos de ejecuccion.
+
+   - tamaño de imagen:
+     A diferencia de la relacion mencionada previamente, no se espera encontrar una relacion clara entre tamaño de bloque y tamaño de imagen. Pero, basandonos en la ley de Gustafson-Barsis, se espera que a medida que manejemos imagen de envergadura el porcentaje de tiempo no paralelizable se torne insignificante. Obteniendo así, una mayor eficiencia a medida que aumenta el tamaño de la imagen.
+
+3. **Comparacion entre Mandelbrot y Julia Set**
+
+   Se espera no encontrar ninguna diferencia significativa entre ambos conjuntos, ya que el computo del programa no recae en el calculo mismo de las funciones; sino que, en la cantidad de iteraciones maximas.
+
+### Diseños de Experimentos
+
+Con el fin de evaluar de manera rigurosa las hipótesis planteadas, se adoptó un diseño factorial completo en el que se combinan de forma sistemática las variaciones de número de procesos MPI, tamaño de bloque, resolución de imagen, número máximo de iteraciones y tipo de fractal. Cada configuración experimental consiste en ejecutar la aplicación tanto en modo secuencial (un único proceso) como en paralelo —con 2, 4, 8 y 16 procesos— para cada par de valores de bloque y resolución seleccionados. De este modo, se generan réplicas suficientes para aislar el efecto de cada factor y sus interacciones, asegurando un muestreo estadísticamente representativo. Cada celda del diseño factorial se repite tres veces, descartando aquellas corridas que difieran en más de un 5 % de la media y computando, finalmente, los valores de tiempo de ejecución, speedup y eficiencia promedio.
+
+### Factores y variables de control experimentales
+
+Los factores independientes cuyo impacto se investiga incluyen, en primer lugar, el número de procesos MPI, evaluado en los niveles de 1, 2, 4, 8 y 16, con el objetivo de medir la relación entre concurrencia y rendimiento. En segundo término, el tamaño de bloque (block_size) se modula entre 32, 64 y 128 píxeles para determinar su influencia en la granularidad de las tareas y la sobrecarga de comunicación. La resolución de la imagen se fijó en tres casos representativos —800 × 600, 1920 × 1080 y 3840 × 2160—, atendiendo a la hipótesis de Gustafson–Barsis sobre la escalabilidad con el problema, mientras que el número máximo de iteraciones por píxel se estableció en 100, 500 y 1 000 para variar la complejidad computacional de cada punto. Finalmente, se compara el cálculo de fractales de tipo Mandelbrot frente a Julia, con el fin de verificar si el tipo de función iterativa afecta de manera apreciable el rendimiento global más allá de la carga por iteración.
+
+Para garantizar la validez interna, todas las corridas se realizan sobre la misma configuración de hardware —un nodo Linux con CPU de cuatro núcleos físicos y 16 GB de RAM— y la misma versión de **OpenMPI (4.0)**. Las compilaciones se efectúan con optimización -O3 y se limpia el directorio de construcción antes de cada serie de mediciones. Los parámetros de zoom, posición de cámara y modo de coloreado permanecen constantes (zoom=1.0, camera_x=0.0, camera_y=0.0, color_mode=0) y se emplea una semilla fija para el muestreo aleatorio en MSAA. La función de temporización utilizada, `perf_counter()` de la libreria `time `en python, se invoca de manera uniforme en todas las pruebas. Con este riguroso control de variables, los resultados obtenidos reflejan de forma confiable el impacto de los factores estudiados sobre el tiempo de renderizado, el speedup y la eficiencia de `DistributedFractals`, permitiendo extraer conclusiones sólidas sobre sus límites de escalabilidad y sus puntos de inflexión en el rendimiento.
+
+## Resultados Obtenidos
+
+## Analisis de los Resultados
+
+## Conclusiones
+
+### Planteo de Mejora
+
+Aunque el esquema maestro–trabajador implementado en DistributedFractals consigue un balanceo de carga dinámico eficiente, el proceso maestro se convierte en un cuello de botella cuando el sistema escala a un gran número de trabajadores. En la versión actual, el maestro atiende de forma secuencial dos tareas críticas: recibir bloques de píxeles procesados y copiarlos uno a uno en el búfer global. Cada recepción y posterior copia obliga al maestro a esperar a que se complete la escritura en memoria antes de poder responder a la siguiente petición de resultados, generando tiempos ociosos en los trabajadores y limitando el speedup alcanzable.
+
+Para mitigar esta contención, proponemos reemplazar la sección monohilo de recepción y ensamblado por una arquitectura multihilo dentro del maestro. En esta nueva versión, un hilo dedicado gestionaría exclusivamente la recepción de mensajes MPI entrantes, almacenándolos inmediatamente en un pool de buffers preasignados. Mientras tanto, uno o más hilos trabajadores internos realizarían la copia asíncrona de cada bloque al búfer global, operando sobre regiones independientes de la imagen. De esta forma, la llamada a MPI_Recv no bloquearía la escritura en memoria, y los hilos de copia podrían ejecutarse en paralelo con las operaciones de recepción y la lógica de despacho de nuevas tareas.
+
+El diseño multihilo se apoyaría en un patrón productor‑consumidor: el hilo de recepción actúa como productor de unidades de trabajo (bloques recibidos), mientras que el(los) hilo(s) de ensamblado consumen dichos bloques para integrarlos en la imagen. La sincronización entre hilos se coordinaría mediante colas de bloqueo ligero (lock‑free queues) o semáforos de bajo coste, garantizando seguridad de memoria y eliminando la latencia asociada a locks pesados. Asimismo, introduciendo doble búfer —un búfer en uso por la copia mientras otro está siendo llenado—, se conseguiría un solapamiento aún mayor entre comunicación y cómputo.
+
+Adicionalmente, convendría explorar el uso de comunicaciones MPI no bloqueantes (MPI_Irecv/MPI_Isend), de manera que los hilos puedan iniciar recepciones anticipadas y comprobar su finalización de forma periódica, en vez de depender de bloqueos completos. Este enfoque híbrido MPI+threads aprovecha la independencia de los bloques fractales para maximizar el solapamiento, reduce los tiempos de espera del maestro y permite escalar más eficientemente al incrementar el número de procesos y el tamaño de los problemas. En conjunto, estas modificaciones prometen reducir drásticamente los intervalos ociosos en los trabajadores y acercar el rendimiento observado al límite teórico dictado por la ley de Amdahl.
 
 ## Bibliografía
 
