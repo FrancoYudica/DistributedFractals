@@ -1,8 +1,0 @@
-Command,Runs,Average Time (s),Std Dev (s)
-mpirun -np 2 ../../../build/fractal_mpi -i 512 -w 1080 -h 1080 -s 9 --output_disabled,10,11.907071548400381,0.31566746994348405
-mpirun -np 3 ../../../build/fractal_mpi -i 512 -w 1080 -h 1080 -s 9 --output_disabled,10,6.498706309000409,0.0465601657979494
-mpirun -np 4 ../../../build/fractal_mpi -i 512 -w 1080 -h 1080 -s 9 --output_disabled,10,4.6702109617002865,0.053775136386923696
-mpirun -np 5 ../../../build/fractal_mpi -i 512 -w 1080 -h 1080 -s 9 --output_disabled,10,3.6355697512995904,0.04469034353090221
-mpirun -np 6 ../../../build/fractal_mpi -i 512 -w 1080 -h 1080 -s 9 --output_disabled,10,3.1180872772998556,0.056222153689390174
-mpirun -np 7 ../../../build/fractal_mpi -i 512 -w 1080 -h 1080 -s 9 --output_disabled,10,2.69110773529992,0.03502267363073068
-mpirun -np 8 ../../../build/fractal_mpi -i 512 -w 1080 -h 1080 -s 9 --output_disabled,10,2.424671718300124,0.018822889263563937
