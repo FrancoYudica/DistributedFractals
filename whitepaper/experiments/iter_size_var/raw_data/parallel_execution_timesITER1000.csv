@@ -1,0 +1,10 @@
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8561452870053472
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8524607459985418
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8855930499994429
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.7965033869986655
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8190326049953001
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.7880089160025818
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8354038340039551
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8664433249941794
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8556710770062637
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.796272769002826

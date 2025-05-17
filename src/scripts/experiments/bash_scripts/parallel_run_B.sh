@@ -2,7 +2,7 @@
 
 for np in 2 4 8 16 32; do
     echo "Running with $np processes..."
-    python3 profile.py --csv parallel_execution_timesb32.csv mpirun -np $np -hostfile ./../../../build/hostfile  ./../../../build/fractal_mpi  -i 512 -s 16 --output_disabled -w 1920  -h 1080 -b 16
+    python3 profile.py --csv parallel_execution_timesb16.csv mpirun -np $np -hostfile ./../../../build/hostfile  ./../../../build/fractal_mpi  -i 512 -s 16 --output_disabled -w 1920  -h 1080 -b 16
 
 done
 
