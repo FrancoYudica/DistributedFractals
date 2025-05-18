@@ -51,7 +51,7 @@ void render_block(
                     double ny = ((double)sample_y / image_settings.height - 0.5) * 2.0;
 
                     // Computes world coordinates with camera
-                    double wx, wy;
+                    number wx, wy;
                     camera.to_world(nx, ny, wx, wy);
                     float t = fractal_function(wx, wy, fractal_settings);
 

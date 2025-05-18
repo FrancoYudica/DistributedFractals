@@ -6,11 +6,12 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(BUILD_TESTS "Build test executables" OFF)
+option(USE_PRECISION_128 "Enables high precision float" OFF)
 
-# Habilitar FetchContent para descargar libpng
+
 include(FetchContent)
 
-# También trae zlib (libpng depende de ella)
+# Download zlib (libpng dependency)
 FetchContent_Declare(
     zlib
     URL https://sourceforge.net/projects/teca/files/TECA_deps/zlib-1.3.tar.gz/download
@@ -18,19 +19,19 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(zlib)
 
-# Descargar libpng
+# Download libpng
 FetchContent_Declare(
     libpng
     URL https://download.sourceforge.net/libpng/libpng-1.6.40.tar.gz
 )
 
-# Esta línea es crucial para que se compile con zlib
 set(SKIP_INSTALL_ALL ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(libpng)
 
 # Adds executable
 set(
     COMMON_SOURCES 
+    src/common/common.cpp
     src/common/color_mode.cpp
     src/common/fractal.cpp
     src/common/renderer.cpp
@@ -40,23 +41,27 @@ set(
 # Finds MPI
 find_package(MPI REQUIRED)
 
-add_executable(
-    fractal_mpi 
+# Creates a common library
+add_library(fractal_common STATIC ${COMMON_SOURCES})
+target_include_directories(fractal_common PUBLIC src)
+target_link_libraries(fractal_common PUBLIC png zlib quadmath)
+
+if(USE_PRECISION_128)
+    target_compile_definitions(fractal_common PUBLIC PRECISION_128)
+endif()
+
+
+# Creates parallel executable
+add_executable(fractal_mpi 
     src/parallel/main.cpp 
     src/parallel/master.cpp 
-    src/parallel/worker.cpp 
-    ${COMMON_SOURCES})
+    src/parallel/worker.cpp)
+target_link_libraries(fractal_mpi PRIVATE fractal_common MPI::MPI_CXX)
 
-target_include_directories(fractal_mpi PRIVATE src)
-target_link_libraries(fractal_mpi PRIVATE MPI::MPI_CXX png zlib)
-
-add_executable(
-    sequential 
-    src/sequential/main.cpp 
-    ${COMMON_SOURCES})
-
-target_include_directories(sequential PRIVATE src)
-target_link_libraries(sequential PRIVATE MPI::MPI_CXX png zlib)
+# Creates sequential executable
+add_executable(sequential 
+    src/sequential/main.cpp)
+target_link_libraries(sequential PRIVATE fractal_common)
 
 
 if(BUILD_TESTS)
