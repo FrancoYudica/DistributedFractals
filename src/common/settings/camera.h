@@ -20,7 +20,7 @@ public:
         number& world_x,
         number& world_y) const
     {
-        world_x = screen_normalized_x / zoom + x;
-        world_y = screen_normalized_y / zoom + y;
+        world_x = (number)screen_normalized_x / zoom + x;
+        world_y = (number)screen_normalized_y / zoom + y;
     }
 };

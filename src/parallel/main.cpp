@@ -18,7 +18,7 @@ int main(int argc, char** argv)
         load_args(argc, argv, settings);
 
         std::cout << "Settings - Image resolution(" << settings.image.width << "x" << settings.image.height
-                  << ") Block size(" << settings.block_size << ") Zoom(" << settings.camera.zoom << ") Camera(" << settings.camera.x << ", " << settings.camera.y
+                  << ") Block size(" << settings.block_size << ") Zoom(" << (double)settings.camera.zoom << ") Camera(" << (double)settings.camera.x << ", " << (double)settings.camera.y
                   << ") Max Iterations(" << settings.fractal.max_iterations << ") Type(" << settings.fractal.type << ")\n";
     }
 
@@ -27,9 +27,25 @@ int main(int argc, char** argv)
     MPI_Bcast(&settings.image.height, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&settings.image.multi_sample_anti_aliasing, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&settings.block_size, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
-    MPI_Bcast(&settings.camera, sizeof(Camera), MPI_BYTE, 0, MPI_COMM_WORLD);
     MPI_Bcast(&settings.fractal, sizeof(FractalSettings), MPI_BYTE, 0, MPI_COMM_WORLD);
+
+    // Camera position and zoom can't don't fit in 128bits, therefore sending those numbers
+    // as a string is necessary
+    char camera_position_x[NUMBER_SERIAL_SIZE];
+    char camera_position_y[NUMBER_SERIAL_SIZE];
+    char camera_zoom[NUMBER_SERIAL_SIZE];
+
+    SERIALIZE_NUM(settings.camera.x, camera_position_x);
+    SERIALIZE_NUM(settings.camera.y, camera_position_y);
+    SERIALIZE_NUM(settings.camera.zoom, camera_zoom);
+
+    MPI_Bcast(camera_position_x, sizeof(camera_position_x), MPI_CHAR, 0, MPI_COMM_WORLD);
+    MPI_Bcast(camera_position_y, sizeof(camera_position_y), MPI_CHAR, 0, MPI_COMM_WORLD);
+    MPI_Bcast(camera_zoom, sizeof(camera_zoom), MPI_CHAR, 0, MPI_COMM_WORLD);
+
+    DESERIALIZE_NUM(settings.camera.x, camera_position_x);
+    DESERIALIZE_NUM(settings.camera.y, camera_position_y);
+    DESERIALIZE_NUM(settings.camera.zoom, camera_zoom);
 
     // Runs Master/Worker functions
     if (rank == 0) {

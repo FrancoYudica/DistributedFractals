@@ -2,29 +2,33 @@
 #include "fractal.h"
 #include "common.h"
 
+const number two(2.0);
+const number four(4.0);
+
 float compute_mandelbrot(
     number world_x,
     number world_y,
     const FractalSettings& settings)
 {
-    number zx = 0, zy = 0;
+    number zx(0.0);
+    number zy(0.0);
     int iter = 0;
 
     number length_squared = zx * zx + zy * zy;
-
+    number xtemp;
     while (length_squared < 4.0 && iter < settings.max_iterations) {
-        number xtemp = zx * zx - zy * zy + world_x;
-        zy = 2.0 * zx * zy + world_y;
+        xtemp = zx * zx - zy * zy + world_x;
+        zy = two * zx * zy + world_y;
         zx = xtemp;
         iter++;
         length_squared = zx * zx + zy * zy;
     }
 
     // Computes smooth t in range [0.0, max_iterations]
-    number smooth_t = number(iter) - LOG2(LOG(length_squared) / LOG(4.0));
+    number smooth_t = (number)iter - LOG2(LOG(length_squared) / LOG(four));
 
     // Normalizes
-    return smooth_t / settings.max_iterations;
+    return (float)(smooth_t / (number)settings.max_iterations);
 }
 
 float compute_julia(
@@ -41,20 +45,20 @@ float compute_julia(
     int iter = 0;
 
     number length_squared = zx * zx + zy * zy;
-
+    number xtemp;
     while (length_squared < 4.0 && iter < settings.max_iterations) {
-        number xtemp = zx * zx - zy * zy + Cx;
-        zy = 2.0 * zx * zy + Cy;
+        xtemp = zx * zx - zy * zy + Cx;
+        zy = two * zx * zy + Cy;
         zx = xtemp;
         iter++;
         length_squared = zx * zx + zy * zy;
     }
 
     // Computes smooth t in range [0.0, max_iterations]
-    number smooth_t = number(iter) - LOG2(LOG(length_squared) / LOG(4.0));
+    number smooth_t = (number)iter - LOG2(LOG(length_squared) / LOG(four));
 
     // Normalizes
-    return smooth_t / settings.max_iterations;
+    return (float)(smooth_t / (number)settings.max_iterations);
 }
 
 std::function<float(number, number, const FractalSettings&)> get_fractal_function(

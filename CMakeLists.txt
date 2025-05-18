@@ -6,7 +6,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(BUILD_TESTS "Build test executables" OFF)
-option(USE_PRECISION_128 "Enables high precision float" OFF)
+option(USE_PRECISION_32 "Enables 32 bit number precision" OFF)
+option(USE_PRECISION_128 "Enables 128 bit number precision" OFF)
+option(USE_DYNAMIC_PRECISION "Enables dynamic precision" OFF)
 
 
 include(FetchContent)
@@ -46,9 +48,29 @@ add_library(fractal_common STATIC ${COMMON_SOURCES})
 target_include_directories(fractal_common PUBLIC src)
 target_link_libraries(fractal_common PUBLIC png zlib quadmath)
 
-if(USE_PRECISION_128)
+if(USE_DYNAMIC_PRECISION)
+    # Try to find MPFR (and its dependency GMP)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(MPFR REQUIRED mpfr)
+
+    if (MPFR_FOUND)
+        message(STATUS "MPFR found via pkg-config")
+
+        # Add include dirs and link libraries to your target
+        target_include_directories(fractal_common PUBLIC ${MPFR_INCLUDE_DIRS})
+        target_link_libraries(fractal_common PUBLIC ${MPFR_LIBRARIES})
+
+        # Define macro for your code
+        target_compile_definitions(fractal_common PUBLIC USE_MPFR)
+    else()
+        message(STATUS "MPFR not found via pkg-config")
+    endif()
+elseif(USE_PRECISION_128)
     target_compile_definitions(fractal_common PUBLIC PRECISION_128)
+elseif(USE_PRECISION_32)
+    target_compile_definitions(fractal_common PUBLIC PRECISION_32)
 endif()
+
 
 
 # Creates parallel executable
