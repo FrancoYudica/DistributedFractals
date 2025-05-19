@@ -1,2 +1,0 @@
-Command,Runs,Average Time (s),Std Dev (s)
-./../../../build/sequential -i 512 -s 16 --output_disabled -w 1920 -h 1080 -b 32,10,17.101134829602962,0.02085965016101272

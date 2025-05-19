@@ -36,7 +36,7 @@
 
     Plotting speedup and efficiency
     ```bash
-    python3 plot_statistics.py --csv speedup_summary.csv           
+    python3 plot_statistics.py --csv speedup_summary.csv --labels <setting_name>
     ```
 
     Box plots and parallel vs sequential graph
