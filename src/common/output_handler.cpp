@@ -3,6 +3,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <cstring>
 #include "common/output_handler.h"
 #include "image_utils.h"
 
@@ -80,6 +81,12 @@ bool NetworkOutputHandler::save_output(
         close(clientSocket);
         return false;
     }
+
+    // Sends UUID size and UUID
+    uint32_t uuid_len = static_cast<uint32_t>(std::strlen(settings.network_data.uuid));
+    uint32_t net_uuid_len = htonl(uuid_len);
+    send(clientSocket, &net_uuid_len, sizeof(net_uuid_len), 0);
+    send(clientSocket, settings.network_data.uuid, uuid_len, 0);
 
     // Sends buffer size
     uint32_t image_byte_size = png_buffer.size();

@@ -20,10 +20,12 @@ struct OutputSetingsDiskData {
 struct OutputSettingsNetworkData {
     char ip[128];
     int port;
+    char uuid[37];
 
     OutputSettingsNetworkData()
         : ip("0.0.0.0")
         , port(5001)
+        , uuid("")
     {
     }
 };
