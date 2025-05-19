@@ -7,7 +7,6 @@
   <img src="https://github.com/user-attachments/assets/ec467539-f3b3-4ea8-b981-d3363a5af00d" alt="Julia Set" width="45%"/>
 </p>
 
-
 ---
 
 ## 🚀 Overview
@@ -21,11 +20,12 @@ This project explores the intersection of fractal rendering and distributed comp
 ---
 
 ## Features
+
 - High-resolution fractal rendering using MPI-based parallelism
 - Implements a master/worker architecture:
-    - The master process generates a queue of image blocks (tasks).
-    - Workers pull tasks dynamically as they finish their current ones, ensuring better load balancing.
-    - Each block contributes to a portion of the final image.
+  - The master process generates a queue of image blocks (tasks).
+  - Workers pull tasks dynamically as they finish their current ones, ensuring better load balancing.
+  - Each block contributes to a portion of the final image.
 - Support for Mandelbrot and Julia sets (extensible)
 - Adjustable rendering parameters via CLI
 - Interactive fractal exploration with zoom support
@@ -45,6 +45,7 @@ This project explores the intersection of fractal rendering and distributed comp
 - C++17-compatible compiler
 
 ### Compiling
+
 To compile the project:
 
 ```bash
@@ -53,7 +54,9 @@ cd build
 cmake ..
 make
 ```
+
 ## ▶️ Running the Application
+
 ### Parallel (MPI) Execution
 
 ```bash
@@ -67,61 +70,70 @@ mpirun -np 4 ./fractal_mpi -w 1080 -h 720 -z 1 -cx -0.7 -cy 0.0 -i 64 -t 0 -s 4 
 ```
 
 ### Sequential Version
+
 A non-MPI version is also available:
+
 ```bash
 ./sequential
 ```
 
 ## Output mode
-After the image is generated, the program can output at the following modes:
-- **Disk**: Stores the generated image in the specified output filepath
-- **Network**: Connects to a remote server and sends the generated *.png* image buffer through TCP. Note that this involves a server. A simple implementation of this server is located at `src/scripts/image_server.py`
 
+After the image is generated, the program can output at the following modes:
+
+- **Disk**: Stores the generated image in the specified output filepath
+- **Network**: Connects to a remote server and sends the generated _.png_ image buffer through TCP. Note that this involves a server. A simple implementation of this server is located at `src/scripts/image_server.py`
 
 ## ⚙️ Command-Line Arguments
 
-| Option                     | Description                                                |
-|----------------------------|------------------------------------------------------------|
-| `-od`, `--output_disk <opt filename>`    | Save output image to disk. Defaults to 'output.png' if no filename is provided|
-| `-on`, `--output_network <opt ip <opt port>>`      |Send output image over TCP. Defaults to IP 0.0.0.0 and port 5001 if not specified.|
-| `-w`, `--width <int>`      | Image width in pixels                                      |
-| `-h`, `--height <int>`     | Image height in pixels                                     |
-| `-s`, `--samples <int>`    | Number of MSAA samples                                     |
-| `-b`, `--block_size <int>` | Block size in pixels per MPI task                          |
-| `-z`, `--zoom <float>`     | Zoom level of the camera                                   |
-| `-cx`, `--camera_x <float>`| X position of the camera                                   |
-| `-cy`, `--camera_y <float>`| Y position of the camera                                   |
-| `-i`, `--iterations <int>` | Maximum number of fractal iterations                       |
-| `-t`, `--type <int>`       | Fractal type ID (e.g., 0 = Mandelbrot, 1 = Julia, ...)     |
-| `--color_mode <int>`       | Color mode ID                                              |
-| `--julia-cx <float>`       | Real component of Julia set constant `C`                   |
-| `--julia-cy <float>`       | Imaginary component of Julia set constant `C`              |
-| `--help`                   | Display help message                                       |
+| Option                                                  | Description                                                                                 |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `-od`, `--output_disk <opt filename>`                   | Save output image to disk. Defaults to 'output.png' if no filename is provided              |
+| `-on`, `--output_network <opt ip <opt port> <opt UUID>` | Send output image over TCP. Defaults to IP 0.0.0.0, port 5001 and no UUID if not specified. |
+| `-w`, `--width <int>`                                   | Image width in pixels                                                                       |
+| `-h`, `--height <int>`                                  | Image height in pixels                                                                      |
+| `-s`, `--samples <int>`                                 | Number of MSAA samples                                                                      |
+| `-b`, `--block_size <int>`                              | Block size in pixels per MPI task                                                           |
+| `-z`, `--zoom <float>`                                  | Zoom level of the camera                                                                    |
+| `-cx`, `--camera_x <float>`                             | X position of the camera                                                                    |
+| `-cy`, `--camera_y <float>`                             | Y position of the camera                                                                    |
+| `-i`, `--iterations <int>`                              | Maximum number of fractal iterations                                                        |
+| `-t`, `--type <int>`                                    | Fractal type ID (e.g., 0 = Mandelbrot, 1 = Julia, ...)                                      |
+| `--color_mode <int>`                                    | Color mode ID                                                                               |
+| `--julia-cx <float>`                                    | Real component of Julia set constant `C`                                                    |
+| `--julia-cy <float>`                                    | Imaginary component of Julia set constant `C`                                               |
+| `--help`                                                | Display help message                                                                        |
 
 ## Interactive visualizer
+
 A simple interactive visualizer is also included, built using Python and Pygame. This viewer allows users to explore the fractal image by zooming into selected regions. It accepts the same command-line arguments as the fractal renderer and passes them directly to the compiled executable. Therefore, make sure the renderer has already been built before running the visualizer.
 
 ### Setup
+
 Creating python virtual environment
+
 ```bash
 cd src/scripts
 python3 -m venv .venv
 source .venv/bin/activate
 ```
+
 Installing pygame
+
 ```bash
 pip install pygame
 ```
 
 ### Running
+
 ```bash
 python3 ./interactive_visualizer.py
 ```
 
 You can also specify the number of mpi processors with argument `--np <x>` and the rendering executable path `--executable_path <path>`.
 
-
 ## Samples!
+
 <p align="center">
   <img src="https://github.com/user-attachments/assets/40d67eec-7bf6-479b-9399-f4f84f9a52ef" alt="mandelbrot_sample_4" width="45%"/>
   <img src="https://github.com/user-attachments/assets/2f84ac84-a359-4c5c-9d81-e06e43479957" alt="mandelbrot_sample3" width="45%"/>
@@ -142,4 +154,3 @@ You can also specify the number of mpi processors with argument `--np <x>` and t
   <img src="https://github.com/user-attachments/assets/7561da1e-d7db-4042-83b8-0a17f7ce16a9" alt="julia_sample0" width="45%"/>
   <img src="https://github.com/user-attachments/assets/5131ed23-f094-4782-b4f5-3e360796d7fc" alt="julia_sample0" width="45%"/>
 </p>
-
