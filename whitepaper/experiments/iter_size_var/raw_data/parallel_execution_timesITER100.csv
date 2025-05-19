@@ -8,3 +8,13 @@ mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -
 mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8215484809916234
 mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8408569109888049
 mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8266099879983813
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.9205102080013603
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8540379190235399
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8580734659917653
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8382141689944547
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8486327420105226
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8186022599984426
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8493440460006241
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8597728229942732
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8965011429972947
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8473839609941933

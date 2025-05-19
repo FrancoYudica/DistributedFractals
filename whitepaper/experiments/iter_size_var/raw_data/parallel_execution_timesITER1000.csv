@@ -8,3 +8,13 @@ mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -
 mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8664433249941794
 mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.8556710770062637
 mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 100 -s 16 --output_disabled -w 1080 -h 1080 -b 32,0.796272769002826
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 1000 -s 16 --output_disabled -w 1080 -h 1080 -b 32,1.6151666130172089
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 1000 -s 16 --output_disabled -w 1080 -h 1080 -b 32,1.6516987470095046
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 1000 -s 16 --output_disabled -w 1080 -h 1080 -b 32,1.6995985719840974
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 1000 -s 16 --output_disabled -w 1080 -h 1080 -b 32,1.6398437409952749
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 1000 -s 16 --output_disabled -w 1080 -h 1080 -b 32,1.6201253760082182
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 1000 -s 16 --output_disabled -w 1080 -h 1080 -b 32,1.675865421013441
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 1000 -s 16 --output_disabled -w 1080 -h 1080 -b 32,1.6388934510177933
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 1000 -s 16 --output_disabled -w 1080 -h 1080 -b 32,1.6622895679902285
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 1000 -s 16 --output_disabled -w 1080 -h 1080 -b 32,1.680922693980392
+mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 1000 -s 16 --output_disabled -w 1080 -h 1080 -b 32,1.6775370959949214
