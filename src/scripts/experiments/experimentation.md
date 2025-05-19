@@ -3,27 +3,16 @@
 
 1. Pick a fixed set of settings `--output_disabled -i 512 -w 1080 -h 1080 -s 16`
 2. Profile the results of both implementations:
-    - Parallel: Execute this command with varying amount of nodes
-    ```bash
-    for np in {2..8}; do
-        echo "Running with $np processes..."
-        python3 profile.py --csv parallel_execution_times.csv mpirun -np $np <program and args>
-    done
-    ```
-
     - Sequential
     ```bash
-    python3 profile.py --csv sequential_execution_times.csv <program and args>
+    python3 profile.py --csv execution_times.csv <program and args>
     ```
+    This will recollect all the required data
 
 3. Generate summaries of data
 
     ```bash
-    python3 profile.py --analyze --csv parallel_execution_times.csv --out summary_parallel.csv
-    ```
-
-    ```bash
-    python3 profile.py --analyze --csv sequential_execution_times.csv --out summary_sequential.csv
+    python3 profile.py --analyze --csv execution_times.csv --out summary.csv
     ```
 
 4. Read average sequential time from `summary_sequential.csv`
@@ -32,14 +21,4 @@
     python analyze_speedup.py --seq_time <seq_time> --csv summary_parallel.csv --out speedup_summary.csv
     ```
 
-6. Plot results with matplotlib
-
-    Plotting speedup and efficiency
-    ```bash
-    python3 plot_statistics.py --csv speedup_summary.csv --labels <setting_name>
-    ```
-
-    Box plots and parallel vs sequential graph
-    ```bash
-    python3 plot_parallel_times.py --seq_time <seq_time> --csv summary_parallel.csv
-    ```
+Now, all that remains is plotting. It's achieved with the scripts located in `src/scripts/experiments/plotting`. Note that these use mathplotlib, so setting a python environment might be necessary.
