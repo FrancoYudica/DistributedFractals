@@ -8,34 +8,43 @@
 
 #define NUMBER_SERIAL_SIZE 512
 #define DEFAULT_PRECISION 256
+
 class number {
-public:
+private:
     mpfr_t n_ptr;
 
+    explicit number(mpfr_prec_t precision)
+    {
+        mpfr_init2(n_ptr, precision);
+    }
+
+public:
     number()
     {
         mpfr_init2(n_ptr, DEFAULT_PRECISION);
     }
+
     static number from_precision(mpfr_prec_t precision)
     {
-        number n;
-        mpfr_clear(n.n_ptr); // clear current init
-        mpfr_init2(n.n_ptr, precision); // reinitialize with new precision
-        return n;
+        return number(precision);
     }
 
-    // Copy constructor
     number(const number& other)
     {
         mpfr_init2(n_ptr, mpfr_get_prec(other.n_ptr));
         mpfr_set(n_ptr, other.n_ptr, MPFR_RNDN);
     }
 
-    // Constructor from double
     number(double d, unsigned int precision = DEFAULT_PRECISION)
     {
         mpfr_init2(n_ptr, precision);
         mpfr_set_d(n_ptr, d, MPFR_RNDN);
+    }
+
+    number(int i, unsigned int precision = DEFAULT_PRECISION)
+    {
+        mpfr_init2(n_ptr, precision);
+        mpfr_set_si(n_ptr, i, MPFR_RNDN);
     }
 
     ~number()
@@ -43,11 +52,13 @@ public:
         mpfr_clear(n_ptr);
     }
 
-    // Assignment operator
     number& operator=(const number& other)
     {
         if (this != &other) {
-            mpfr_set_prec(n_ptr, mpfr_get_prec(other.n_ptr));
+            if (mpfr_get_prec(n_ptr) != mpfr_get_prec(other.n_ptr)) {
+                mpfr_clear(n_ptr);
+                mpfr_init2(n_ptr, mpfr_get_prec(other.n_ptr));
+            }
             mpfr_set(n_ptr, other.n_ptr, MPFR_RNDN);
         }
         return *this;
@@ -65,96 +76,68 @@ public:
         return *this;
     }
 
-    // Math operators -------------------------------------
+    // Math operations
     number log() const
     {
-        number result = number::from_precision(mpfr_get_prec(n_ptr));
+        number result = from_precision(mpfr_get_prec(n_ptr));
         mpfr_log(result.n_ptr, n_ptr, MPFR_RNDN);
         return result;
     }
 
     number log2() const
     {
-        number result = number::from_precision(mpfr_get_prec(n_ptr));
+        number result = from_precision(mpfr_get_prec(n_ptr));
         mpfr_log2(result.n_ptr, n_ptr, MPFR_RNDN);
         return result;
     }
 
     number operator+(const number& rhs) const
     {
-        number result = number::from_precision(mpfr_get_prec(n_ptr));
+        number result = from_precision(mpfr_get_prec(n_ptr));
         mpfr_add(result.n_ptr, n_ptr, rhs.n_ptr, MPFR_RNDN);
         return result;
     }
 
     number operator-(const number& rhs) const
     {
-        number result = number::from_precision(mpfr_get_prec(n_ptr));
+        number result = from_precision(mpfr_get_prec(n_ptr));
         mpfr_sub(result.n_ptr, n_ptr, rhs.n_ptr, MPFR_RNDN);
         return result;
     }
 
     number operator*(const number& rhs) const
     {
-        number result = number::from_precision(mpfr_get_prec(n_ptr));
+        number result = from_precision(mpfr_get_prec(n_ptr));
         mpfr_mul(result.n_ptr, n_ptr, rhs.n_ptr, MPFR_RNDN);
         return result;
     }
 
     number operator/(const number& rhs) const
     {
-        number result = number::from_precision(mpfr_get_prec(n_ptr));
+        number result = from_precision(mpfr_get_prec(n_ptr));
         mpfr_div(result.n_ptr, n_ptr, rhs.n_ptr, MPFR_RNDN);
         return result;
     }
 
-    // Comparison operators -----------------------------------
-    bool operator==(const number& rhs) const
-    {
-        return mpfr_cmp(n_ptr, rhs.n_ptr) == 0;
-    }
+    // Comparison operators
+    bool operator==(const number& rhs) const { return mpfr_cmp(n_ptr, rhs.n_ptr) == 0; }
+    bool operator!=(const number& rhs) const { return mpfr_cmp(n_ptr, rhs.n_ptr) != 0; }
+    bool operator<(const number& rhs) const { return mpfr_cmp(n_ptr, rhs.n_ptr) < 0; }
+    bool operator<=(const number& rhs) const { return mpfr_cmp(n_ptr, rhs.n_ptr) <= 0; }
+    bool operator>(const number& rhs) const { return mpfr_cmp(n_ptr, rhs.n_ptr) > 0; }
+    bool operator>=(const number& rhs) const { return mpfr_cmp(n_ptr, rhs.n_ptr) >= 0; }
 
-    bool operator!=(const number& rhs) const
-    {
-        return mpfr_cmp(n_ptr, rhs.n_ptr) != 0;
-    }
+    // Casts
+    explicit operator double() const { return mpfr_get_d(n_ptr, MPFR_RNDN); }
+    explicit operator float() const { return mpfr_get_flt(n_ptr, MPFR_RNDN); }
 
-    bool operator<(const number& rhs) const
-    {
-        return mpfr_cmp(n_ptr, rhs.n_ptr) < 0;
-    }
-
-    bool operator<=(const number& rhs) const
-    {
-        return mpfr_cmp(n_ptr, rhs.n_ptr) <= 0;
-    }
-
-    bool operator>(const number& rhs) const
-    {
-        return mpfr_cmp(n_ptr, rhs.n_ptr) > 0;
-    }
-
-    bool operator>=(const number& rhs) const
-    {
-        return mpfr_cmp(n_ptr, rhs.n_ptr) >= 0;
-    }
-
-    // Casting -----------------------------------------------
-    explicit operator double() const
-    {
-        return mpfr_get_d(n_ptr, MPFR_RNDN);
-    }
-
-    explicit operator float() const
-    {
-        return mpfr_get_flt(n_ptr, MPFR_RNDN);
-    }
+    // Serialization
     void serialize(char* buffer) const
     {
         char* str = nullptr;
-        // convert to string in scientific notation
         mpfr_asprintf(&str, "%.Re", n_ptr);
-        memcpy(buffer, str, NUMBER_SERIAL_SIZE);
+        memset(buffer, 0, NUMBER_SERIAL_SIZE);
+        strncpy(buffer, str, NUMBER_SERIAL_SIZE - 1);
         mpfr_free_str(str);
     }
 
