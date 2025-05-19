@@ -25,7 +25,7 @@ struct OutputSettingsNetworkData {
     OutputSettingsNetworkData()
         : ip("0.0.0.0")
         , port(5001)
-        , uuid("")
+        , uuid("00000000-0000-0000-0000-000000000000")
     {
     }
 };

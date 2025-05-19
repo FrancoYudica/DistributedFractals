@@ -54,6 +54,13 @@ void load_args(int argc, char** argv, Settings& settings)
                 if (arg_index + 1 < argc && argv[arg_index + 1][0] != '-') {
                     settings.output_settings.network_data.port = std::atoi(argv[++arg_index]);
                 }
+
+                // Check for optional uuid
+                if (arg_index + 1 < argc && argv[arg_index + 1][0] != '-') {
+                    std::strcpy(
+                        settings.output_settings.network_data.uuid,
+                        argv[++arg_index]);
+                }
             }
             continue;
         }

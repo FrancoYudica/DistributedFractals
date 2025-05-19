@@ -90,10 +90,11 @@ bool NetworkOutputHandler::save_output(
 
     // Sends buffer size
     uint32_t image_byte_size = png_buffer.size();
-    send(clientSocket, &image_byte_size, sizeof(image_byte_size), 0);
+    uint32_t net_image_byte_size = htonl(image_byte_size);
+    send(clientSocket, &net_image_byte_size, sizeof(net_image_byte_size), 0);
 
     // Sends buffer
-    send(clientSocket, png_buffer.data(), sizeof(uint8_t) * png_buffer.size(), 0);
+    send(clientSocket, png_buffer.data(), png_buffer.size(), 0);
 
     // closing socket
     close(clientSocket);
