@@ -1,0 +1,10 @@
+./../../../build/sequential -i 512 -s 16 --output_disabled -w 1920 -h 1080 -b 2,17.109671837999485
+./../../../build/sequential -i 512 -s 16 --output_disabled -w 1920 -h 1080 -b 2,17.17823861600482
+./../../../build/sequential -i 512 -s 16 --output_disabled -w 1920 -h 1080 -b 2,17.081650822015945
+./../../../build/sequential -i 512 -s 16 --output_disabled -w 1920 -h 1080 -b 2,17.13093049498275
+./../../../build/sequential -i 512 -s 16 --output_disabled -w 1920 -h 1080 -b 2,17.142420215008315
+./../../../build/sequential -i 512 -s 16 --output_disabled -w 1920 -h 1080 -b 2,17.104192508995766
+./../../../build/sequential -i 512 -s 16 --output_disabled -w 1920 -h 1080 -b 2,17.10922059600125
+./../../../build/sequential -i 512 -s 16 --output_disabled -w 1920 -h 1080 -b 2,17.149537421995774
+./../../../build/sequential -i 512 -s 16 --output_disabled -w 1920 -h 1080 -b 2,17.09488455398241
+./../../../build/sequential -i 512 -s 16 --output_disabled -w 1920 -h 1080 -b 2,17.106022724008653
