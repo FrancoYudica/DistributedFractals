@@ -57,6 +57,18 @@ def image_generated_callback(png_data):
 # Simple TCP server that accepts connections and expects 
 # a PNG formatted buffer image. 
 def run_server():
+
+    def recv_exact(sock, num_bytes):
+        """Receive exactly num_bytes from the socket."""
+        data = b''
+        while len(data) < num_bytes:
+            packet = sock.recv(num_bytes - len(data))
+            if not packet:
+                raise ConnectionError("Client disconnected")
+            data += packet
+        return data
+
+
     global done
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((HOST, PORT))
@@ -72,15 +84,20 @@ def run_server():
 
         # Handle the client
         try:
-            data = b''
-            expected_size = int.from_bytes(client_socket.recv(4), byteorder='big')
+            # Step 1: Receive UUID length (4 bytes depending on sender)
+            uuid_len_bytes = recv_exact(client_socket, 4)
+            uuid_len = int.from_bytes(uuid_len_bytes, byteorder='big')
 
-            while len(data) < expected_size:
-                packet = client_socket.recv(4096)
-                if not packet:
-                    break
-                data += packet
+            # Step 2: Receive UUID string
+            uuid_bytes = recv_exact(client_socket, uuid_len)
+            _uuid = uuid_bytes.decode('utf-8')
 
+            # Step 3: Receive buffer size (4 bytes for uint32)
+            buf_size_bytes = recv_exact(client_socket, 4)
+            buf_size = int.from_bytes(buf_size_bytes, byteorder='big')
+
+            # Step 4: Receive the buffer (image or binary data)
+            data = recv_exact(client_socket, buf_size)
             image_generated_callback(data)
         finally:
             client_socket.close()
