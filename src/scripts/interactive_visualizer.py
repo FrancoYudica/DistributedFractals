@@ -189,6 +189,9 @@ def render_camera_info():
 parser = argparse.ArgumentParser()
 parser.add_argument('--np', type=int, default=4, help="Number of processors")
 parser.add_argument("--executable_path", type=str, default="../../build/fractal_mpi", help="Filepath of the rendering program")
+parser.add_argument('--start_cx', type=str, default="0.0")
+parser.add_argument('--start_cy', type=str, default="0.0")
+parser.add_argument('--start_zoom', type=str, default="1.0")
 args, renderer_args = parser.parse_known_args()
 
 pygame.init()
@@ -196,6 +199,9 @@ font = pygame.font.SysFont(None, 24)
 
 is_holding = False
 camera = Camera()
+camera.x = Decimal(args.start_cx)
+camera.y = Decimal(args.start_cy)
+camera.zoom = Decimal(args.start_zoom)
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((720, 720))
 

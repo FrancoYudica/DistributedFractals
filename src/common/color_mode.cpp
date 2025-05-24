@@ -33,9 +33,9 @@ void blue_orange_function(float t, float& r, float& g, float& b)
     }
 
     float d = 100.0f * t;
-    r = 0.5f + 0.49f * cos(3.0f + d * 0.15f);
-    g = 0.5f + 0.49f * cos(3.0f + d * 0.15f + 0.6f);
-    b = 0.5f + 0.49f * cos(3.0f + d * 0.15f + 1.0f);
+    r = 0.5f + 0.5f * cos(3.0f + d * 0.15f);
+    g = 0.5f + 0.5f * cos(3.0f + d * 0.15f + 0.6f);
+    b = 0.5f + 0.5f * cos(3.0f + d * 0.15f + 1.0f);
 }
 
 ColorFunction get_color_function(ColorMode mode)

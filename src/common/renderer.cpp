@@ -55,6 +55,13 @@ void render_block(
                     camera.to_world(nx, ny, wx, wy);
                     float t = fractal_sampler->sample(wx, wy, fractal_settings);
 
+                    // Clamps t in range [0.0, 1.0]
+                    if (t < 0.0f)
+                        t = 0.0f;
+
+                    else if (t > 1.0f)
+                        t = 1.0f;
+
                     float sample_r, sample_g, sample_b;
 
                     color_function(
