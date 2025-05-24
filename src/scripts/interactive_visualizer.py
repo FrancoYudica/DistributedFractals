@@ -53,7 +53,6 @@ def image_generated_callback(png_data):
     global image
     image_stream = io.BytesIO(png_data)
     image = pygame.image.load(image_stream, "image.png")
-    print(camera)
 
 # Simple TCP server that accepts connections and expects 
 # a PNG formatted buffer image. 
@@ -130,7 +129,7 @@ def generate_image(renderer_args, np, executable_path):
     # Uses logarithmic scaling for the iterations
     base_iterations = 256
     iterations_scale = 64
-    iterations = base_iterations + math.log2(camera.zoom) * iterations_scale
+    iterations = int(base_iterations + math.log2(camera.zoom) * iterations_scale)
 
     command = [
         'mpirun', '-np', str(np), executable_path,
@@ -144,7 +143,7 @@ def generate_image(renderer_args, np, executable_path):
     ] + renderer_args
 
     print("Running:", ' '.join(command))
-    subprocess.run(command, check=True, capture_output=True)
+    subprocess.run(command, check=True, capture_output=False)
 
 def render_selection_rect():
     min_p, center_p, max_p = get_screen_points()

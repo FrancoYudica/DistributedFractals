@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 
         std::cout << "Settings - Image resolution(" << settings.image.width << "x" << settings.image.height
                   << ") Block size(" << settings.block_size << ") Zoom(" << (double)settings.camera.zoom << ") Camera(" << (double)settings.camera.x << ", " << (double)settings.camera.y
-                  << ") Max Iterations(" << settings.fractal.max_iterations << ") Type(" << settings.fractal.type << ")\n";
+                  << ") Max Iterations(" << settings.fractal.max_iterations << ") Type(" << (int)settings.fractal.type << ")\n";
     }
 
     // Broadcasts arguments to workers

@@ -1,8 +1,8 @@
 #pragma once
 
-enum FractalType {
-    FRACTAL_MANDELBROT = 0,
-    FRACTAL_JULIA,
+enum class FractalType {
+    MANDELBROT = 0,
+    JULIA,
 
     // Used to tell the valid range of values
     INVALID_LAST
@@ -40,7 +40,7 @@ struct FractalSettings {
     FractalSettings()
         : max_iterations(128)
         , color_mode(ColorMode::BLUE_GREEN_RED)
-        , type(FRACTAL_MANDELBROT)
+        , type(FractalType::MANDELBROT)
     {
     }
 };

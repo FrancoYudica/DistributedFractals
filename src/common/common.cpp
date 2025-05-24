@@ -95,11 +95,11 @@ void load_args(int argc, char** argv, Settings& settings)
         } else if (!strcmp(parameter, "-b") || !strcmp(parameter, "--block_size")) {
             settings.block_size = std::atoi(value);
         } else if (!strcmp(parameter, "-z") || !strcmp(parameter, "--zoom")) {
-            settings.camera.zoom = std::atof(value);
+            DESERIALIZE_NUM(settings.camera.zoom, value);
         } else if (!strcmp(parameter, "-cx") || !strcmp(parameter, "--camera_x")) {
-            settings.camera.x = std::atof(value);
+            DESERIALIZE_NUM(settings.camera.x, value);
         } else if (!strcmp(parameter, "-cy") || !strcmp(parameter, "--camera_y")) {
-            settings.camera.y = std::atof(value);
+            DESERIALIZE_NUM(settings.camera.y, value);
         } else if (!strcmp(parameter, "-i") || !strcmp(parameter, "--iterations")) {
             settings.fractal.max_iterations = std::atoi(value);
         } else if (!strcmp(parameter, "-t") || !strcmp(parameter, "--type")) {

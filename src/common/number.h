@@ -11,14 +11,14 @@
 
 class number {
 private:
-    mpfr_t n_ptr;
-
     explicit number(mpfr_prec_t precision)
     {
         mpfr_init2(n_ptr, precision);
     }
 
 public:
+    mpfr_t n_ptr;
+
     number()
     {
         mpfr_init2(n_ptr, DEFAULT_PRECISION);
@@ -131,16 +131,22 @@ public:
     explicit operator double() const { return mpfr_get_d(n_ptr, MPFR_RNDN); }
     explicit operator float() const { return mpfr_get_flt(n_ptr, MPFR_RNDN); }
 
-    // Serialization
     void serialize(char* buffer) const
     {
+        constexpr int DIGITS = 100;
         char* str = nullptr;
-        mpfr_asprintf(&str, "%.Re", n_ptr);
+
+        mpfr_asprintf(&str, "%.*Rf", DIGITS, n_ptr);
+
+        if (!str) {
+            buffer[0] = '\0';
+            return;
+        }
+
         memset(buffer, 0, NUMBER_SERIAL_SIZE);
         strncpy(buffer, str, NUMBER_SERIAL_SIZE - 1);
         mpfr_free_str(str);
     }
-
     void deserialize(const char* data)
     {
         mpfr_set_str(n_ptr, data, 10, MPFR_RNDN);
@@ -156,34 +162,30 @@ public:
 #elif PRECISION_128
 #include <quadmath.h>
 typedef long double number;
-#define NUMBER_SERIAL_SIZE sizeof(number)
-
-#define SERIALIZE_NUM(X, Y) memcpy(&Y, &X, sizeof(number));
-#define DESERIALIZE_NUM(X, Y) memcpy(&X, &Y, sizeof(number));
-
+#define NUMBER_SERIAL_SIZE 128
+#define SERIALIZE_NUM(X, Y) sprintf(Y, "%.36Lf", X)
+#define DESERIALIZE_NUM(X, Y) sscanf(Y, "%Lf", &X)
 #define LOG(X) logq(X)
 #define LOG2(X) log2q(X)
 
 #elif PRECISION_32
 #include <math.h>
 typedef float number;
-#define NUMBER_SERIAL_SIZE sizeof(number)
-
-#define SERIALIZE_NUM(X, Y) memcpy(&Y, &X, sizeof(number));
-#define DESERIALIZE_NUM(X, Y) memcpy(&X, &Y, sizeof(number));
-
+#define NUMBER_SERIAL_SIZE 128
+#define SERIALIZE_NUM(X, Y) sprintf(Y, "%.9g", X)
+#define DESERIALIZE_NUM(X, Y) sscanf(Y, "%f", &X)
 #define LOG(X) logf(X)
 #define LOG2(X) log2f(X)
 
 #else
 #include <math.h>
 typedef double number;
-#define NUMBER_SERIAL_SIZE sizeof(number)
+#define NUMBER_SERIAL_SIZE 128
+
+#define SERIALIZE_NUM(X, Y) sprintf(Y, "%.17g", X)
+#define DESERIALIZE_NUM(X, Y) sscanf(Y, "%lf", &X)
 
 #define LOG(X) log(X)
 #define LOG2(X) log2(X)
-
-#define SERIALIZE_NUM(X, Y) memcpy(&Y, &X, sizeof(number));
-#define DESERIALIZE_NUM(X, Y) memcpy(&X, &Y, sizeof(number));
 
 #endif

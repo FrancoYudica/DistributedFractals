@@ -14,7 +14,7 @@ void render_block(
     int height)
 {
 
-    auto fractal_function = get_fractal_function(fractal_settings.type);
+    auto fractal_sampler = get_fractal_sampler(fractal_settings.type);
     auto color_function = get_color_function(fractal_settings.color_mode);
 
     double pixel_size_x = 1.0 / image_settings.width;
@@ -53,7 +53,7 @@ void render_block(
                     // Computes world coordinates with camera
                     number wx, wy;
                     camera.to_world(nx, ny, wx, wy);
-                    float t = fractal_function(wx, wy, fractal_settings);
+                    float t = fractal_sampler->sample(wx, wy, fractal_settings);
 
                     float sample_r, sample_g, sample_b;
 

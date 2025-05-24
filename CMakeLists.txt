@@ -35,9 +35,11 @@ set(
     COMMON_SOURCES 
     src/common/common.cpp
     src/common/color_mode.cpp
-    src/common/fractal.cpp
     src/common/renderer.cpp
-    src/common/output_handler.cpp)
+    src/common/output_handler.cpp
+    src/common/fractal.cpp
+    src/common/fractal_samplers/mandelbrot_fractal_sampler.cpp
+    src/common/fractal_samplers/julia_fractal_sampler.cpp)
 
 
 # Finds MPI
