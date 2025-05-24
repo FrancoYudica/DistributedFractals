@@ -17,6 +17,16 @@ def get_zoom_exponential(
 
     return 2.0 ** (x0 + t * x1)
 
+def get_iterations(
+        zoom, 
+        base_iter, 
+        scale) -> int:
+    
+    # Uses logarithmic scaling for iterations based on zoom
+    return int(base_iter + math.log2(zoom) * scale)
+    
+
+
 def main():
     parser = argparse.ArgumentParser(description="Batch render fractals at different zoom levels")
 
@@ -33,8 +43,6 @@ def main():
     # Creates a directory to store the images
     dir_name = os.path.abspath(f"{args.output_folder}/images_{int(time.time())}")
     os.mkdir(dir_name)
-    print(dir_name)
-
     # Saves as many images as zoom levels
     for frame in range(args.frames):
 
@@ -43,6 +51,11 @@ def main():
             args.z0,
             args.z1
         )
+
+        iterations = get_iterations(
+            zoom,
+            256,
+            64)
 
         output_name = os.path.join(dir_name, f"fractal_zoom_{frame}.png")
         command = ['mpirun']
@@ -58,6 +71,9 @@ def main():
 
         command.append('--zoom')
         command.append(str(zoom))
+
+        command.append('--iterations')
+        command.append(str(iterations))
 
         command.append('-od')
         command.append(output_name)

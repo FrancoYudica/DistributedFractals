@@ -11,6 +11,7 @@ import argparse
 import socket
 import threading
 import io
+import math
 
 FPS = 60
 ZOOM_BOX_SIZE = 64
@@ -125,6 +126,12 @@ def pixel_to_ndc(pixel):
 
 
 def generate_image(renderer_args, np, executable_path):
+
+    # Uses logarithmic scaling for the iterations
+    base_iterations = 256
+    iterations_scale = 64
+    iterations = base_iterations + math.log2(camera.zoom) * iterations_scale
+
     command = [
         'mpirun', '-np', str(np), executable_path,
         '--output_network',
@@ -132,11 +139,12 @@ def generate_image(renderer_args, np, executable_path):
         '-cx', str(camera.x),
         '-cy', str(camera.y),
         '--width', str(screen.get_width()),
-        '--height', str(screen.get_height())
+        '--height', str(screen.get_height()),
+        '--iterations', str(iterations)
     ] + renderer_args
 
     print("Running:", ' '.join(command))
-    subprocess.run(command, check=True)
+    subprocess.run(command, check=True, capture_output=True)
 
 def render_selection_rect():
     min_p, center_p, max_p = get_screen_points()
