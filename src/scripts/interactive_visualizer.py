@@ -12,6 +12,10 @@ import socket
 import threading
 import io
 import math
+from decimal import Decimal, getcontext
+
+# Set precision to about 256 bits (~77 decimal digits)
+getcontext().prec = 77
 
 FPS = 60
 ZOOM_BOX_SIZE = 64
@@ -21,33 +25,39 @@ PORT = 5001
 
 class Camera:
     def __init__(self):
-        self.x = 0
-        self.y = 0
-        self.zoom = 1.0
+        self.x = Decimal(0)
+        self.y = Decimal(0)
+        self.zoom = Decimal(1)
     
     def to_world(self, normalized_screen_pos):
+        # Convert inputs to Decimal too (in case they aren't)
+        nx = Decimal(normalized_screen_pos[0])
+        ny = Decimal(normalized_screen_pos[1])
         return (
-            normalized_screen_pos[0] / self.zoom + self.x,
-            normalized_screen_pos[1] / self.zoom + self.y
+            nx / self.zoom + self.x,
+            ny / self.zoom + self.y
         )
 
     def to_pixel(self, world_pos):
+        wx = Decimal(world_pos[0])
+        wy = Decimal(world_pos[1])
         return (
-            self.zoom * (world_pos[0] - self.x),
-            self.zoom * (world_pos[1] - self.y)
+            self.zoom * (wx - self.x),
+            self.zoom * (wy - self.y)
         )
 
     def __str__(self):
-        return f"Camera({self.x}, {self.y}, {self.zoom})"
+        # Format with full precision
+        return f"Camera(x={str(self.x)}, y={str(self.y)}, zoom={str(self.zoom)})"
 
 # w1: top-left world coordinate
 # w2: bottom-right world coordinate
 # returns: zoom for a perfectly framed camera
-def compute_zoom(w1, w2) -> float:
+def compute_zoom(w1, w2) -> Decimal:
     world_width = abs(w2[0] - w1[0])
     if world_width == 0:
         return float('inf') 
-    return 2.0 / world_width
+    return Decimal(2) / world_width
 
 def image_generated_callback(png_data):
     global image
@@ -127,10 +137,9 @@ def pixel_to_ndc(pixel):
 def generate_image(renderer_args, np, executable_path):
 
     # Uses logarithmic scaling for the iterations
-    base_iterations = 256
-    iterations_scale = 64
-    iterations = int(base_iterations + math.log2(camera.zoom) * iterations_scale)
-
+    base_iterations = Decimal(256)
+    iterations_scale = Decimal(64)
+    iterations = int(base_iterations + camera.zoom.ln() / Decimal(math.log(2)) * iterations_scale)
     command = [
         'mpirun', '-np', str(np), executable_path,
         '--output_network',

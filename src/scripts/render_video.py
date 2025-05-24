@@ -3,27 +3,36 @@ import subprocess
 import math
 import os
 import time
+from decimal import Decimal, getcontext
+
+# Set precision to about 256 bits (~77 decimal digits)
+getcontext().prec = 77
+
+def decimal_log2(decimal: Decimal) -> Decimal:
+    return decimal.ln() / Decimal(math.log(2))
+
+def decimal_pow(base: Decimal, exp: Decimal) -> Decimal:
+    return (exp * base.ln()).exp()
 
 # This function returns the zoom using an exponential formula
 # This way, when the camera applies zoom, it looks linear and constant
 def get_zoom_exponential(
-        t: float,
-        min_zoom: float,
-        max_zoom: float
-) -> float:
+        t: Decimal,
+        min_zoom: Decimal,
+        max_zoom: Decimal
+) -> Decimal:
     
-    x0 = math.log2(min_zoom)
-    x1 = math.log2(max_zoom / (2.0 ** x0))
-
-    return 2.0 ** (x0 + t * x1)
+    x0 = decimal_log2(min_zoom)
+    x1 = decimal_log2(max_zoom / decimal_pow(Decimal(2.0),  x0))
+    return decimal_pow(Decimal(2.0), x0 + t * x1)
 
 def get_iterations(
-        zoom, 
-        base_iter, 
-        scale) -> int:
+        zoom: Decimal, 
+        base_iter: Decimal, 
+        scale: Decimal) -> int:
     
     # Uses logarithmic scaling for iterations based on zoom
-    return int(base_iter + math.log2(zoom) * scale)
+    return int(base_iter + decimal_log2(zoom) * scale)
     
 
 
@@ -47,15 +56,15 @@ def main():
     for frame in range(args.frames):
 
         zoom = get_zoom_exponential(
-            frame / (args.frames - 1),
-            args.z0,
-            args.z1
+            Decimal(frame / (args.frames - 1)),
+            Decimal(args.z0),
+            Decimal(args.z1)
         )
 
         iterations = get_iterations(
             zoom,
-            256,
-            64)
+            Decimal(256),
+            Decimal(64))
 
         output_name = os.path.join(dir_name, f"fractal_zoom_{frame}.png")
         command = ['mpirun']
