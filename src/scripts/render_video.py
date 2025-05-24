@@ -90,8 +90,8 @@ def main():
         command.extend(cpp_args)
         print(command)
         
-        print("Running:", ' '.join(command))
-        subprocess.run(command, check=True)
+        print(f"PROGRESS: {float(frame) / (args.frames - 1) * 100.0}% Running:", ' '.join(command))
+        subprocess.run(command, check=True, capture_output=False)
     
     command = f"ffmpeg -framerate 10 -i {dir_name}/fractal_zoom_%d.png -c:v libx264 -pix_fmt yuv420p {os.path.join(dir_name, "fractal_zoom.mp4")} -y".split(" ")
     print("Running ffmpeg to convert to video. {}")
