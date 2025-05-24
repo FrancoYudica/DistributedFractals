@@ -24,6 +24,14 @@ void blue_green_red_function(float t, float& r, float& g, float& b)
     b = 8.5 * one_minus_t * one_minus_t * one_minus_t * t;
 }
 
+void blue_orange_function(float t, float& r, float& g, float& b)
+{
+    float d = 100.0f * t;
+    r = 0.5f + 0.5f * cos(3.0f + d * 0.15f);
+    g = 0.5f + 0.5f * cos(3.0f + d * 0.15f + 0.6f);
+    b = 0.5f + 0.5f * cos(3.0f + d * 0.15f + 1.0f);
+}
+
 ColorFunction get_color_function(ColorMode mode)
 {
     switch (mode) {
@@ -33,6 +41,8 @@ ColorFunction get_color_function(ColorMode mode)
         return grayscale_color_function;
     case ColorMode::BLUE_GREEN_RED:
         return blue_green_red_function;
+    case ColorMode::BLUE_ORANGE:
+        return blue_orange_function;
     default:
         std::cout << "Unimplemented color mode in get_color_function()." << std::endl;
         return black_white_color_function;

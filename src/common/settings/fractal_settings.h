@@ -12,6 +12,7 @@ enum class ColorMode {
     BLACK_WHITE,
     GRAYSCALE,
     BLUE_GREEN_RED,
+    BLUE_ORANGE,
 
     // Used to tell the valid range of values
     INVALID_LAST
