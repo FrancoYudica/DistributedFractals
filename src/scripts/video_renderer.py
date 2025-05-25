@@ -114,7 +114,7 @@ def main():
 
         progress = float(frame) / (args.frames - 1) * 100.0
         zoom_level = float(decimal_log2(zoom))
-        print(f"PROGRESS: {progress:.4f}% Zoom level {zoom_level:.4f}")
+        print(f"PROGRESS: {progress:.4f}% - Zoom level {zoom_level:.4f} - Frame time {elapsed:.4f} sec")
 
         # Append a line to the CSV log
         with open(log_path, "a") as log_file:
