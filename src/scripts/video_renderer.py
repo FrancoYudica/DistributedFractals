@@ -57,6 +57,8 @@ def main():
     parser.add_argument('--output_folder', type=str, default='.', help='Base name for output images')
     parser.add_argument('--hostfile', type=str, default='', help='MPI hostfile filepath')
     parser.add_argument('--np', type=int, default=8, help='MPI processes count')
+    parser.add_argument('--net_interface', type=str, default='')
+    
 
     args, cpp_args = parser.parse_known_args()
 
@@ -91,6 +93,9 @@ def main():
 
         if args.hostfile != '':
             command.extend(['-hostfile', args.hostfile])
+
+        if args.net_interface != '':
+            command.extend(['--mca', 'btl_tcp_if_include', args.net_interface])
 
         command.extend([
             '-np', str(args.np),
