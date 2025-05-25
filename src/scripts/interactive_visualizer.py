@@ -141,7 +141,7 @@ def generate_image(
         executable_path):
 
     # Uses logarithmic scaling for the iterations
-    base_iterations = Decimal(256)
+    base_iterations = Decimal(512)
     iterations_scale = Decimal(64)
     iterations = int(base_iterations + camera.zoom.ln() / Decimal(math.log(2)) * iterations_scale)
     command = [
@@ -185,7 +185,8 @@ def update_camera_from_selection(min_p, center_p, max_p):
     camera.zoom = zoom
 
 def render_camera_info():
-    text = f"x={camera.x:.4f}  y={camera.y:.4f}  zoom={camera.zoom:.4f}"
+    zoom_level = int(camera.zoom.ln() / Decimal(math.log(2)))
+    text = f"Zoom level = {zoom_level:.4f}"
     surface = font.render(text, True, (255, 255, 255))
     screen.blit(surface, (10, 10))
 
@@ -197,6 +198,7 @@ parser.add_argument('--start_cx', type=str, default="0.0")
 parser.add_argument('--start_cy', type=str, default="0.0")
 parser.add_argument('--start_zoom', type=str, default="1.0")
 parser.add_argument('--render_scale', type=float, default=1.0)
+parser.add_argument('--zoom_level', type=int, default=-1.0)
 args, renderer_args = parser.parse_known_args()
 
 pygame.init()
@@ -206,7 +208,12 @@ is_holding = False
 camera = Camera()
 camera.x = Decimal(args.start_cx)
 camera.y = Decimal(args.start_cy)
-camera.zoom = Decimal(args.start_zoom)
+
+if args.zoom_level != -1:
+    camera.zoom = Decimal(2.0) ** Decimal(args.zoom_level)
+else:
+    camera.zoom = Decimal(args.start_zoom)
+
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((720, 720))
 

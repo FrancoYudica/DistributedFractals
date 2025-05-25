@@ -1,9 +1,21 @@
+"""
+Video renderer takes a target position and zooms. Zoom is exponentially
+interpolated.
+
+This program outputs a folder with all the images, then another program such 
+as ffmpeg can be used to build the video with a command such as:
+
+    ffmpeg -framerate 60 -i ./frame_%d.png   -c:v libx264   -preset veryslow   -crf 18   -pix_fmt yuv420p   -vf "format=yuv420p"   ../video.mp4 -y
+
+"""
 import argparse
 import subprocess
 import math
 import os
 import time
+from datetime import datetime
 from decimal import Decimal, getcontext
+
 
 # Set precision to about 256 bits (~77 decimal digits)
 getcontext().prec = 77
@@ -38,7 +50,6 @@ def get_iterations(
 
 def main():
     parser = argparse.ArgumentParser(description="Batch render fractals at different zoom levels")
-
     parser.add_argument('--program', required=True, help='Path to the MPI program (e.g. ./fractal_mpi)')
     parser.add_argument('--z0', type=float, default=1.0, help='Starting zoom level')
     parser.add_argument('--z1', type=float, default=10.0, help='Ending zoom level')
@@ -50,8 +61,16 @@ def main():
     args, cpp_args = parser.parse_known_args()
 
     # Creates a directory to store the images
-    dir_name = os.path.abspath(f"{args.output_folder}/images_{int(time.time())}")
+
+    timestamp_str = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+    dir_name = os.path.abspath(f"{args.output_folder}/images_{timestamp_str}")
     os.mkdir(dir_name)
+
+    # Open log file once, write header
+    log_path = os.path.join(args.output_folder, f"video_rendering_{timestamp_str}.log")
+    with open(log_path, "w") as log_file:
+        log_file.write("frame,image_path,zoom_level,time_seconds,command\n")
+
     # Saves as many images as zoom levels
     for frame in range(args.frames):
 
@@ -63,39 +82,45 @@ def main():
 
         iterations = get_iterations(
             zoom,
-            Decimal(256),
+            Decimal(512),
             Decimal(64))
 
-        output_name = os.path.join(dir_name, f"fractal_zoom_{frame}.png")
+        output_name = os.path.join(dir_name, f"frame_{frame}.png")
+
         command = ['mpirun']
 
         if args.hostfile != '':
-            command.append('-hostfile')
-            command.append(args.hostfile)
+            command.extend(['-hostfile', args.hostfile])
 
-        command.append('-np')
-        command.append(str(args.np))
-        
-        command.append(args.program)
-
-        command.append('--zoom')
-        command.append(str(zoom))
-
-        command.append('--iterations')
-        command.append(str(iterations))
-
-        command.append('-od')
-        command.append(output_name)
+        command.extend([
+            '-np', str(args.np),
+            args.program,
+            '--zoom', str(zoom),
+            '--iterations', str(iterations),
+            '-od', output_name
+        ])
 
         command.extend(cpp_args)
-        print(command)
-        
-        print(f"PROGRESS: {float(frame) / (args.frames - 1) * 100.0}% Running:", ' '.join(command))
-        subprocess.run(command, check=True, capture_output=True)
-    
-    command = f"ffmpeg -framerate 10 -i {dir_name}/fractal_zoom_%d.png -c:v libx264 -pix_fmt yuv420p {os.path.join(dir_name, "fractal_zoom.mp4")} -y".split(" ")
-    print("Running ffmpeg to convert to video. {}")
-    subprocess.run(command, check=True)
 
+        # Generates the image
+        t0 = time.perf_counter()
+        subprocess.run(command, check=True, capture_output=True)
+        elapsed = time.perf_counter() - t0
+
+        progress = float(frame) / (args.frames - 1) * 100.0
+        zoom_level = float(decimal_log2(zoom))
+        print(f"PROGRESS: {progress:.4f}% Zoom level {zoom_level:.4f}")
+
+        # Append a line to the CSV log
+        with open(log_path, "a") as log_file:
+            # Escape command list into a single string for CSV
+            command_str = ' '.join(command).replace(',', ';')
+            line = f"{frame},{output_name},{zoom_level:.6f},{elapsed:.6f},{command_str}\n"
+            log_file.write(line)
+    
 if __name__ == '__main__':
+
+    rendering_t0 = time.perf_counter()
     main()
+    rendering_time = time.perf_counter() - rendering_t0
+    print(f"Rendering took {rendering_time} seconds")
