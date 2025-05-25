@@ -134,7 +134,11 @@ def pixel_to_ndc(pixel):
     )
 
 
-def generate_image(renderer_args, np, executable_path):
+def generate_image(
+        render_scale, 
+        np, 
+        renderer_args, 
+        executable_path):
 
     # Uses logarithmic scaling for the iterations
     base_iterations = Decimal(256)
@@ -146,8 +150,8 @@ def generate_image(renderer_args, np, executable_path):
         '--zoom', str(camera.zoom),
         '-cx', str(camera.x),
         '-cy', str(camera.y),
-        '--width', str(screen.get_width()),
-        '--height', str(screen.get_height()),
+        '--width', str(int(screen.get_width() * render_scale)),
+        '--height', str(int(screen.get_height() * render_scale)),
         '--iterations', str(iterations)
     ] + renderer_args
 
@@ -192,6 +196,7 @@ parser.add_argument("--executable_path", type=str, default="../../build/fractal_
 parser.add_argument('--start_cx', type=str, default="0.0")
 parser.add_argument('--start_cy', type=str, default="0.0")
 parser.add_argument('--start_zoom', type=str, default="1.0")
+parser.add_argument('--render_scale', type=float, default=1.0)
 args, renderer_args = parser.parse_known_args()
 
 pygame.init()
@@ -217,7 +222,7 @@ server_thread = threading.Thread(target=run_server)
 server_thread.start()
 
 image: pygame.Surface = None
-generate_image(renderer_args, args.np, args.executable_path)
+generate_image(args.render_scale, args.np, renderer_args, args.executable_path)
 
 while not done:
 
@@ -234,7 +239,12 @@ while not done:
             is_holding = False
 
             update_camera_from_selection(*get_screen_points())
-            generate_image(renderer_args, args.np, args.executable_path)
+            generate_image(
+                args.render_scale,
+                args.np,
+                renderer_args,
+                args.executable_path)
+
 
     # Client rendering -------------------------------------------------------------------------
     if image is not None:
