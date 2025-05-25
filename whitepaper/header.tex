@@ -1,0 +1,15 @@
+\usepackage[none]{hyphenat}
+\usepackage{graphicx}
+
+\let\Oldincludegraphics\includegraphics
+\renewcommand{\includegraphics}[2][]{%
+  \begin{center}%
+    \Oldincludegraphics[width=0.5\textwidth, #1]{#2}%
+  \end{center}%
+}
+\usepackage{titlesec}
+\titlespacing*{\paragraph}{0pt}{1.5ex plus .2ex minus .2ex}{1em}
+\titleformat{\paragraph}[hang]{\bfseries}{\theparagraph}{1em}{}
+
+\usepackage{fontspec}
+\setmainfont{TeX Gyre Termes}

@@ -1,34 +1,31 @@
-# Renderizado de fractales con MPI
+---
+# pandoc whitepaper_esp.md -o whitepaper.pdf --pdf-engine=xelatex --include-in-header=header.tex --number-sections
+geometry: top=5cm, left=4cm, right=4cm, bottom=4cm
+---
+\begin{flushleft}
+{\fontsize{16pt}{16pt}\selectfont \textbf{Renderizado de fractales con MPI}}
 
-Franco Yudica, Martín Farrés
+Trabajo Integrador Final: Programación Paralela y Distribuida
+\end{flushleft}
 
-## Abstract
+\begin{flushleft}
+{\fontsize{12pt}{12pt}\selectfont \textbf{Autores}}
+\end{flushleft}
 
-Este trabajo presenta el desarrollo de una implementación paralela de renderizado de fractales bidimensionales, mostrando sus diferencias con la versión secuencial. Además se detalla sobre los experimentos realizados para determinar el rendimiento de la aplicación, en conjutno con conclusiones sobre tales resultados.
+\begin{flushleft}
+\begin{itemize}
+  \item Franco Yudica
+  \item Martín Farrés
+\end{itemize}
+\end{flushleft}
 
-## Índice
 
-- [Introducción](#introducción)
-- [Marco teórico](#marco-teórico)
-  - [Dinámica compleja](#dinámica-compleja)
-  - [Conjuntos de Julia y Fatou](#conjuntos-de-Julia-y-fatou)
-  - [Fractal Julia](#fracal-Julia)
-  - [Fractal Mandelbrot](#fracal-Mandelbrot)
-  - [Coloreo de fractales](#coloreo-de-fractales)
-- [Desarrollo](#desarrollo)
-  - [Secuencial](#secuencial)
-  - [Paralelo](#paralelo)
-  - [Parametros de Funcionamiento](#parámetros-de-funcionamiento)
-- [Estudio Experimental](#estudio-experimental)
-  - [Hipotesis Experimentales](#hipotesis-experimentales)
-  - [Diseño de Experimentos](#diseños-de-experimentos)
-  - [Factores y variables de control experimentales](#factores-y-variables-de-control-experimentales)
-- [Resultados Obtenidos](#resultados-obtenidos)
-- [Analisis de los Resultados](#analisis-de-los-resultados)
-- [Conclusiones](#conclusiones)
-- [Bibliografía](#bibliografía)
+*Abstract: Este trabajo presenta el desarrollo de una implementación paralela de renderizado de fractales bidimensionales, mostrando sus diferencias con la versión secuencial. Además se detalla sobre los experimentos realizados para determinar el rendimiento de la aplicación, en conjutno con conclusiones sobre tales resultados.*
 
-## Introducción
+*Keywords: Fractals, Mandelbrot Set, Julia Set, Programación paralela, MPI, Números Complejos, Sistemas Dinámicos, Gráficos de Computadora, Evaluación de Resultados.*
+
+
+# Introducción
 
 El renderizado eficiente de imágenes fractales representa un reto significativo en el ámbito de la computación gráfica, debido a la complejidad matemática involucrada y la alta demanda computacional que implica su visualización detallada. Los fractales, como el conjunto de Mandelbrot o los conjuntos de Julia, se caracterizan por su estructura auto-similar e infinita complejidad, lo que requiere un gran número de cálculos por píxel para generar imágenes precisas y atractivas.
 
@@ -40,11 +37,11 @@ A continuación, se presentan los experimentos realizados para evaluar el rendim
 
 Finalmente, se exponen las conclusiones obtenidas a partir del análisis, resaltando las ventajas y limitaciones del enfoque propuesto. Se sugieren además posibles líneas de mejora, incluyendo la exploración de técnicas avanzadas como el uso de GPUs, algoritmos adaptativos de muestreo y representación dinámica en tiempo real.
 
-## Marco teórico
+# Marco teórico
 
 En esta sección se desarrolla el marco teórico fundamental de los fractales, realizando una breve introducción a la dinámica compleja [\[7\]](#complex-dynamics), conjuntos de Julia y Fatou [\[9\]](#Julia-fatou), fractales de Julia y Mandelbrot [\[2\]](#Mandelbrot), y las técnicas de coloreo de fractales utilizadas en este proyecto.
 
-### Dinámica compleja
+## Dinámica compleja
 
 La dinámica compleja, también conocida como dinámica holomorfa [\[7\]](#complex-dynamics), es una rama de la matemática que estudia el comportamiento de los sistemas dinámicos [\[8\]](#dynamic-systems) obtenidos mediante la iteración de funciones analíticas en el plano complejo. A diferencia de los sistemas dinámicos en el plano real, la estructura adicional que proporciona la analiticidad en los números complejos introduce una rica variedad de comportamientos geométricos y topológicos que han sido ampliamente estudiados desde principios del siglo XX.
 
@@ -78,7 +75,7 @@ $$
     Si |z_0| = 1, entonces f^n(z_0) → 1
 $$
 
-### Conjuntos de Julia y Fatou
+## Conjuntos de Julia y Fatou
 
 El estudio de estas órbitas lleva a la clasificación del plano complejo en dos regiones fundamentales:
 
@@ -87,7 +84,7 @@ El estudio de estas órbitas lleva a la clasificación del plano complejo en dos
 
 Estos conjuntos son complementarios y su frontera compartida representa el límite entre estabilidad y caos. En el caso de $f(z) = z²$, el conjunto de Julia es el círculo unitario $|z|=1$, mientras que el conjunto de Fatou está formado por el interior y el exterior de tal círculo.
 
-### Fractal Julia
+## Fractal Julia
 
 Los conjuntos de Julia se generan utilizando números complejos. Estos poseen dos componentes, real e imaginaria, y pueden representarse como puntos en un plano bidimensional, lo que permite renderizar el fractal sobre una imagen 2D. Para cada píxel de la imagen, su coordenada $(x,y)$ en el plano se utiliza como entrada en una función recursiva.
 
@@ -107,7 +104,7 @@ donde:
 
 Está demostrado que si $∣z_n∣>2$, entonces la sucesión diverge (tiende a infinito). En este contexto, el valor 2 se denomina bailout, y es el umbral utilizado para determinar la divergencia. [\[5\]](#fractal-rendering).
 
-### Fractal Mandelbrot
+## Fractal Mandelbrot
 
 El fractal de Mandelbrot es muy similar al de Julia, ya que también se trata de un fractal de tiempo de escape. La principal diferencia radica en la función recursiva y en los valores iniciales utilizados.
 
@@ -126,7 +123,7 @@ donde:
 Al igual que en el caso del fractal de Julia, el criterio de escape se basa en si $|z_n∣>2$, utilizando el mismo valor de bailout.
 [\[2\]](#Mandelbrot), [\[5\]](#fractal-rendering).
 
-### Coloreo de fractales
+## Coloreo de fractales
 
 Existen distintos métodos para colorear fractales, siendo el más básico el blanco y negro. En este esquema, los píxeles cuya posición, al ser utilizada como punto de partida en la iteración del fractal, tienden al infinito, se colorean de blanco. Por el contrario, aquellos que no divergen se colorean de negro.
 
@@ -143,78 +140,72 @@ Sin embargo, este método binario puede resultar limitado para visualizar la com
 Pero también es posible mapear el número de iteraciones a una paleta de colores. Nótese que los puntos pertenecientes al conjunto de Mandelbrot toman un color uniforme, ya que alcanzan el número máximo de iteraciones sin divergir.
 
 ![](imgs/mandelbrot_colored.png)
+<p align="center"><b>Figura 3:</b> Mapeo de iteraciones a paleta de colores del conjunto de Mandelbrot.</p>
 
-<p align="center"><b>Figura 3:</b> Mapeo de iteraciones a paletea de colores del conjunto de Mandelbrot.</p>
+En la figura 3 se pueden observar resultados mucho más interesantes. Al mirar con detalle, se aprecian transiciones abruptas entre los colores, un efecto comúnmente denominado *banding* en computación gráfica. Esto se debe a que el mapeo del color se realiza únicamente en función de la cantidad de iteraciones, que es un valor discreto.
 
-Es interesante observar que se produce un efecto de banding, claramente visible en la Figura 3, ya que los puntos divergentes con igual número de iteraciones toman el mismo color.
+![](imgs/mandelbrot_colored_bandless.png)
+<p align="center"><b>Figura 4:</b> Mapeo de iteraciones a colores con transición suave.</p>
 
-## Desarrollo
+Para renderizar la figura 4, se ha utilizado el número de iteraciones, en conjunto con $|z_n|$,  lo cual permite realizar un mapeo continuo a la paleta de colores, eliminando el efecto de *banding*. El desarrollo matemático se encuentra en la referencia [\[5\]](#fractal-rendering).
+
+
+
+
+# Desarrollo
 
 El algoritmo para el desarrollo de dichas imagenes se resume en, la obtencion del color correspondiente segun la formula de fractal aplicada a cada pixel de la imagen. Para la cual se desarrollo una funcion de renderizado **render_block**;
 
-```plaintext
-FUNCION render_block(buffer, config_fractal)
+```python
+def render_block(x_inicial, y_inicial, ancho, alto):
 
-    Obtener funcion_fractal desde config_fractal
-    Obtener funcion_color desde config_fractal
+    for j in range(alto):
 
-    PARA cada fila j desde 0 hasta alto
-        PARA cada columna i desde 0 hasta ancho
+        for i in range(ancho):
 
             pixel_x = x_inicial + i
             pixel_y = y_inicial + j
 
-            Inicializar r, g, b en 0
+            # Calcular coordenadas normalizadas [-1.0, 1.0]
+            nx, ny = calcular_ndc(pixel_x, pixel_y)
 
-            PARA cada muestra de antialiasing
-                Generar un pequeño desplazamiento aleatorio en x y y
+            # Convertir (nx, ny) a coordenadas del mundo (wx, wy) usando la camara
+            wx, wy = camera.to_world(nx, ny)
 
-                Calcular coordenadas normalizadas nx, ny
-
-                Convertir (nx, ny) a coordenadas del mundo (wx, wy) usando la camara
-
-                t = funcion_fractal(wx, wy)
-
-                (sample_r, sample_g, sample_b) = funcion_color(t)
-
-                Acumular los valores en r, g, b
-            FIN PARA
-
-            Promediar r, g, b y convertir a valores entre 0 y 255
-
-            Guardar el color en el buffer
-        FIN PARA
-    FIN PARA
-
-FIN FUNCION
+            # Evaluar el fractal, obteniendo las iteraciones normalizadas [0.0, 1.0]
+            t = fractal(wx, wy)
+            r, g, b = color(t)
+            
+            # Guardar el color en el buffer
+            guardar_buffer(r, g, b, pixel_x, pixel_y)
 ```
 
 La funcion se encarga del procesamiento de la imagen fractal. Para cada píxel, el algoritmo toma varias muestras con un pequeño desplazamiento aleatorio (antialiasing) para disminuir el ruido obtenido en la imagen final. Luego cada muestra se transforma en coordenadas del mundo con una cámara virtual. Las mismas son evaluadas por **funcion_fractal** para obtener un valor que, luego es transformados a valores rgb utilizando la funcion, **funcion_color**. Finalmente, dichos valores se promedian obteniendo así el color para cada pixel de la imagen.
 
 Para el desarrollo del problema se hicieron dos versiones, secuencial y paralalelo, para observar las diferencias de ambas en terminos de tiempo y costo computacional.
 
-### Secuencial
+## Secuencial
 
 El código secuencial implementa un enfoque lineal para resolver el problema de renderizado. El algoritmo recibe varios parámetros de configuración, tales como el ancho y alto de la imagen, la posición y el nivel de zoom de la cámara, el tipo de fractal a calcular, entre otros. A partir de esta información, se invoca directamente la función de renderizado, y una vez finalizado el proceso, se guarda la imagen resultante.
 
 El procesamiento es completamente secuencial: cada píxel de la imagen es calculado uno por uno, sin ningún tipo de paralelismo o concurrencia. Esto lo convierte en una implementación sencilla pero poco eficiente para imágenes de alta resolución o fractales complejos.
 
 
-### Paralelo
+## Paralelo
 
 Dado que el renderizado de fractales es una tarea altamente demandante en términos computacionales, se exploró una versión paralela del algoritmo con el objetivo de reducir significativamente el tiempo de ejecución.
 
-#### Identificación del paralelismo
+## Identificación del paralelismo
 El renderizado de fractales es un problema naturalmente paralelizable. Cada píxel de la imagen puede calcularse de forma independiente, ya que no requiere información de los píxeles vecinos ni de ningún otro elemento de la imagen. Esta independencia permite dividir la carga de trabajo entre múltiples procesos o hilos de ejecución sin necesidad de sincronización compleja, lo que lo convierte en un caso ideal para aplicar técnicas de paralelismo.
 
-#### Secciones secuenciales y paralelizables
+## Secciones secuenciales y paralelizables
 El algoritmo presenta tanto secciones secuenciales como paralelizables.
 
 Las secciones secuenciales incluyen la etapa de inicialización, en la cual se configura el entorno de ejecución, se inicializa la biblioteca MPI y se definen las tareas o bloques de la imagen que serán distribuidos a los procesos trabajadores. La etapa de finalización también es secuencial, ya que implica recopilar los bloques renderizados, ensamblar la imagen final y guardarla en disco. Estas etapas requieren acceso centralizado a ciertos recursos y coordinación general, lo que limita su paralelización.
 
 Por otro lado, la sección paralelizable corresponde al renderizado de los bloques de imagen. Dado que cada bloque puede ser procesado de forma independiente, esta etapa se distribuye entre los distintos procesos para acelerar significativamente el tiempo total de ejecución.
 
-#### Sincronismo - Asincronismo
+## Sincronismo - Asincronismo
 
 El sistema implementado utiliza un modelo de comunicación sincrónico. Los mensajes intercambiados entre el nodo maestro y los trabajadores se gestionan mediante llamadas bloqueantes, donde tanto el emisor como el receptor deben estar sincronizados para que la operación de envío o recepción se complete.
 
@@ -222,15 +213,15 @@ Este enfoque simplifica la lógica de coordinación y garantiza un flujo de ejec
 
 En este contexto, los beneficios de un modelo asincrónico serían mínimos, ya que el tiempo de comunicación es muy bajo en comparación con el tiempo de cómputo, siendo este último dominado por el proceso de renderizado.
 
-#### Estrategia de descomposición
+## Estrategia de descomposición
 El renderizado de fractales representa un caso típico para aplicar una estrategia de descomposición de dominio. Esta técnica consiste en subdividir el dominio del problema, en este caso, la imagen a renderizar, en múltiples subregiones independientes. Concretamente, la imagen se divide en bloques rectangulares, cada uno definido por una tupla de la forma (x, y, ancho, alto), que indica la posición y dimensiones del bloque dentro de la imagen global.
 
-#### Modelo de algoritmo paralelo
+## Modelo de algoritmo paralelo
 Se adopta un modelo maestro-trabajador. En este esquema, el nodo maestro se encarga de dividir la imagen en bloques y distribuir el trabajo entre los distintos procesos trabajadores. Además, coordina las solicitudes de tareas, asigna bloques disponibles de forma dinámica y recibe los resultados procesados por cada trabajador.
 
 Una vez que los bloques son completados, el maestro se encarga de ensamblar los resultados parciales en un búfer central, que luego se utiliza para generar la imagen final.
 
-##### Asignación de tareas y balanceo de carga
+### Asignación de tareas y balanceo de carga
 Esta aproximación inicial ya demuestra mejoras en el tiempo total de cómputo, aunque revela un desbalanceo de carga cuando algunos bloques requieren más cómputo que otros, siendo esta una característica común en el renderizado de fractales, dejando procesos inactivos mientras otros siguen trabajando.
 
 Por ejemplo, si las ocho tareas tienen duraciones (en ms) [10, 10, 10, 10, 20, 30, 40, 50] y se reparten estáticamente en dos nodos:
@@ -332,7 +323,7 @@ La función worker arranca enviando al maestro una petición de tarea y se bloqu
 
 En esta sección se describen en detalle los comandos de ejecución de la aplicación DistributedFractals, tanto en modo secuencial como distribuido, los parámetros de entrada disponibles y las condiciones necesarias del entorno para su correcto funcionamiento.
 
-### Requisitos y Condiciones del Entorno
+## Requisitos y Condiciones del Entorno
 
 Para garantizar la reproducibilidad de los experimentos y el correcto funcionamiento de la plataforma de renderizado distribuido, el entorno de ejecución debe satisfacer los siguientes requisitos hardware, software y de configuración:
 
@@ -349,7 +340,8 @@ Para garantizar la reproducibilidad de los experimentos y el correcto funcionami
   - Librerías estándar de C++17 (`libstdc++`, `libm`)
   - Librerías MPI (`openmpi-bin`, `openmpi-bin`, `openmpi-common`)
 
-### Instruccion de Construccion
+## Instruccion de Construccion
+
 
 Previo a la ejecuccion, es necesario construir el ejecutable. Para ello, primero instalar las dependencias necesarias:
 
@@ -366,7 +358,30 @@ cmake ..
 make
 ```
 
-### Ejecuccion Secuencial
+## Parametros de Entrada
+
+
+La aplicación admite los siguientes parámetros de entrada:
+
+| Parámetro | Descripción | Valor por defecto |
+| ------------------------- | --------------------------------------------------------------- | ----------------- |
+| `--width` | Ancho de la imagen (píxeles) | 800 |
+| `--height` | Alto de la imagen (píxeles) | 600 |
+| `--zoom` | Nivel de zoom | 1.0 |
+| `--camera_x` | Posición X del centro de la cámara | 0.0 |
+| `--camera_y` | Posición Y del centro de la cámara | 0.0 |
+| `--iterations` | Máximo número de iteraciones | 100 |
+| `--type` | Identificador de tipo de fractal (0 = Mandelbrot, 1 = Julia, …) | 0 |
+| `--color_mode` | Modo de coloreado | 0 |
+| `--block_size` | (MPI) Tamaño de bloque en píxeles | 64 |
+| `--samples` | (MPI) Número de muestras MSAA | 1 |
+| `--output_disk` | Ruta de salida para guardar la imagen en disco | `output.png` |
+| `--Julia-cx` | Componente real de la constante $C$ (solo Julia) | 0.285 |
+| `--Julia-cy` | Componente imaginaria de la constante $C$ (solo Julia) | 0.01 |
+
+
+## Ejecuccion Secuencial
+
 
 La versión secuencial de la aplicación permite generar imágenes fractales utilizando un único proceso de cómputo. El ejecutable asociado se denomina `sequential`.
 
@@ -374,32 +389,7 @@ La versión secuencial de la aplicación permite generar imágenes fractales uti
 ./sequential [OPCIONES]
 ```
 
-#### **Opciones Principales**
-
-- `-od, --output_disk <ruta>`
-  Guarda la imagen resultante en el sistema de archivos. Si no se especifica `<ruta>`, el nombre por defecto es `output.png`.
-- `-w, --width <int>`
-  Ancho de la imagen en píxeles (p.ej., 1920).
-- `-h, --height <int>`
-  Alto de la imagen en píxeles (p.ej., 1080).
-- `-z, --zoom <float>`
-  Nivel de zoom aplicado al fractal (valor ≥ 1.0).
-- `-cx, --camera_x <float>`
-  Coordenada X del centro de la cámara en el plano complejo.
-- `-cy, --camera_y <float>`
-  Coordenada Y del centro de la cámara en el plano complejo.
-- `-i, --iterations <int>`
-  Número máximo de iteraciones por píxel (p.ej., 512).
-- `-t, --type <int>`
-  Tipo de fractal: 0 = Mandelbrot, 1 = Julia, etc.
-- `--color_mode <int>`
-  Modo de coloreado según el número de iteraciones.
-- `--Julia-cx <float>`
-  Componente real de la constante C para el conjunto de Julia.
-- `--help`
-  Muestra un mensaje de ayuda completo.
-
-### Ejecuccion Distribuida (MPI)
+## Ejecuccion Distribuida (MPI)
 
 La versión paralela aprovecha MPI para repartir bloques de cálculo entre varios procesos. El ejecutable se denomina `fractal_mpi`.
 
@@ -409,92 +399,110 @@ mpirun -np <N> ./fractal_mpi [OPCIONES]
 
 donde `<N>` es el número de procesos MPI.
 
-#### **Ejemplo de Uso**
+### **Ejemplo de Uso**
 
 ```bash
-## Con 8 procesos MPI y parámetros personalizados
+# Con 8 procesos MPI y parámetros personalizados
 mpirun -np 8 ./fractal_mpi \
-  -w 1080 -h 720 \
-  -z 1.5 \
-  -cx -0.7 -cy 0.0 \
-  -i 256 \
-  -t 0 \
-  -b 64 \
-  -s 4 \
-  -od mandelbrot_distribuido.png
+  --width 1080 \
+  --height 720 \
+  --zoom 1.5 \
+  --camera_x -0.7 \
+  --camera_y 0.0 \
+  --iterations 256 \
+  --type 0 \
+  --block_size 64 \
+  --samples 4 \
+  -output_disk mandelbrot_distribuido.png
 ```
 
-#### **Opciones adicionales específicas para MPI**
+# Estudio experimental
 
-- `-b, --block_size <int>`
-  Tamaño (en píxeles) de cada bloque de tareas que envía el proceso maestro a los trabajadores (p.ej., 32, 64 o 128).
-- `-s, --samples <int>`
-  Número de muestras MSAA para antialiasing en cada bloque.
+En esta sección, se desarrolla el diseño de experimental, sus resultados y análisis de los mismos.
 
-Otras opciones (-w, -h, -z, etc.) tienen el mismo comportamiento que en la versión secuencial.
+## Diseños de Experimentos
 
-### Parametros de Entrada
+Primero, se plantea un estudio comparativo entre la versión secuencial y la paralela bajo distintas cantidades de nodos, con el fin de evaluar la eficiencia y el speedup.
 
-La aplicación admite los siguientes parámetros de entrada, ya sean en ejecución secuencial o distribuida:
-| Parámetro | Descripción | Valor por defecto |
-| ------------------------- | --------------------------------------------------------------- | ----------------- |
-| `--width`, `-w` | Ancho de la imagen (píxeles) | 800 |
-| `--height`, `-h` | Alto de la imagen (píxeles) | 600 |
-| `--zoom`, `-z` | Nivel de zoom | 1.0 |
-| `--camera_x`, `-cx` | Posición X del centro de la cámara | 0.0 |
-| `--camera_y`, `-cy` | Posición Y del centro de la cámara | 0.0 |
-| `--iterations`, `-i` | Máximo número de iteraciones | 100 |
-| `--type`, `-t` | Identificador de tipo de fractal (0 = Mandelbrot, 1 = Julia, …) | 0 |
-| `--color_mode` | Modo de coloreado | 0 |
-| `--Julia-cx` | Componente real de la constante $C$ (solo Julia) | 0.285 |
-| `--Julia-cy` | Componente imaginaria de la constante $C$ (solo Julia) | 0.01 |
-| `--block_size`, `-b` | (MPI) Tamaño de bloque en píxeles | 64 |
-| `--samples`, `-s` | (MPI) Número de muestras MSAA | 1 |
-| `--output_disk`, `-od` | Ruta de salida para guardar la imagen en disco | `output.png` |
-| `--output_network`, `-on` | Dirección IP y puerto para envío por TCP | `0.0.0.0:5001` |
-| `--help` | Muestra la ayuda en pantalla | — |
+Luego, se analiza en profundidad el comportamiento de la versión paralela frente a diferentes configuraciones de parámetros.
 
-#### **Parametros de configuracion recomendados**
+Es importante aclarar que cada una de las mediciones se basa en el tiempo de ejecución medio, el cuál se obtuvo a partir del promedio de al menos 10 ejecuciones, con el objetivo de asegurar resultados representativos y confiables. Además, ya que el fin de los experimentos radica en el cómputo del buffer con los colores de los pixeles, se ha eliminado de la experimentación el guardado de la imagen.
 
-## Estudio Experimental
+## Versión secuencial contra paralela
 
-### Hipotesis Experimentales
+Con el objetivo de realizar una comparación exhaustiva entre la versión secuencial y la versión paralela de la aplicación, se evaluó el rendimiento medio de ambas bajo los siguientes parámetros fijos:
 
-Para el diseños de experimentos se plantean las siguientes hipotesis a evaluar:
+| Parámetro | Valor |
+| --------- | ----- |  
+| `iterations`          |   512    |
+| `samples`              | 16       |
+| `block size` (Aplica a la versión paralela) |       32  |
 
-1. **La ejecuccion en Paralelo va retornar un speedup logaritmico:**
+Un factor determinante es la resolución de la imagen, especificada por los parámetros width y height. Para simplificar, se utilizaron imágenes cuadradas con $width = height$. Se realizaron ejecuciones para los siguientes tamaños:
 
-   Se espera que al incorporar paralelismo se obtenga un speedup notable; sin embargo, al agregar más procesos se vuelva notable el cuello de botella del proceso master para manejar un gran conjunto de nodos workers. Incluso no sería de extrañar observar una baja en el rendimiento a medida que se aumenten exponencialmente los procesos.
+|Caso| Resolución|
+| ----   |    -    |
+| 0 | $128$ x $128$|
+| 1 | $512$ x $512$|
+| 2 | $1080$ x $1080$|
+| 3 | $1920$ x $1920$|
 
-2. **Relacion de tamaño de bloque con,**
+Con el fin de evaluar la **eficiencia** y el **speedup** de la versión paralela, en comparación con la versión secuencial, cada combinación de los parámetros anteriores se ejecutó utilizando diferentes cantidades de procesos MPI: $[2, 4, 8, 16, 32]$.
 
-   - cantidad de procesos:
-     Se estima encontrar una relacion optima entre la cantidad de procesos y la cantidad de tareas en las que se divide la imagen (tamaño de imagen / tamaño de bloque). Nuevamente, basandonos en la teoría, a medida que tenemos una relacion de 1 a 1 de tareas por nodos, es esperable obtener un gran porcentaje de tiempo oscioso. Mientras que, al disminuir demasiado el tamaño de bloque podría generar una disminucion en la eficiencia del programa al aumentar significativamente los tiempos de ejecuccion.
+## Análisis de versión paralela
 
-   - tamaño de imagen:
-     A diferencia de la relacion mencionada previamente, no se espera encontrar una relacion clara entre tamaño de bloque y tamaño de imagen. Pero, basandonos en la ley de Gustafson-Barsis, se espera que a medida que manejemos imagen de envergadura el porcentaje de tiempo no paralelizable se torne insignificante. Obteniendo así, una mayor eficiencia a medida que aumenta el tamaño de la imagen.
+Existen otros parámetros relevantes, además del tamaño de imagen, que se han considerado fundamentales para el análisis. A continuación, se detallan los parámetros estudiados junto con la justificación de su inclusión y los distintos valores sobre los cuales se realizaron las mediciones:
 
-3. **Comparacion entre Mandelbrot y Julia Set**
+| Parámetro | Justificación | Valores |
+| - | - | - |
+| `block_size`| Permite analizar el impacto del tamaño de bloque en el balanceo de carga entre nodos, con el objetivo de encontrar un valor óptimo. |$[2, 4, 8, 16, 32, 64, 128]$
+| `tipo de fractal` | Evalúa si el tipo de fractal influye en el rendimiento computacional. |$[Mandelbrot, Julia]$|
+| `iteraciones` | Permite observar cómo afecta el aumento en el número máximo de iteraciones al tiempo de ejecución, y analizar si su comportamiento es lineal, logarítmico o exponencial.| $[100, 500, 1000]$|
 
-   Se espera no encontrar ninguna diferencia significativa entre ambos conjuntos, ya que el computo del programa no recae en el calculo mismo de las funciones; sino que, en la cantidad de iteraciones maximas.
+Estos experimentos se realizaron con 32 nodos computacionales,
 
-### Diseños de Experimentos
+## Consideraciones sobre experimentos
 
-Con el fin de evaluar de manera rigurosa las hipótesis planteadas, se adoptó un diseño factorial completo en el que se combinan de forma sistemática las variaciones de número de procesos MPI, tamaño de bloque, resolución de imagen, número máximo de iteraciones y tipo de fractal. Cada configuración experimental consiste en ejecutar la aplicación tanto en modo secuencial (un único proceso) como en paralelo —con 2, 4, 8 y 16 procesos— para cada par de valores de bloque y resolución seleccionados. De este modo, se generan réplicas suficientes para aislar el efecto de cada factor y sus interacciones, asegurando un muestreo estadísticamente representativo. Cada celda del diseño factorial se repite tres veces, descartando aquellas corridas que difieran en más de un 5 % de la media y computando, finalmente, los valores de tiempo de ejecución, speedup y eficiencia promedio.
+Con el fin de garantizar la validez de los resultados, se han tomado en cuenta los siguientes criterios:
 
-### Factores y variables de control experimentales
+- Todas las corridas se realizan sobre la misma configuración de hardware, un cluster de nodos Debian con CPU de cuatro núcleos físicos, los cuales forman un total de 32 nodos computacionales. 
 
-Los factores independientes cuyo impacto se investiga incluyen, en primer lugar, el número de procesos MPI, evaluado en los niveles de 1, 2, 4, 8, 16 y 32, con el objetivo de medir la relación entre concurrencia y rendimiento. En segundo término, el tamaño de bloque (block_size) se modula entre 32, 64 y 128 píxeles para determinar su influencia en la granularidad de las tareas y la sobrecarga de comunicación. La resolución de la imagen se fijó en tres casos representativos — 128x128, 512x512, 1080x1080 y 1920x1920—, atendiendo a la hipótesis de Gustafson–Barsis sobre la escalabilidad con el problema, mientras que el número máximo de iteraciones por píxel se estableció en 100, 500 y 1 000 para variar la complejidad computacional de cada punto. Finalmente, se compara el cálculo de fractales de tipo Mandelbrot frente a Julia, con el fin de verificar si el tipo de función iterativa afecta de manera apreciable el rendimiento global más allá de la carga por iteración.
+- Misma versión de **OpenMPI (4.1.4)**. 
+- Las compilaciones se efectúan con optimización `-O3`.
+- Aquellos parámetros que no se hayan especificado, toman su valor por defecto.
+- La función de temporización utilizada, `perf_counter()` de la libreria `time` en python, se invoca de manera uniforme en todas las pruebas. 
 
-Para garantizar la validez interna, todas las corridas se realizan sobre la misma configuración de hardware —un nodo Linux con CPU de cuatro núcleos físicos y 16 GB de RAM— y la misma versión de **OpenMPI (4.0)**. Las compilaciones se efectúan con optimización -O3 y se limpia el directorio de construcción antes de cada serie de mediciones. Los parámetros de zoom, posición de cámara y modo de coloreado permanecen constantes (zoom=1.0, camera_x=0.0, camera_y=0.0, color_mode=0) y se emplea una semilla fija para el muestreo aleatorio en MSAA. La función de temporización utilizada, `perf_counter()` de la libreria `time `en python, se invoca de manera uniforme en todas las pruebas. Con este riguroso control de variables, los resultados obtenidos reflejan de forma confiable el impacto de los factores estudiados sobre el tiempo de renderizado, el speedup y la eficiencia de `DistributedFractals`, permitiendo extraer conclusiones sólidas sobre sus límites de escalabilidad y sus puntos de inflexión en el rendimiento.
+Con este riguroso control de variables, los resultados obtenidos reflejan de forma confiable el impacto de los factores estudiados sobre el tiempo de renderizado, el speedup y la eficiencia de la versión paralela, permitiendo extraer conclusiones sólidas sobre sus límites de escalabilidad y sus puntos de inflexión en el rendimiento.
 
 ## Resultados Obtenidos
 
+(DESARROLLO PENDIENTE)
+
+## Versión secuencial contra paralela
+![](experiments/image_size_var/all_speedup.png){width=100%}
+![](experiments/image_size_var/all_efficiency.png){width=100%}
+
+## Versión paralela con distintos parámetros
+
+## Tamaño de bloques
+![](experiments/block_size_var/combined_speedup.png){width=100%}
+![](experiments/block_size_var/combined_efficiency.png){width=100%}
+
+## Tipo de fractal
+![](experiments/fractal_type_var/bar_chart.png){width=100%}
+
+## Cantidad de iteraciones
+![](experiments/iter_size_var/iteration_times_bar_chart.png){width=100%}
+
 ## Analisis de los Resultados
+(DESARROLLO PENDIENTE)
 
-## Conclusiones
 
-### Planteo de Mejora
+# Conclusiones
+
+## Planteo de Mejora
+
+(DESARROLLO PENDIENTE)
 
 Aunque el esquema maestro–trabajador implementado en DistributedFractals consigue un balanceo de carga dinámico eficiente, el proceso maestro se convierte en un cuello de botella cuando el sistema escala a un gran número de trabajadores. En la versión actual, el maestro atiende de forma secuencial dos tareas críticas: recibir bloques de píxeles procesados y copiarlos uno a uno en el búfer global. Cada recepción y posterior copia obliga al maestro a esperar a que se complete la escritura en memoria antes de poder responder a la siguiente petición de resultados, generando tiempos ociosos en los trabajadores y limitando el speedup alcanzable.
 
@@ -504,7 +512,7 @@ El diseño multihilo se apoyaría en un patrón productor‑consumidor: el hilo 
 
 Adicionalmente, convendría explorar el uso de comunicaciones MPI no bloqueantes (MPI_Irecv/MPI_Isend), de manera que los hilos puedan iniciar recepciones anticipadas y comprobar su finalización de forma periódica, en vez de depender de bloqueos completos. Este enfoque híbrido MPI+threads aprovecha la independencia de los bloques fractales para maximizar el solapamiento, reduce los tiempos de espera del maestro y permite escalar más eficientemente al incrementar el número de procesos y el tamaño de los problemas. En conjunto, estas modificaciones prometen reducir drásticamente los intervalos ociosos en los trabajadores y acercar el rendimiento observado al límite teórico dictado por la ley de Amdahl.
 
-## Bibliografía
+# Bibliografía
 
 **[1]** https://solarianprogrammer.com/2013/02/28/Mandelbrot-set-cpp-11/
 
@@ -524,7 +532,7 @@ Adicionalmente, convendría explorar el uso de comunicaciones MPI no bloqueantes
 
 **[9]** <a id="Julia-fatou"></a>https://en.wikipedia.org/wiki/Julia_set 
 
-#### Proyectos de referencia
+## Proyectos de referencia
 
 **[8]** https://github.com/lucaszm7/Mandel2Us
 
