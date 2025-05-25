@@ -10,12 +10,12 @@ as ffmpeg can be used to build the video with a command such as:
 """
 import argparse
 import subprocess
+from subprocess import CalledProcessError
 import math
 import os
 import time
 from datetime import datetime
 from decimal import Decimal, getcontext
-
 
 # Set precision to about 256 bits (~77 decimal digits)
 getcontext().prec = 77
@@ -47,6 +47,26 @@ def get_iterations(
     return int(base_iter + decimal_log2(zoom) * scale)
     
 
+def render_frame(
+    frame_index, 
+    command,
+    retry_limit = 5):
+    
+    for i in range(retry_limit):
+        try:
+            # Generates the image
+            subprocess.run(command, check=True, capture_output=True)
+            return
+                    
+        except CalledProcessError as e:
+            # Print to console
+            print(f"[ERROR] Frame {frame_index} failed on iteration {i}")
+            print(f"Command: {' '.join(command)}")
+            # stderr may be bytes; decode for readability
+            stderr = e.stderr.decode(errors='ignore') if e.stderr else "(no stderr)"
+            print(f"Error output:\n{stderr}")
+
+    raise Exception(f"Unable to render frame after {retry_limit} attempts")
 
 def main():
     parser = argparse.ArgumentParser(description="Batch render fractals at different zoom levels")
@@ -58,18 +78,19 @@ def main():
     parser.add_argument('--hostfile', type=str, default='', help='MPI hostfile filepath')
     parser.add_argument('--np', type=int, default=8, help='MPI processes count')
     parser.add_argument('--net_interface', type=str, default='')
-    
 
     args, cpp_args = parser.parse_known_args()
 
     # Creates a directory to store the images
-
     timestamp_str = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-    dir_name = os.path.abspath(f"{args.output_folder}/images_{timestamp_str}")
-    os.mkdir(dir_name)
+    root_dir = os.path.join(args.output_folder, f"video_{timestamp_str}")
+    os.mkdir(root_dir)
+
+    frames_dir = os.path.join(root_dir, "frames")
+    os.mkdir(frames_dir)
 
     # Open log file once, write header
-    log_path = os.path.join(args.output_folder, f"video_rendering_{timestamp_str}.log")
+    log_path = os.path.join(root_dir, f"render.log")
     with open(log_path, "w") as log_file:
         log_file.write("frame,zoom_level,time_seconds,command\n")
 
@@ -87,7 +108,7 @@ def main():
             Decimal(512),
             Decimal(64))
 
-        output_name = os.path.join(dir_name, f"frame_{frame}.png")
+        output_name = os.path.join(frames_dir, f"frame_{frame}.png")
 
         command = ['mpirun']
 
@@ -107,9 +128,8 @@ def main():
 
         command.extend(cpp_args)
 
-        # Generates the image
         t0 = time.perf_counter()
-        subprocess.run(command, check=True, capture_output=True)
+        render_frame(frame, command)
         elapsed = time.perf_counter() - t0
 
         progress = float(frame) / (args.frames - 1) * 100.0
