@@ -71,7 +71,7 @@ def main():
     # Open log file once, write header
     log_path = os.path.join(args.output_folder, f"video_rendering_{timestamp_str}.log")
     with open(log_path, "w") as log_file:
-        log_file.write("frame,image_path,zoom_level,time_seconds,command\n")
+        log_file.write("frame,zoom_level,time_seconds,command\n")
 
     # Saves as many images as zoom levels
     for frame in range(args.frames):
@@ -120,7 +120,7 @@ def main():
         with open(log_path, "a") as log_file:
             # Escape command list into a single string for CSV
             command_str = ' '.join(command).replace(',', ';')
-            line = f"{frame},{output_name},{zoom_level:.6f},{elapsed:.6f},{command_str}\n"
+            line = f"{frame},{zoom_level:.6f},{elapsed:.6f},{command_str}\n"
             log_file.write(line)
     
 if __name__ == '__main__':
