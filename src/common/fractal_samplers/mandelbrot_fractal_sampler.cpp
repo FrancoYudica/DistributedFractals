@@ -26,7 +26,7 @@ float MandelbrotFractalSampler::sample(
     }
 
     // Computes smooth t in range [0.0, max_iterations]
-    number smooth_t = (number)iter - LOG2(LOG(length_squared) / LOG(four));
+    number smooth_t = (number)iter - LOG2_NUM(LOG_NUM(length_squared) / LOG_NUM(four));
 
     // Normalizes
     return (float)(smooth_t / (number)settings.max_iterations);

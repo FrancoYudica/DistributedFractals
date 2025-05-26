@@ -5,13 +5,18 @@
 #include "common/renderer.h"
 #include <memory>
 #include "common/output_handler.h"
+#include "common/logging.h"
 
 int main(int argc, char** argv)
 {
 
     Settings settings;
 
-    load_args(argc, argv, settings);
+    bool run_program = load_args(argc, argv, settings);
+
+    if (!run_program) {
+        return 0;
+    }
 
     std::chrono::time_point start = std::chrono::high_resolution_clock::now();
 
@@ -29,7 +34,7 @@ int main(int argc, char** argv)
     std::chrono::time_point end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-    std::cout << "Computation took: " << duration.count() << " ms\n";
+    LOG_STATUS("Computation took: " << duration.count() << " ms");
 
     // Creates output handler based on the settings mode
     std::shared_ptr<OutputHandler> output_handler = OutputHandler::factory_create(settings.output_settings.mode);
@@ -41,7 +46,7 @@ int main(int argc, char** argv)
         settings.output_settings);
 
     if (!success) {
-        std::cout << "Unable to output image..." << std::endl;
+        LOG_ERROR("Unable to output image...");
     }
 
     return 0;

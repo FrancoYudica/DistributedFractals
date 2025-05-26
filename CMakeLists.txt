@@ -34,6 +34,7 @@ FetchContent_MakeAvailable(libpng)
 set(
     COMMON_SOURCES 
     src/common/common.cpp
+    src/common/logging.cpp
     src/common/color_mode.cpp
     src/common/renderer.cpp
     src/common/output_handler.cpp

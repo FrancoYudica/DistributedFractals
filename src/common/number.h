@@ -165,8 +165,8 @@ typedef long double number;
 #define NUMBER_SERIAL_SIZE 128
 #define SERIALIZE_NUM(X, Y) sprintf(Y, "%.36Lf", X)
 #define DESERIALIZE_NUM(X, Y) sscanf(Y, "%Lf", &X)
-#define LOG(X) logq(X)
-#define LOG2(X) log2q(X)
+#define LOG_NUM(X) logq(X)
+#define LOG2_NUM(X) log2q(X)
 
 #elif PRECISION_32
 #include <math.h>
@@ -174,8 +174,8 @@ typedef float number;
 #define NUMBER_SERIAL_SIZE 128
 #define SERIALIZE_NUM(X, Y) sprintf(Y, "%.9g", X)
 #define DESERIALIZE_NUM(X, Y) sscanf(Y, "%f", &X)
-#define LOG(X) logf(X)
-#define LOG2(X) log2f(X)
+#define LOG_NUM(X) logf(X)
+#define LOG2_NUM(X) log2f(X)
 
 #else
 #include <math.h>
@@ -185,7 +185,7 @@ typedef double number;
 #define SERIALIZE_NUM(X, Y) sprintf(Y, "%.17g", X)
 #define DESERIALIZE_NUM(X, Y) sscanf(Y, "%lf", &X)
 
-#define LOG(X) log(X)
-#define LOG2(X) log2(X)
+#define LOG_NUM(X) log(X)
+#define LOG2_NUM(X) log2(X)
 
 #endif

@@ -1,4 +1,3 @@
-#include <iostream>
 #include "fractal.h"
 #include "common.h"
 

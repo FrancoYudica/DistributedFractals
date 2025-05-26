@@ -1,6 +1,6 @@
-#include <iostream>
 #include "color_mode.h"
 #include "math.h"
+#include "common/logging.h"
 
 /// @brief Black an white color mode is black if it's inside the set, otherwise white
 void black_white_color_function(float t, float& r, float& g, float& b)
@@ -50,7 +50,7 @@ ColorFunction get_color_function(ColorMode mode)
     case ColorMode::BLUE_ORANGE:
         return blue_orange_function;
     default:
-        std::cout << "Unimplemented color mode in get_color_function()." << std::endl;
+        LOG_WARNING("Unimplemented color mode in get_color_function(). Using black-white");
         return black_white_color_function;
     }
 }

@@ -1,4 +1,5 @@
 #include "common/common.h"
+#include "common/logging.h"
 #include "master.h"
 #include "worker.h"
 #include "mpi/mpi.h"
@@ -14,12 +15,24 @@ int main(int argc, char** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &num_procs);
 
-    if (rank == 0) {
-        load_args(argc, argv, settings);
+    bool run_program = true;
 
-        std::cout << "Settings - Image resolution(" << settings.image.width << "x" << settings.image.height
-                  << ") Block size(" << settings.block_size << ") Zoom(" << (double)settings.camera.zoom << ") Camera(" << (double)settings.camera.x << ", " << (double)settings.camera.y
-                  << ") Max Iterations(" << settings.fractal.max_iterations << ") Type(" << (int)settings.fractal.type << ")\n";
+    if (rank == 0) {
+
+        run_program = load_args(argc, argv, settings);
+        LOG("SETTINGS");
+        LOG("- Image resolution(" << settings.image.width << "x" << settings.image.height << ")");
+        LOG("- Block size(" << settings.block_size << ")");
+        LOG("- Camera(x=" << (double)settings.camera.x << ", y=" << (double)settings.camera.y << ", zoom=" << (double)settings.camera.zoom << ")");
+        LOG("- Max Iterations(" << settings.fractal.max_iterations << ")");
+        LOG("- Type(" << (int)settings.fractal.type);
+    }
+
+    MPI_Bcast(&run_program, 1, MPI_C_BOOL, 0, MPI_COMM_WORLD);
+
+    if (!run_program) {
+        MPI_Finalize();
+        return 0;
     }
 
     // Broadcasts arguments to workers

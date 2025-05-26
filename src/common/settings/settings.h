@@ -8,7 +8,6 @@
 struct Settings {
 
     int block_size;
-
     ImageSettings image;
     Camera camera;
     FractalSettings fractal;

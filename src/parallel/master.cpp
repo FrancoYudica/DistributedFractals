@@ -6,6 +6,7 @@
 #include <chrono>
 #include "parallel/master.h"
 #include "common/output_handler.h"
+#include "common/logging.h"
 
 void master(
     int num_procs,
@@ -72,7 +73,7 @@ void master(
                 }
             }
             ++completed_task_count;
-            std::cout << "Worker " << source << " completed task. " << 100.0 * (float)completed_task_count / worker_tasks.size() << "%" << std::endl;
+            LOG_STATUS("Worker " << source << " completed task. " << 100.0 * (float)completed_task_count / worker_tasks.size() << "%");
         }
     }
 
@@ -83,7 +84,7 @@ void master(
 
     std::chrono::time_point end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    std::cout << "Computation took: " << duration.count() << " ms\n";
+    LOG_STATUS("Image generated in " << duration.count() << " ms");
 
     // Creates output handler based on the settings mode
     std::shared_ptr<OutputHandler> output_handler = OutputHandler::factory_create(settings.output_settings.mode);
@@ -95,6 +96,8 @@ void master(
         settings.output_settings);
 
     if (!success) {
-        std::cout << "Unable to output image..." << std::endl;
+        LOG_ERROR("Unable to output image...");
+    } else {
+        LOG_SUCCESS("Image outputted");
     }
 }

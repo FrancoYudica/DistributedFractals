@@ -1,4 +1,3 @@
-#include <iostream>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -6,6 +5,8 @@
 #include <cstring>
 #include "common/output_handler.h"
 #include "image_utils.h"
+#include "common/common.h"
+#include "common/logging.h"
 
 std::shared_ptr<OutputHandler> OutputHandler::factory_create(OutputSettingsMode mode)
 {
@@ -52,16 +53,16 @@ bool NetworkOutputHandler::save_output(
         height);
 
     if (!success) {
-        std::cout << "Unable to create png buffer" << std ::endl;
+        LOG_ERROR("Unable to create png buffer");
         return false;
     }
 
-    std::cout << "PNG buffer created successfully. Sending buffer to server" << std::endl;
+    LOG_STATUS("PNG buffer created successfully. Sending buffer to server");
 
     // creating socket
     int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket < 0) {
-        perror("Socket creation failed");
+        LOG_ERROR("Socket creation failed");
         return false;
     }
 
@@ -71,13 +72,13 @@ bool NetworkOutputHandler::save_output(
     serverAddress.sin_port = htons(settings.network_data.port);
 
     if (inet_pton(AF_INET, settings.network_data.ip, &serverAddress.sin_addr) <= 0) {
-        perror("Invalid IP address");
+        LOG_ERROR("Invalid IP address");
         close(clientSocket);
         return false;
     }
 
     if (connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
-        perror("Connection failed");
+        LOG_ERROR("Connection failed");
         close(clientSocket);
         return false;
     }

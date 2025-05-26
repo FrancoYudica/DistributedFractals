@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <png.h>
+#include "common/logging.h"
 
 bool save_image(
     const char* filename,
@@ -12,14 +13,14 @@ bool save_image(
 {
     FILE* fp = fopen(filename, "wb");
     if (!fp) {
-        perror("Error while trying to open file in write mode");
+        LOG_ERROR("Error while trying to open file in write mode");
         return false;
     }
 
     png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
     if (!png_ptr) {
         fclose(fp);
-        fprintf(stderr, "Unable to create PNG struct\n");
+        LOG_ERROR("Unable to create PNG struct");
         return false;
     }
 
@@ -27,14 +28,14 @@ bool save_image(
     if (!info_ptr) {
         fclose(fp);
         png_destroy_write_struct(&png_ptr, nullptr);
-        fprintf(stderr, "Unable to create PNG info_struct\n");
+        LOG_ERROR("Unable to create PNG info_struct");
         return false;
     }
 
     if (setjmp(png_jmpbuf(png_ptr))) {
         fclose(fp);
         png_destroy_write_struct(&png_ptr, &info_ptr);
-        fprintf(stderr, "Fail during PNG write\n");
+        LOG_ERROR("Fail during PNG write");
         return false;
     }
 
@@ -66,7 +67,6 @@ void _png_memory_write(png_structp png_ptr, png_bytep data, png_size_t length)
     out->insert(out->end(), data, data + length);
 }
 
-// Optional: flush callback (does nothing for memory)
 void _png_memory_flush(png_structp)
 {
 }
@@ -79,20 +79,20 @@ bool save_image_to_memory(
 {
     png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
     if (!png_ptr) {
-        fprintf(stderr, "Unable to create PNG struct\n");
+        LOG_ERROR("Unable to create PNG struct");
         return false;
     }
 
     png_infop info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr) {
         png_destroy_write_struct(&png_ptr, nullptr);
-        fprintf(stderr, "Unable to create PNG info_struct\n");
+        LOG_ERROR("Unable to create PNG info_struct");
         return false;
     }
 
     if (setjmp(png_jmpbuf(png_ptr))) {
         png_destroy_write_struct(&png_ptr, &info_ptr);
-        fprintf(stderr, "Fail during PNG write\n");
+        LOG_ERROR("Fail during PNG write");
         return false;
     }
 
