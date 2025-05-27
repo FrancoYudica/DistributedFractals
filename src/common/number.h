@@ -153,8 +153,8 @@ public:
     }
 };
 
-#define LOG(X) X.log()
-#define LOG2(X) X.log2()
+#define LOG_NUM(X) X.log()
+#define LOG2_NUM(X) X.log2()
 
 #define SERIALIZE_NUM(X, Y) X.serialize(Y)
 #define DESERIALIZE_NUM(X, Y) X.deserialize(Y)

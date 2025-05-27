@@ -14,6 +14,10 @@ public:
     {
     }
 
+    /// @brief Transforms screen coordinates to world
+    /// @param screen_normalized Are in range [-0.5, 0.5]
+    /// this is done to avoid mapping [-1, 1] and then to [-0.5, 0.5]
+    /// therefore, this aren't NDC
     void to_world(
         double screen_normalized_x,
         double screen_normalized_y,

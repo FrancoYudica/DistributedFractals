@@ -46,9 +46,9 @@ void render_block(
                     double sample_offset_y = (double)sy / n_samples;
                     double sample_y = pixel_y + pixel_size_y * sample_offset_y;
 
-                    // Computes normalized coordinates in range [-1.0, 1.0]
-                    double nx = ((double)sample_x / image_settings.width - 0.5) * 2.0 * aspect_ratio;
-                    double ny = ((double)sample_y / image_settings.height - 0.5) * 2.0;
+                    // Computes normalized coordinates in range [-0.5, 0.5]
+                    double nx = ((double)sample_x / image_settings.width - 0.5) * aspect_ratio;
+                    double ny = ((double)sample_y / image_settings.height - 0.5);
 
                     // Computes world coordinates with camera
                     number wx, wy;
