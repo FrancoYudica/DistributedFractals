@@ -416,11 +416,7 @@ mpirun -np 8 ./fractal_mpi \
   -output_disk mandelbrot_distribuido.png
 ```
 
-# Estudio experimental
-
-En esta sección, se desarrolla el diseño de experimental, sus resultados y análisis de los mismos.
-
-## Diseños de Experimentos
+# Diseños de Experimentos
 
 Primero, se plantea un estudio comparativo entre la versión secuencial y la paralela bajo distintas cantidades de nodos, con el fin de evaluar la eficiencia y el speedup.
 
@@ -474,7 +470,7 @@ Con el fin de garantizar la validez de los resultados, se han tomado en cuenta l
 
 Con este riguroso control de variables, los resultados obtenidos reflejan de forma confiable el impacto de los factores estudiados sobre el tiempo de renderizado, el speedup y la eficiencia de la versión paralela, permitiendo extraer conclusiones sólidas sobre sus límites de escalabilidad y sus puntos de inflexión en el rendimiento.
 
-## Resultados Obtenidos
+# Resultados Obtenidos
 
 (DESARROLLO PENDIENTE)
 
@@ -494,7 +490,7 @@ Con este riguroso control de variables, los resultados obtenidos reflejan de for
 ## Cantidad de iteraciones
 ![](experiments/iter_size_var/iteration_times_bar_chart.png){width=100%}
 
-## Analisis de los Resultados
+# Analisis de los Resultados
 (DESARROLLO PENDIENTE)
 
 
@@ -504,7 +500,7 @@ Con este riguroso control de variables, los resultados obtenidos reflejan de for
 
 (DESARROLLO PENDIENTE)
 
-Aunque el esquema master–trabajador implementado en DistributedFractals consigue un balanceo de carga dinámico eficiente, el proceso master se convierte en un cuello de botella cuando el sistema escala a un gran número de workers. En la versión actual, el master atiende de forma secuencial dos tareas críticas: recibir bloques de píxeles procesados y copiarlos uno a uno en el búfer global. Cada recepción y posterior copia obliga al master a esperar a que se complete la escritura en memoria antes de poder responder a la siguiente petición de resultados, generando tiempos ociosos en los workers y limitando el speedup alcanzable.
+Aunque el esquema master-worker implementado en DistributedFractals consigue un balanceo de carga dinámico eficiente, el proceso master se convierte en un cuello de botella cuando el sistema escala a un gran número de workers. En la versión actual, el master atiende de forma secuencial dos tareas críticas: recibir bloques de píxeles procesados y copiarlos uno a uno en el búfer global. Cada recepción y posterior copia obliga al master a esperar a que se complete la escritura en memoria antes de poder responder a la siguiente petición de resultados, generando tiempos ociosos en los workers y limitando el speedup alcanzable.
 
 Para mitigar esta contención, proponemos reemplazar la sección monohilo de recepción y ensamblado por una arquitectura multihilo dentro del master. En esta nueva versión, un hilo dedicado gestionaría exclusivamente la recepción de mensajes MPI entrantes, almacenándolos inmediatamente en un pool de buffers preasignados. Mientras tanto, uno o más hilos workers internos realizarían la copia asíncrona de cada bloque al búfer global, operando sobre regiones independientes de la imagen. De esta forma, la llamada a MPI_Recv no bloquearía la escritura en memoria, y los hilos de copia podrían ejecutarse en paralelo con las operaciones de recepción y la lógica de despacho de nuevas tareas.
 
