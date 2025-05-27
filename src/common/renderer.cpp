@@ -26,7 +26,7 @@ void render_block(
     // Computes the color for each subpixel of the partial image
     for (int j = 0; j < height; ++j) {
         // Computes pixel Y coordinate [0, height - 1]
-        int pixel_y = y + j;
+        int pixel_y = image_settings.height - 1 - y - j;
 
         for (int i = 0; i < width; ++i) {
 
