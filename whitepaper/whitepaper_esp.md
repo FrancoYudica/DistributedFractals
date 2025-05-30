@@ -430,13 +430,14 @@ Con el objetivo de realizar una comparación exhaustiva entre la versión secuen
 
 | Parámetro | Valor |
 | --------- | ----- |  
-| `iterations`           |   20000    |
-| `samples`              | 4       |
-| `cx`| -0.7454286 |
-| `cy`| 0.1130089 |
-| `zoom`| 327000 |
-| `color_mode`| 5 |
-| `block size` (Aplica a la versión paralela) |       32  |
+| `iterations`           |   $20000$    |
+| `samples`              | $4$       |
+| `cx`| $-0.7454286$ |
+| `cy`| $0.1130089$ |
+| `zoom`| $327000$ |
+| `color_mode`| $5$ |
+| `type`  |       $Mandelbrot$  |
+| `block size` (Aplica a la versión paralela) |       $32$  |
 
 Un factor determinante es la resolución de la imagen, especificada por los parámetros width y height. Para simplificar, se utilizaron imágenes cuadradas con $width = height$. Se realizaron ejecuciones para los siguientes tamaños:
 
@@ -456,10 +457,11 @@ Existen otros parámetros relevantes, además del tamaño de imagen, que se han 
 | Parámetro | Justificación | Valores |
 | - | - | - |
 | `block_size`| Permite analizar el impacto del tamaño de bloque en el balanceo de carga entre nodos, con el objetivo de encontrar un valor óptimo. |$[2, 4, 8, 16, 32, 64, 128]$
-| `tipo de fractal` | Evalúa si el tipo de fractal influye en el rendimiento computacional. |$[Mandelbrot, Julia]$|
 | `iteraciones` | Permite observar cómo afecta el aumento en el número máximo de iteraciones al tiempo de ejecución, y analizar si su comportamiento es lineal, logarítmico o exponencial.| $[100, 500, 1000]$|
 
-Estos experimentos se realizaron con 32 nodos computacionales,
+Estos experimentos se realizaron con 32 nodos computacionales.
+
+Es importante aclarar que no se realiza una comparación directa entre los fractales de Julia y Mandelbrot. Esto se debe a que el tiempo de ejecución total está determinado por la cantidad de píxeles que alcanzan el número máximo de iteraciones. Ambos fractales poseen subconjuntos de puntos que pertenecen al conjunto en distintas ubicaciones, es decir, puntos que siempre alcanzarán dicho máximo. Compararlos carece de sentido, ya que el resultado depende fuertemente de la posición de la cámara y del nivel de zoom.
 
 ## Consideraciones sobre experimentos
 
@@ -484,19 +486,59 @@ Con este riguroso control de variables, los resultados obtenidos reflejan de for
 
 ## Versión paralela con distintos parámetros
 
-## Tamaño de bloques
+### Tamaño de bloques
 ![](experiments/block_size_var/combined_speedup.png){width=100%}
 ![](experiments/block_size_var/combined_efficiency.png){width=100%}
 
-## Tipo de fractal
-![](experiments/fractal_type_var/bar_chart.png){width=100%}
 
-## Cantidad de iteraciones
+### Cantidad de iteraciones
 ![](experiments/iter_size_var/iteration_times_bar_chart.png){width=100%}
 
 # Analisis de los Resultados
-(DESARROLLO PENDIENTE)
 
+En esta sección, se realiza un análisis de los resultados obtenidos en la sección anterior.
+
+## Análisis de versión secuencial contra paralela
+El gráfico de los tiemposASDSADSADAD, ilustra claramente que existe una mejora significativa al usar el algoritmo paralelo. Se pueden obtener los mismos resultados en menor tiempo, tal como era esperado.
+
+Al observar el GRÁFICO DE SPEEDUP, se observa que existe una relación entre el speedup obtenido y la resolución de la imagen. Si la imagen a renderizar cuenta con muy pocos pixeles, tal como la resolución 128x128, entonces podemos decir que no resulta conviente la utilización del algoritmo paralelo. Esto se debe a la sección secuencial inicial presente en la versión paralela, la cuál corresponde a la inicialización de mpi, a través de `MPI_Init`, toma aproximadamente 350ms. Al aumentar la resolución, aumenta la cantidad de pixeles a renderizar, haciendo que aumente la porción paralelizable, y es por este motivo que el speedup aumenta al renderizar imágenes con más pixeles, se aprovecha el paralelismo.
+
+En cuanto a la eficiencia, se observa que a mayor cantidad de pixeles, es decir, en imágenes de mayor resolución, el valor que toma con dos nodos es de 0.5. Esto no debería sorprender considerando el modelo de algoritmo paralelo que se ha seleccionado, siendo este el master-worker. Al haber dos nodos, uno toma el rol de master y el otro de worker, pero en realidad solo un nodo se encarga del renderizado.
+En este contexto, si asumimos que el tiempo secuencial es igual al tiempo de cómputo:
+$$
+T_{Secuencial}=T_{Paralelo}
+$$
+
+Entonces el speeup:
+
+$$
+Speedup(2)=T_{Secuencial}/T_{Paralelo}=1
+$$
+Luego, calculando la eficiencia
+
+$$
+Eficiencia(2)=Speedup(2)/N_{nodos}=1/2
+$$
+
+Lo cuál demuestra matemáticamente que el valor de eficiencia obtenido con 2 nodos es correcto.
+
+Si relacionamos los gráficos de speedup y eficiencia, se puede observar que la relación de orden entre las distintas resoluciones de imagen y su rendimiento se mantiene. Esto se debe a que la eficiencia se calcula a partir de el speedup y la cantidad de nodos, siendo este un factor constante.
+
+Es claro que la versión paralela no alcanzará el speedup superlineal, pero si tiende a alcanzar un speedup lineal. Hay una fuerte relación entre la porción paralelizable, la cuál aumenta al renderizar mayor cantidad de pixeles. Y el programa paralelo es capaz de escalar correctamente.
+
+## Análisis de versión paralela
+### Tamaño de los bloques
+Como ilusta la figura X, existe una clara relación entre el speedup y el tamaño de los bloques. 
+
+Se observa que para bloques de $2$ x $2$, el speedup se ve acotado. A partir de los 16 nodos. Esto se debe a que contamos con un único nodo master, y al tener una granularidad muy fina, es decir tareas pequeñas y muchas tareas, el programa paralelo pasa mucho tiempo realizando comunicaciones, y el master se satura, convirtiéndose en un cuello de botella.
+
+Los tamaños de $4$ x $4$ y de $8$ x $8$ presentan mejoras en comparación a $2$ x $2$.
+
+La configuración óptima para el tamaño de bloque resulta ser $32$ x $32$, un total de $1024$ pixeles por nodo. Este es el punto en el cuál se logra un banance entre tamaño de bloque, cantidad de nodos y tiempos de comunicaciones.
+
+Nótese que al aumentar el tamaño de los bloques, para $64$ x $64$ y especialmente $128$ x $128$, los tiempos de ejecución aumentan y el speedup se reduce.
+
+En cuanto a la eficiencia, nos encontramos la misma situación presentada en el análisis comparativo anterior cuando $N_{nodos}=2$, siendo incluso más claro.
 
 # Conclusiones
 
