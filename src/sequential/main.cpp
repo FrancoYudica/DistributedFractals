@@ -17,6 +17,7 @@ int main(int argc, char** argv)
     if (!run_program) {
         return 0;
     }
+    LOG_STATUS("Running...");
 
     std::chrono::time_point start = std::chrono::high_resolution_clock::now();
 

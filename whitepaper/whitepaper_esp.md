@@ -430,8 +430,12 @@ Con el objetivo de realizar una comparación exhaustiva entre la versión secuen
 
 | Parámetro | Valor |
 | --------- | ----- |  
-| `iterations`          |   512    |
-| `samples`              | 16       |
+| `iterations`           |   20000    |
+| `samples`              | 4       |
+| `cx`| -0.7454286 |
+| `cy`| 0.1130089 |
+| `zoom`| 327000 |
+| `color_mode`| 5 |
 | `block size` (Aplica a la versión paralela) |       32  |
 
 Un factor determinante es la resolución de la imagen, especificada por los parámetros width y height. Para simplificar, se utilizaron imágenes cuadradas con $width = height$. Se realizaron ejecuciones para los siguientes tamaños:
