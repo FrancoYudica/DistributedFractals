@@ -1,6 +1,7 @@
 ---
 # pandoc whitepaper_esp.md -o whitepaper.pdf --pdf-engine=xelatex --include-in-header=header.tex --number-sections
 geometry: top=5cm, left=4cm, right=4cm, bottom=4cm
+figures-latex-placement: H
 ---
 \begin{flushleft}
 {\fontsize{16pt}{16pt}\selectfont \textbf{Renderizado de fractales con MPI}}
@@ -127,25 +128,27 @@ Al igual que en el caso del fractal de Julia, el criterio de escape se basa en s
 
 Existen distintos métodos para colorear fractales, siendo el más básico el blanco y negro. En este esquema, los píxeles cuya posición, al ser utilizada como punto de partida en la iteración del fractal, tienden al infinito, se colorean de blanco. Por el contrario, aquellos que no divergen se colorean de negro.
 
-![](imgs/mandelbrot_black_white.png)
-
-<p align="center"><b>Figura 1:</b> Representación en blanco y negro del conjunto de Mandelbrot.</p>
+![](imgs/mandelbrot_black_white.png){ width=60% .center }
+  **Figura 1:** *Representación en blanco y negro del conjunto de Mandelbrot.*
 
 Sin embargo, este método binario puede resultar limitado para visualizar la complejidad del sistema dinámico. Por ello, se utilizan técnicas más avanzadas como el coloreo por tiempo de escape (escape time coloring), donde se asignan colores según la cantidad de iteraciones que tarda un punto en escapar de un cierto radio. Esto permite generar imágenes con ricos gradientes de color que reflejan la velocidad de divergencia y destacan la estructura del borde del conjunto. [\[5\]](#fractal-rendering).
 
-![](imgs/mandelbrot_grayscale.png)
+![](imgs/mandelbrot_grayscale.png){ width=60% .center }
+  **Figura 2:** *Representación en escala de grises del conjunto de Mandelbrot.*
 
-<p align="center"><b>Figura 2:</b> Representación en escala de grises del conjunto de Mandelbrot.</p>
 
 Pero también es posible mapear el número de iteraciones a una paleta de colores. Nótese que los puntos pertenecientes al conjunto de Mandelbrot toman un color uniforme, ya que alcanzan el número máximo de iteraciones sin divergir.
 
-![](imgs/mandelbrot_colored.png)
-<p align="center"><b>Figura 3:</b> Mapeo de iteraciones a paleta de colores del conjunto de Mandelbrot.</p>
+![](imgs/mandelbrot_colored.png){ width=60% .center }
+  **Figura 3:** *Mapeo de iteraciones a paleta de colores del conjunto de Mandelbrot.*
+
+
 
 En la figura 3 se pueden observar resultados mucho más interesantes. Al mirar con detalle, se aprecian transiciones abruptas entre los colores, un efecto comúnmente denominado *banding* en computación gráfica. Esto se debe a que el mapeo del color se realiza únicamente en función de la cantidad de iteraciones, que es un valor discreto.
 
-![](imgs/mandelbrot_colored_bandless.png)
-<p align="center"><b>Figura 4:</b> Mapeo de iteraciones a colores con transición suave.</p>
+![](imgs/mandelbrot_colored_bandless.png){ width=60% .center }
+  **Figura 4:** *Mapeo de iteraciones a colores con transición suave.*
+
 
 Para renderizar la figura 4, se ha utilizado el número de iteraciones, en conjunto con $|z_n|$,  lo cual permite realizar un mapeo continuo a la paleta de colores, eliminando el efecto de *banding*. El desarrollo matemático se encuentra en la referencia [\[5\]](#fractal-rendering).
 
@@ -478,32 +481,133 @@ Con este riguroso control de variables, los resultados obtenidos reflejan de for
 
 # Resultados Obtenidos
 
-(DESARROLLO PENDIENTE)
+En esta sección se presentarán los resultados obtenidos al realizar los experimentos planteados en la sección de diseño de experimentos. Es por este motivo que seguirá la misma estructura planteada anteriormente. Se presentarán tablas de datos y gráficos, los cuales serán analizados en detalle en la sección de análisis de resultados.
 
 ## Versión secuencial contra paralela
-![](experiments/image_size_var/all_speedup.png){width=100%}
-![](experiments/image_size_var/all_efficiency.png){width=100%}
+A continuación se muestra el rendimiento de ambas versiones en función del tamaño de la imagen y la cantidad de nodos utilizados.
+
+### Tamaño de imagen
+Se estudió el efecto de modificar la resolución de imagen en el tiempo de ejecución.
+
+#### Tabla de datos de ejecución paralela
+Se presenta el tiempo promedio y la desviación estándar para distintas resoluciones y cantidades de nodos.
+
+| Cantidad de nodos | Resolución | Tiempo promedio (s) | Desviación estándar (s) |
+| --- | --- | --- | --- |
+| 2 | 32x32 |0.7347766071998194 | 0.024293793933656622 |
+| 4 | 32x32 |0.7194581487994582 | 0.019995011884794463 |
+| 8 | 32x32 |0.7597506460006116 | 0.019692794415084734 |
+| 16 | 32x32 |0.755642992799767 | 0.014237480350074726 |
+| 32 | 32x32 |0.7530325819996506 | 0.014154650552929655 |
+| 2 | 64x64 |0.9698013217999687 | 0.04280733081779699 |
+| 4 | 64x64 |0.7844574396993267 | 0.02057444796819635 |
+| 8 | 64x64 |0.8701380547001463 | 0.20425526530434057 |
+| 16 | 64x64 |0.813580839000133 | 0.02785545076843234 |
+| 32 | 64x64 |0.8377403283004241 | 0.030037874078768456 |
+| 2 | 128x128 |1.8987524622003549 | 0.02253840710023415 |
+| 4 | 128x128 |1.0858486641998752 | 0.027295021328173408 |
+| 8 | 128x128 |1.0203170211996622 | 0.026902499139743397 |
+| 16 | 128x128 |1.0145710798999061 | 0.022382251243951167 |
+| 32 | 128x128 |1.0069084299993847 | 0.019242904410697554 |
+| 2 | 512x512 |20.83092403529954 | 0.022270186767527914 |
+| 4 | 512x512 |7.38089184599994 | 0.025637281621891578 |
+| 8 | 512x512 |3.6114315322007315 | 0.024159854440402008 |
+| 16 | 512x512 |2.126211233899812 | 0.03389213149233942 |
+| 32 | 512x512 |1.6320069547000458 | 0.03812131381339011 |
+| 2 | 1080x1080 |90.4301608312002 | 0.044303374630204846 |
+| 4 | 1080x1080 |30.63535752170028 | 0.022529494539971554 |
+| 8 | 1080x1080 |13.590946517599514 | 0.014405034421835603 |
+| 16 | 1080x1080 |6.808138592400428 | 0.0172290493620024 |
+| 32 | 1080x1080 |4.109694875600326 | 0.05180247169371324 |
+| 2 | 1920x1920 |284.35179361740086 | 0.028804059407490677 |
+| 4 | 1920x1920 |95.44321080139962 | 0.03332558576788434 |
+| 8 | 1920x1920 |41.52969608500025 | 0.017873206091913493 |
+| 16 | 1920x1920 |20.056586532099754 | 0.025654280626253977 |
+| 32 | 1920x1920 |11.296893179300605 | 0.25224913775009544 |
+
+#### Tabla de datos de ejecución secuencial
+A modo de comparación, se incluye el tiempo de ejecución para la versión secuencial con cada resolución.
+
+| Resolución | Tiempo promedio (s) | Desviación estándar (s) |
+| --- | --- | --- |
+| 32x32 | 0.07977260379984731 | 0.00043435765082315455 |
+| 64x64 | 0.31759674040004027 | 0.002131164715677036 |
+| 128x128 | 1.2609421436000048 | 0.0013148213508798747 |
+| 512x512 | 20.132811490099993 | 0.009180779629399193 |
+| 1080x1080 | 89.59314089329982 | 0.024588972955427328 |
+| 1920x1920 | 283.25439927300033 | 0.04803506827399954 |
+
+#### Tabla de datos de speedup y eficiencia
+
+A partir de los tiempos anteriores, se calculó el Speedup y la Eficiencia de la versión paralela respecto a la secuencial.
+
+| Cantidad de nodos | Resolución | Speedup | Efficiency |
+| --- | --- | --- | --- |
+| 2 | 32x32 | 0.10856715227211022 | 0.05428357613605511 |
+| 4 | 32x32 | 0.11087872718234111 | 0.027719681795585278 |
+| 8 | 32x32 | 0.10499840206754242 | 0.013124800258442803 |
+| 16 | 32x32 | 0.10556917030922001 | 0.006598073144326251 |
+| 32 | 32x32 | 0.10593512911222787 | 0.003310472784757121 |
+| 2 | 64x64 | 0.3274863967091476 | 0.1637431983545738 |
+| 4 | 64x64 | 0.404861658934322 | 0.1012154147335805 |
+| 8 | 64x64 | 0.3649958057626679 | 0.045624475720333485 |
+| 16 | 64x64 | 0.3903690022866779 | 0.02439806264291737 |
+| 32 | 64x64 | 0.3791111991043436 | 0.011847224972010737 |
+| 2 | 128x128 | 0.6640898003833378 | 0.3320449001916689 |
+| 4 | 128x128 | 1.1612503520729105 | 0.2903125880182276 |
+| 8 | 128x128 | 1.2358336844341005 | 0.15447921055426256 |
+| 16 | 128x128 | 1.2428327286092216 | 0.07767704553807635 |
+| 32 | 128x128 | 1.252290780404704 | 0.039134086887647 |
+| 2 | 512x512 | 0.9664867221436484 | 0.4832433610718242 |
+| 4 | 512x512 | 2.727693605348103 | 0.6819234013370258 |
+| 8 | 512x512 | 5.57474544667097 | 0.6968431808338712 |
+| 16 | 512x512 | 9.46886704815927 | 0.5918041905099544 |
+| 32 | 512x512 | 12.336228979980234 | 0.3855071556243823 |
+| 2 | 1080x1080 | 0.9907440180332888 | 0.4953720090166444 |
+| 4 | 1080x1080 | 2.924501234556748 | 0.731125308639187 |
+| 8 | 1080x1080 | 6.592119303632144 | 0.824014912954018 |
+| 16 | 1080x1080 | 13.159711671161924 | 0.8224819794476202 |
+| 32 | 1080x1080 | 21.80043618936855 | 0.6812636309177672 |
+| 2 | 1920x1920 | 0.9961407159404907 | 0.49807035797024535 |
+| 4 | 1920x1920 | 2.9677794459618765 | 0.7419448614904691 |
+| 8 | 1920x1920 | 6.820526658640936 | 0.852565832330117 |
+| 16 | 1920x1920 | 14.122762057225598 | 0.8826726285765999 |
+| 32 | 1920x1920 | 25.073654745360415 | 0.783551710792513 |
+
+### Gráficos de rendimiento
+A continuación, se presentan gráficos realizados con los datos obtenidos previamente.
+
+![](experiments/image_size/imgs/combined_time.png){ width=100%  }
+  **Figura 5:** *Tiempo medio paralelo y secuencial para cada configuración de cantidada de nodos y resolución de imagen*
+
+![](experiments/image_size/imgs/image_size_combined_speedup.png){ width=100% }
+  **Figura 6:** *Speedup para cada configuración de cantidad de nodos y resolución de imagen*
+
+![](experiments/image_size/imgs/image_size_combined_efficiency.png){ width=100%}
+  **Figura 7:** *Eficiencia para cada configuración de cantidad de nodos y resolución de imagen*
+
+
 
 ## Versión paralela con distintos parámetros
+Esta sección explora cómo afectan distintos parámetros internos al rendimiento de la versión paralela.
 
 ### Tamaño de bloques
-![](experiments/block_size_var/combined_speedup.png){width=100%}
-![](experiments/block_size_var/combined_efficiency.png){width=100%}
+Se evaluó el impacto del tamaño de bloques en el rendimiento del sistema.
 
 
 ### Cantidad de iteraciones
-![](experiments/iter_size_var/iteration_times_bar_chart.png){width=100%}
+Se estudió el efecto de modificar el número de iteraciones en el tiempo de ejecución.
+
 
 # Analisis de los Resultados
-
 En esta sección, se realiza un análisis de los resultados obtenidos en la sección anterior.
 
 ## Análisis de versión secuencial contra paralela
-El gráfico de los tiemposASDSADSADAD, ilustra claramente que existe una mejora significativa al usar el algoritmo paralelo. Se pueden obtener los mismos resultados en menor tiempo, tal como era esperado.
+La *figura 5*, ilustra claramente que existe una mejora significativa al usar el algoritmo paralelo. Se puede observar que las versiones paralelas y secuenciasles toman aproximadamente el mismo tiempo cuando la cantidad de nodos es de 2, ya que solo un procesador trabaja. Luego, a medida que aumenta la cantidad de nodos, el tiempo paralelo decrece logarítmicamente, lo cuál se ve con mayor claridad en grandes resoluciones, especialmente $1920$ x $1920$. Es decir que se pueden obtener los mismos resultados en menor tiempo, tal como era esperado.
 
-Al observar el GRÁFICO DE SPEEDUP, se observa que existe una relación entre el speedup obtenido y la resolución de la imagen. Si la imagen a renderizar cuenta con muy pocos pixeles, tal como la resolución 128x128, entonces podemos decir que no resulta conviente la utilización del algoritmo paralelo. Esto se debe a la sección secuencial inicial presente en la versión paralela, la cuál corresponde a la inicialización de mpi, a través de `MPI_Init`, toma aproximadamente 350ms. Al aumentar la resolución, aumenta la cantidad de pixeles a renderizar, haciendo que aumente la porción paralelizable, y es por este motivo que el speedup aumenta al renderizar imágenes con más pixeles, se aprovecha el paralelismo.
+En cuanto a la *figura 6*, se observa que existe una relación entre el speedup obtenido y la resolución de la imagen. Si la imagen a renderizar cuenta con muy pocos pixeles, tal como la resolución 128x128, entonces podemos decir que no resulta conviente la utilización del algoritmo paralelo. Esto se debe a la sección secuencial inicial presente en la versión paralela, la cuál corresponde a la inicialización de mpi, a través de `MPI_Init`, toma aproximadamente 350ms. Al aumentar la resolución, aumenta la cantidad de pixeles a renderizar, haciendo que aumente la porción paralelizable, y es por este motivo que el speedup aumenta al renderizar imágenes con más pixeles, se aprovecha el paralelismo.
 
-En cuanto a la eficiencia, se observa que a mayor cantidad de pixeles, es decir, en imágenes de mayor resolución, el valor que toma con dos nodos es de 0.5. Esto no debería sorprender considerando el modelo de algoritmo paralelo que se ha seleccionado, siendo este el master-worker. Al haber dos nodos, uno toma el rol de master y el otro de worker, pero en realidad solo un nodo se encarga del renderizado.
+Al considerar la *figura 7*, se observa que a mayor cantidad de pixeles, es decir, en imágenes de mayor resolución, el valor que toma la eficiencia con dos nodos es de 0.5. Esto no debería sorprender considerando el modelo de algoritmo paralelo que se ha seleccionado, siendo este el master-worker. Al haber dos nodos, uno toma el rol de master y el otro de worker, pero en realidad solo un nodo se encarga del renderizado.
 En este contexto, si asumimos que el tiempo secuencial es igual al tiempo de cómputo:
 $$
 T_{Secuencial}=T_{Paralelo}
@@ -522,12 +626,37 @@ $$
 
 Lo cuál demuestra matemáticamente que el valor de eficiencia obtenido con 2 nodos es correcto.
 
+Además, si consideramos las gráficas correspondientes a las distintas resoluciones mostradas en la Figura 7, podemos afirmar que el punto máximo de eficiencia depende tanto de la resolución de la imagen como de la cantidad de nodos utilizados.
+
+Para las versiones de $32 \times 32$, $64 \times 64$ y $128 \times 128$, la eficiencia máxima se alcanza con $N_{\text{Nodos}} = 2$. Esto no debería sorprender, ya que, al observar nuevamente la Figura 6, se puede ver que estas resoluciones mantienen un speedup constante a partir de $N_{\text{Nodos}} = 2$.
+
+Por otro lado, al analizar la resolución de $512 \times 512$, la eficiencia máxima se obtiene con $N_{\text{Nodos}} = 8$, alcanzando un valor de eficiencia de:
+$$
+Eficiencia(8)=0.6968431808338712
+$$
+De manera similar, para una resolución de $1080 \times 1080$, la eficiencia máxima también se da con $N_{\text{Nodos}} = 8$, con un valor de:
+$$
+Eficiencia(8)=0.824014912954018
+$$
+Finalmente, para una resolución de $1920 \times 1920$, el punto máximo de eficiencia se alcanza con $N_{\text{Nodos}} = 16$, alcanzando:
+$$
+Eficiencia(16)=0.8826726285765999
+$$
+
 Si relacionamos los gráficos de speedup y eficiencia, se puede observar que la relación de orden entre las distintas resoluciones de imagen y su rendimiento se mantiene. Esto se debe a que la eficiencia se calcula a partir de el speedup y la cantidad de nodos, siendo este un factor constante.
 
-Es claro que la versión paralela no alcanzará el speedup superlineal, pero si tiende a alcanzar un speedup lineal. Hay una fuerte relación entre la porción paralelizable, la cuál aumenta al renderizar mayor cantidad de pixeles. Y el programa paralelo es capaz de escalar correctamente.
+Es claro que la versión paralela no alcanzará el speedup superlineal, pero si tiende a alcanzar un speedup lineal. Hay una fuerte relación entre la porción paralelizable, la cuál aumenta al renderizar mayor cantidad de pixeles. 
+
+Sin embargo, existe un umbral a partir del cual no resulta conveniente emplear la versión paralela, ya que los tiempos secuenciales comienzan a representar una proporción significativa en relación con la parte paralelizable del problema.
+
+A pesar de ello, al aumentar el tamaño de la imagen, la utilización de la versión paralela se vuelve cada vez más justificada y eficiente.
 
 ## Análisis de versión paralela
+
+En la sección anterior, se ha comprobado que la utilización de la versión paralela brinda excelentes resultados. En esta sección se realizará un análsis con el fin de entender el impacto de los parámetros de tamaño de bloque e iteraciones sobre el tiempo de ejecución.
+
 ### Tamaño de los bloques
+
 Como ilusta la figura X, existe una clara relación entre el speedup y el tamaño de los bloques. 
 
 Se observa que para bloques de $2$ x $2$, el speedup se ve acotado. A partir de los 16 nodos. Esto se debe a que contamos con un único nodo master, y al tener una granularidad muy fina, es decir tareas pequeñas y muchas tareas, el programa paralelo pasa mucho tiempo realizando comunicaciones, y el master se satura, convirtiéndose en un cuello de botella.

@@ -28,7 +28,12 @@ def plot_speedup_all(all_data, output_file):
     plt.plot(ideal, ideal, 'k--', label="Ideal Linear Speedup")
     
     plt.title("Speedup vs Processors")
+
+    # Use actual processor values from the first dataset for x-ticks
+    first_procs = next(iter(all_data.values()))[0]
+    plt.xticks(first_procs)
     plt.xlabel("Processors")
+
     plt.ylabel("Speedup")
     plt.legend()
     plt.grid(True)
@@ -43,7 +48,12 @@ def plot_efficiency_all(all_data, output_file):
         plt.plot(procs, efficiencies, marker='o', label=label)
     
     plt.title("Efficiency vs Processors")
+
+    # Use actual processor values from the first dataset for x-ticks
+    first_procs = next(iter(all_data.values()))[0]
+    plt.xticks(first_procs)
     plt.xlabel("Processors")
+
     plt.ylabel("Efficiency")
     plt.ylim(0, 1.1)
     plt.legend()

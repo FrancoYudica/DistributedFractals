@@ -1,0 +1,6 @@
+Command,Runs,Average Time (s),Std Dev (s)
+mpirun -np 2 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 -b 32 --color_mode 5 -w 128 -h 128 -b 32,10,1.8987524622003549,0.02253840710023415
+mpirun -np 4 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 -b 32 --color_mode 5 -w 128 -h 128 -b 32,10,1.0858486641998752,0.027295021328173408
+mpirun -np 8 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 -b 32 --color_mode 5 -w 128 -h 128 -b 32,10,1.0203170211996622,0.026902499139743397
+mpirun -np 16 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 -b 32 --color_mode 5 -w 128 -h 128 -b 32,10,1.0145710798999061,0.022382251243951167
+mpirun -np 32 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 -b 32 --color_mode 5 -w 128 -h 128 -b 32,10,1.0069084299993847,0.019242904410697554

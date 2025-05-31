@@ -1,6 +1,0 @@
-Command,Runs,Average Time (s),Std Dev (s)
-mpirun -np 2 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 512 -s 16 --output_disabled -w 1920 -h 1920 -b 32,10,47.305599235398404,0.04754033147981566
-mpirun -np 4 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 512 -s 16 --output_disabled -w 1920 -h 1920 -b 32,10,16.504871795298822,0.03256054400194051
-mpirun -np 8 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 512 -s 16 --output_disabled -w 1920 -h 1920 -b 32,10,7.526775008499681,0.04126647609363697
-mpirun -np 16 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 512 -s 16 --output_disabled -w 1920 -h 1920 -b 32,10,4.170737075699435,0.04172823427400041
-mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 512 -s 16 --output_disabled -w 1920 -h 1920 -b 32,10,2.3062210644988226,0.02398473813952338

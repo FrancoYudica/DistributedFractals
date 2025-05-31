@@ -1,6 +1,0 @@
-Processors,Command,Parallel Time (s),Speedup,Efficiency
-2,mpirun -np 2 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 512 -s 16 --output_disabled -w 128 -h 128 -b 32,0.8321036087014363,0.25353467007788255,0.12676733503894128
-4,mpirun -np 4 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 512 -s 16 --output_disabled -w 128 -h 128 -b 32,0.6968170775988256,0.30275824270798507,0.07568956067699627
-8,mpirun -np 8 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 512 -s 16 --output_disabled -w 128 -h 128 -b 32,0.6868595302003087,0.3071473927736139,0.03839342409670174
-16,mpirun -np 16 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 512 -s 16 --output_disabled -w 128 -h 128 -b 32,0.6985842625013902,0.30199236545543323,0.018874522840964577
-32,mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 512 -s 16 --output_disabled -w 128 -h 128 -b 32,0.7066419199996744,0.2985488235722434,0.009329650736632606

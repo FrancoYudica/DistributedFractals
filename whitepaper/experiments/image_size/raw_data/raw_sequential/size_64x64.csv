@@ -1,0 +1,10 @@
+/home/debian/DistributedFractals/build/sequential -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 -b 32 --color_mode 5 --output_disabled -w 64 -h 64 -b 32,0.3164168620005512
+/home/debian/DistributedFractals/build/sequential -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 -b 32 --color_mode 5 --output_disabled -w 64 -h 64 -b 32,0.3168558360002862
+/home/debian/DistributedFractals/build/sequential -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 -b 32 --color_mode 5 --output_disabled -w 64 -h 64 -b 32,0.3165839319999577
+/home/debian/DistributedFractals/build/sequential -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 -b 32 --color_mode 5 --output_disabled -w 64 -h 64 -b 32,0.31814147400018555
+/home/debian/DistributedFractals/build/sequential -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 -b 32 --color_mode 5 --output_disabled -w 64 -h 64 -b 32,0.3164116859998103
+/home/debian/DistributedFractals/build/sequential -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 -b 32 --color_mode 5 --output_disabled -w 64 -h 64 -b 32,0.31619248100014374
+/home/debian/DistributedFractals/build/sequential -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 -b 32 --color_mode 5 --output_disabled -w 64 -h 64 -b 32,0.3162770540002384
+/home/debian/DistributedFractals/build/sequential -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 -b 32 --color_mode 5 --output_disabled -w 64 -h 64 -b 32,0.31662377799966634
+/home/debian/DistributedFractals/build/sequential -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 -b 32 --color_mode 5 --output_disabled -w 64 -h 64 -b 32,0.31963273499968636
+/home/debian/DistributedFractals/build/sequential -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 -b 32 --color_mode 5 --output_disabled -w 64 -h 64 -b 32,0.32283156599987706

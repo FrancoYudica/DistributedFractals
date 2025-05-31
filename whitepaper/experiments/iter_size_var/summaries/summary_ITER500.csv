@@ -1,2 +1,0 @@
-Command,Runs,Average Time (s),Std Dev (s)
-mpirun -np 32 -hostfile ./../../../build/hostfile ./../../../build/fractal_mpi -i 500 -s 16 --output_disabled -w 1080 -h 1080 -b 32,20,1.2050854273504228,0.04335114834065703
