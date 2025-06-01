@@ -822,9 +822,15 @@ En cuanto a los tamaños de $4 \times 4$ y $64 \times 64$, es correcto decir que
 
 Luego, nos encontramos con los tamaños de $8 \times 8$, $16 \times 16$ y $32 \times 32$. $8 \times 8$ y $32 \times 32$ presentaron un resultado prácticamente idéntico, con un speedup medio de $22.23358286347971$ y $22.206063258055412$ respectivamente. Pero indicutiblemente, los mejores resultados, tanto en términos de speedup como eficiencia se obtuvieron con un tamaño de bloque de $16 \times 16$.
 
-Otro factor importante a analizar, presente tanto en la Figura 8 como en la Figura 9, es el aumento en la dispersión de las gráficas a medida que se incrementa la cantidad de nodos.
+Otro aspecto importante a analizar, presente tanto en la Figura 8 como en la Figura 9, es el aumento en la dispersión de las gráficas a medida que se incrementa la cantidad de nodos.
 
-Este comportamiento resulta coherente, ya que al aumentar el número de nodos, la ejecución del programa se aleja progresivamente de su versión secuencial. Esto penaliza especialmente a aquellas configuraciones que no logran encontrar un equilibrio adecuado entre la cantidad de comunicaciones y el tamaño de las tareas asignadas a cada nodo.
+Este comportamiento es coherente, ya que al aumentar el número de nodos, la ejecución del programa se aleja progresivamente de su versión secuencial. Esto penaliza especialmente a aquellas configuraciones que no logran equilibrar adecuadamente la cantidad de comunicaciones con el tamaño de las tareas asignadas a cada nodo. Además, cuando se utilizan bloques de tamaño reducido, como $2 \times 2$, un mayor número de nodos implica un incremento en la cantidad de comunicaciones con el nodo maestro, lo que a su vez eleva los tiempos de respuesta.
+
+El comportamiento observado evidencia que la escalabilidad del sistema depende fuertemente del equilibrio entre la granularidad de las tareas y la sobrecarga de comunicación. A medida que se incrementa la cantidad de nodos, este equilibrio se vuelve más crítico, ya que se amplifican tanto los beneficios como las deficiencias del esquema de distribución adoptado.
+
+Un buen balance de carga no solo mejora el speedup, sino que también permite una asignación dinámica más eficiente, reduciendo tiempos ociosos y evitando cuellos de botella.
+
+En definitiva, una escalabilidad efectiva no se logra únicamente con más nodos, sino mediante una correcta configuración del sistema que permita distribuir el trabajo de forma uniforme y con un costo de coordinación razonable. Esto reafirma la importancia de ajustar adecuadamente el tamaño de los bloques en función del modelo de ejecución y la arquitectura utilizada.
 
 ## Cantidad de iteraciones
 
@@ -864,19 +870,20 @@ El ruido es otro factor muy notable en las imágenes con una baja cantidad de it
 A pesar de que la imagen más precisa de todas es la de $40000$ iteraciones, se considera que para estas configuraciones de cámara, las imágenes de $15000$ y $20000$ iteraciones son las ideales, al balancear los tiempos de ejecución, $3.2485190514998976$ segundos y 
 $4.026260491098219$ segundos respectivamente, y la calidad de imagen obtenida.
 
+En definitiva, se observa una diferencia significativa en las imágenes generadas al variar la cantidad máxima de iteraciones en la visualización del conjunto de Mandelbrot. Estas diferencias se manifiestan en los colores, las formas y el nivel de ruido presente. La cantidad de iteraciones influye directamente en la precisión del mapeo de colores, en la fidelidad de las formas observadas, especialmente en niveles altos de zoom, y en la suavidad de los bordes. Iteraciones bajas producen imágenes más ruidosas y con regiones negras más extensas, producto de clasificaciones erróneas.
+
 # Conclusiones
 
-## Planteo de Mejora
+En este trabajo se analizó el comportamiento computacional del conjunto de Mandelbrot mediante la implementación de versiones secuencial y paralela del algoritmo de generación de imágenes. El estudio se enfocó en evaluar el rendimiento bajo distintas configuraciones, incluyendo el tamaño de la imagen, el tamaño del bloque y la cantidad de iteraciones máximas por píxel.
 
-(DESARROLLO PENDIENTE)
+Los resultados experimentales muestran que la versión paralela ofrece mejoras significativas en el tiempo de ejecución frente a la versión secuencial, especialmente a medida que aumentan el tamaño de la imagen y la complejidad del problema. Se observó que la eficiencia paralela mejora con la resolución, alcanzando su punto óptimo con una mayor cantidad de nodos en configuraciones de alta demanda computacional.
 
-Aunque el esquema master-worker implementado en DistributedFractals consigue un balanceo de carga dinámico eficiente, el proceso master se convierte en un cuello de botella cuando el sistema escala a un gran número de workers. En la versión actual, el master atiende de forma secuencial dos tareas críticas: recibir bloques de píxeles procesados y copiarlos uno a uno en el búfer global. Cada recepción y posterior copia obliga al master a esperar a que se complete la escritura en memoria antes de poder responder a la siguiente petición de resultados, generando tiempos ociosos en los workers y limitando el speedup alcanzable.
+El estudio sobre el tamaño de los bloques evidenció la importancia crítica de este parámetro, dado su impacto directo en los tiempos de ejecución y su estrecha relación con el modelo master-worker adoptado en la paralelización.
 
-Para mitigar esta contención, proponemos reemplazar la sección monohilo de recepción y ensamblado por una arquitectura multihilo dentro del master. En esta nueva versión, un hilo dedicado gestionaría exclusivamente la recepción de mensajes MPI entrantes, almacenándolos inmediatamente en un pool de buffers preasignados. Mientras tanto, uno o más hilos workers internos realizarían la copia asíncrona de cada bloque al búfer global, operando sobre regiones independientes de la imagen. De esta forma, la llamada a MPI_Recv no bloquearía la escritura en memoria, y los hilos de copia podrían ejecutarse en paralelo con las operaciones de recepción y la lógica de despacho de nuevas tareas.
+Asimismo, el análisis del número de iteraciones permitió evidenciar su doble impacto: por un lado, en la calidad visual de las imágenes generadas y, por otro, en el rendimiento general del sistema. Esto sugiere la necesidad de elegir cuidadosamente un valor que logre un equilibrio adecuado entre fidelidad visual y eficiencia computacional.
 
-El diseño multihilo se apoyaría en un patrón productor‑consumidor: el hilo de recepción actúa como productor de unidades de trabajo (bloques recibidos), mientras que el(los) hilo(s) de ensamblado consumen dichos bloques para integrarlos en la imagen. La sincronización entre hilos se coordinaría mediante colas de bloqueo ligero (lock‑free queues) o semáforos de bajo coste, garantizando seguridad de memoria y eliminando la latencia asociada a locks pesados. Asimismo, introduciendo doble búfer —un búfer en uso por la copia mientras otro está siendo llenado—, se conseguiría un solapamiento aún mayor entre comunicación y cómputo.
+Finalmente, se identificó una posible limitación en el diseño actual del algoritmo paralelo: la figura del master como punto central de coordinación puede convertirse en un cuello de botella bajo ciertas configuraciones. Como línea de trabajo futura, se propone el desarrollo de una versión multihilo del master, capaz de atender a múltiples workers de manera concurrente, con el objetivo de reducir la espera ociosa y mejorar la escalabilidad del sistema.
 
-Adicionalmente, convendría explorar el uso de comunicaciones MPI no bloqueantes (MPI_Irecv/MPI_Isend), de manera que los hilos puedan iniciar recepciones anticipadas y comprobar su finalización de forma periódica, en vez de depender de bloqueos completos. Este enfoque híbrido MPI+threads aprovecha la independencia de los bloques fractales para maximizar el solapamiento, reduce los tiempos de espera del master y permite escalar más eficientemente al incrementar el número de procesos y el tamaño de los problemas. En conjunto, estas modificaciones prometen reducir drásticamente los intervalos ociosos en los workers y acercar el rendimiento observado al límite teórico dictado por la ley de Amdahl.
 
 # Bibliografía
 
@@ -903,3 +910,8 @@ Adicionalmente, convendría explorar el uso de comunicaciones MPI no bloqueantes
 **[8]** https://github.com/lucaszm7/Mandel2Us
 
 **[9]** https://github.com/Sudo-Rahman/Fractalium
+
+# Anexo - Código fuente
+
+El código fuente de este trabajo, incluyendo las versiones secuencial y paralela se encuentra disponible en el siguiente repositorio de GitHub:  
+[https://github.com/FrancoYudica/DistributedFractals](https://github.com/FrancoYudica/DistributedFractals)
