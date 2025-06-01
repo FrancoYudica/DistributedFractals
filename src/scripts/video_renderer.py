@@ -68,16 +68,27 @@ def render_frame(
 
     raise Exception(f"Unable to render frame after {retry_limit} attempts")
 
+# Linear interpolation
+def lerp(a: Decimal, b: Decimal, t: Decimal):
+    return a + (b - a) * t
+
+
 def main():
     parser = argparse.ArgumentParser(description="Batch render fractals at different zoom levels")
     parser.add_argument('--program', required=True, help='Path to the MPI program (e.g. ./fractal_mpi)')
     parser.add_argument('--z0', type=float, default=1.0, help='Starting zoom level')
     parser.add_argument('--z1', type=float, default=10.0, help='Ending zoom level')
+    parser.add_argument('--cx0', type=float, default=0.0, help='Starting camera X')
+    parser.add_argument('--cy0', type=float, default=0.0, help='Starting camera Y')
+    parser.add_argument('--cx1', type=float, default=0.0, help='Ending camera X')
+    parser.add_argument('--cy1', type=float, default=0.0, help='Ending camera Y')
     parser.add_argument('--frames', type=int, default=5, help='Number of zoom steps')
     parser.add_argument('--output_folder', type=str, default='.', help='Base name for output images')
     parser.add_argument('--hostfile', type=str, default='', help='MPI hostfile filepath')
     parser.add_argument('--np', type=int, default=8, help='MPI processes count')
     parser.add_argument('--net_interface', type=str, default='')
+    parser.add_argument('--iterations_base', type=int, default=512)
+    parser.add_argument('--iterations_scale', type=int, default=64)
 
     args, cpp_args = parser.parse_known_args()
 
@@ -96,17 +107,28 @@ def main():
 
     # Saves as many images as zoom levels
     for frame in range(args.frames):
+        
+        t = Decimal(frame / (args.frames - 1))
 
-        zoom = get_zoom_exponential(
-            Decimal(frame / (args.frames - 1)),
-            Decimal(args.z0),
-            Decimal(args.z1)
-        )
+        z0 = Decimal(args.z0)
+        z1 = Decimal(args.z1)
 
+        zoom = get_zoom_exponential(t, z0, z1)
+
+        # At each frame:
+        scale = zoom / z0
+        max_scale = z1 / z0
+
+        # Normalized position interpolation factor
+        s = (1 - 1 / scale) / (1 - 1 / max_scale)
+
+        cx = lerp(Decimal(args.cx0), Decimal(args.cx1), s)
+        cy = lerp(Decimal(args.cy0), Decimal(args.cy1), s)
+        
         iterations = get_iterations(
             zoom,
             Decimal(512),
-            Decimal(64))
+            Decimal(args.iterations_scale))
 
         output_name = os.path.join(frames_dir, f"frame_{frame}.png")
 
@@ -122,6 +144,8 @@ def main():
             '-np', str(args.np),
             args.program,
             '--zoom', str(zoom),
+            '-cx', str(cx),
+            '-cy', str(cy),
             '--iterations', str(iterations),
             '-od', output_name
         ])
