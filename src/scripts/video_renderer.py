@@ -44,7 +44,7 @@ def get_iterations(
         scale: Decimal) -> int:
     
     # Uses logarithmic scaling for iterations based on zoom
-    return int(base_iter + decimal_log2(zoom) * scale)
+    return int(base_iter + decimal_log2(1 + zoom) * scale)
     
 
 def render_frame(
@@ -114,7 +114,6 @@ def main():
         z1 = Decimal(args.z1)
 
         zoom = get_zoom_exponential(t, z0, z1)
-
         # At each frame:
         scale = zoom / z0
         max_scale = z1 / z0
