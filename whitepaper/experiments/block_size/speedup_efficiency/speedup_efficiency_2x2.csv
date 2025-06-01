@@ -1,0 +1,6 @@
+Processors,Command,Parallel Time (s),Speedup,Efficiency
+2,mpirun -np 2 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 --color_mode 5 --output_disabled -w 1080 -h 1080 -b 2,91.43973352199973,0.9799525062170226,0.4899762531085113
+4,mpirun -np 4 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 --color_mode 5 --output_disabled -w 1080 -h 1080 -b 2,31.363201925400062,2.8570614775186836,0.7142653693796709
+8,mpirun -np 8 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 --color_mode 5 --output_disabled -w 1080 -h 1080 -b 2,17.032129470899235,5.261033048498158,0.6576291310622697
+16,mpirun -np 16 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 --color_mode 5 --output_disabled -w 1080 -h 1080 -b 2,9.80977562420012,9.134418509190597,0.5709011568244123
+32,mpirun -np 32 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 --color_mode 5 --output_disabled -w 1080 -h 1080 -b 2,7.282809931899829,12.3038493206049,0.38449529126890314

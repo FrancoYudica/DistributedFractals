@@ -578,7 +578,7 @@ Se presenta el tiempo promedio y la desviación estándar para distintas resoluc
 
 A partir de los tiempos anteriores, se calculó el Speedup y la Eficiencia de la versión paralela respecto a la secuencial.
 
-| Cantidad de nodos | Resolución | Speedup | Efficiency |
+| Cantidad de nodos | Resolución | Speedup | Eficiencia |
 | --- | --- | --- | --- |
 | 2 | 32x32 | 0.10856715227211022 | 0.05428357613605511 |
 | 4 | 32x32 | 0.11087872718234111 | 0.027719681795585278 |
@@ -614,19 +614,29 @@ A partir de los tiempos anteriores, se calculó el Speedup y la Eficiencia de la
 #### Gráficos de rendimiento
 A continuación, se presentan gráficos realizados con los datos obtenidos previamente.
 
-![](experiments/image_size/imgs/combined_time.png){ width=100%  }
+![](imgs/experiments/image_size/combined_time.png){ width=100%  }
   **Figura 5:** *Tiempo medio paralelo y secuencial para cada configuración de cantidada de nodos y resolución de imagen*
 
-![](experiments/image_size/imgs/image_size_combined_speedup.png){ width=100% }
+![](imgs/experiments/image_size/image_size_combined_speedup.png){ width=100% }
   **Figura 6:** *Speedup para cada configuración de cantidad de nodos y resolución de imagen*
 
-![](experiments/image_size/imgs/image_size_combined_efficiency.png){ width=100%}
+![](imgs/experiments/image_size/image_size_combined_efficiency.png){ width=100%}
   **Figura 7:** *Eficiencia para cada configuración de cantidad de nodos y resolución de imagen*
 
 ### Tamaño de bloque
 Se estudió el efecto de modificar el tamaño de bloque en el tiempo de ejecución.
 
+#### Tabla de datos de ejecución secuencial
+
+A continuación se presentan los datos obtenidos a partir de las ejecuciones de la versión secuencial. Nótese que se presenta una sola fila, ya que tanto la cantidad de nodos como el tamaño de los bloques, son parámetros pertinentes a la versión paralela.
+
+| Tiempo promedio (s) | Desviación estándar (s) |
+| --------------------| ----------------------- |
+| 89.60659603270032   | 0.020723353358982382    |
+
+
 #### Tabla de datos de ejecución paralela
+
 | Cantidad de nodos | Tamaño de bloque | Tiempo promedio (s) | Desviación estándar (s) |
 | --- | --- | --- | --- |
 | 2 | 2x2 | 91.43973352199973 | 0.05611679641446187 |
@@ -665,6 +675,58 @@ Se estudió el efecto de modificar el tamaño de bloque en el tiempo de ejecuci�
 | 16 | 128x128 | 8.014758754597278 | 0.07856331140741309 |
 | 32 | 128x128 | 6.913615914300317 | 0.6075389399688722 |
 
+#### Gráficos de rendimiento
+
+A continuación, se presentan gráficos realizados con los datos obtenidos previamente.
+
+![](imgs/experiments/block_size/combined_speedup.png){ width=100% }
+  **Figura 8:** *Speedup para cada configuración de cantidad de nodos y tamaño de bloque*
+
+![](imgs/experiments/block_size/combined_efficiency.png){ width=100%}
+  **Figura 9:** *Eficiencia para cada configuración de cantidad de nodos y tamño de bloque*
+
+
+#### Tabla de datos de speedup y eficiencia
+
+A partir de los tiempos anteriores, se calculó el Speedup y la Eficiencia de la versión paralela respecto a la secuencial.
+
+| Cantidad de nodos | Tamaño de bloque | Speedup | Eficiencia |
+| --- |  --- | --- | --- |
+| 2 | 2x2 | 0.9799525062170226 | 0.4899762531085113 |
+| 4 | 2x2 | 2.8570614775186836 | 0.7142653693796709 |
+| 8 | 2x2 | 5.261033048498158 | 0.6576291310622697 |
+| 16 | 2x2 | 9.134418509190597 | 0.5709011568244123 |
+| 32 | 2x2 | 12.3038493206049 | 0.38449529126890314 |
+| 2 | 4x4 | 0.9887492513642141 | 0.49437462568210705 |
+| 4 | 4x4 | 2.9142155532093077 | 0.7285538883023269 |
+| 8 | 4x4 | 6.2046426113707005 | 0.7755803264213376 |
+| 16 | 4x4 | 11.964723050493939 | 0.7477951906558712 |
+| 32 | 4x4 | 18.925695545161776 | 0.5914279857863055 |
+| 2 | 8x8 | 0.9912624446031736 | 0.4956312223015868 |
+| 4 | 8x8 | 2.927673071482721 | 0.7319182678706803 |
+| 8 | 8x8 | 6.50871635323777 | 0.8135895441547213 |
+| 16 | 8x8 | 13.01106999931813 | 0.8131918749573831 |
+| 32 | 8x8 | 22.23358286347971 | 0.694799464483741 |
+| 2 | 16x16 | 0.991991210161143 | 0.4959956050805715 |
+| 4 | 16x16 | 2.9314729285271763 | 0.7328682321317941 |
+| 8 | 16x16 | 6.611409651065558 | 0.8264262063831948 |
+| 16 | 16x16 | 13.237419653936957 | 0.8273387283710598 |
+| 32 | 16x16 | 22.783909893792874 | 0.7119971841810273 |
+| 2 | 32x32 | 0.9920014445497536 | 0.4960007222748768 |
+| 4 | 32x32 | 2.933111470797429 | 0.7332778676993572 |
+| 8 | 32x32 | 6.620642018678514 | 0.8275802523348142 |
+| 16 | 32x32 | 13.314754360096789 | 0.8321721475060493 |
+| 32 | 32x32 | 22.206063258055412 | 0.6939394768142316 |
+| 2 | 64x64 | 0.9921832338941714 | 0.4960916169470857 |
+| 4 | 64x64 | 2.9341144846541973 | 0.7335286211635493 |
+| 8 | 64x64 | 6.6230671325929 | 0.8278833915741125 |
+| 16 | 64x64 | 13.126337305550717 | 0.8203960815969198 |
+| 32 | 64x64 | 18.869816441906796 | 0.5896817638095874 |
+| 2 | 128x128 | 0.9921560458217941 | 0.49607802291089703 |
+| 4 | 128x128 | 2.9320179864715743 | 0.7330044966178936 |
+| 8 | 128x128 | 5.998899644132491 | 0.7498624555165614 |
+| 16 | 128x128 | 11.180198777823705 | 0.6987624236139816 |
+| 32 | 128x128 | 12.960887203374362 | 0.4050277251054488 |
 
 ## Cantidad de iteraciones
 Se estudió el efecto de modificar el número de iteraciones en el tiempo de ejecución.
@@ -684,10 +746,11 @@ Se estudió el efecto de modificar el número de iteraciones en el tiempo de eje
 | 15000 | 3.2485190514998976 | 0.037265794864773556 |
 | 20000 | 4.026260491098219 | 0.058440292592556196 |
 | 40000 | 7.153266767101013 | 0.08296469529306266 |
+
 #### Gráfico de rendimiento
 
-![](experiments/iterations/imgs/iterations_time.png){ width=100%}
-  **Figura 8:** *Tiempo de ejecución medio por cantidad de iteraciones*
+![](imgs/experiments/iterations/iterations_time.png){ width=100%}
+  **Figura 10:** *Tiempo de ejecución medio por cantidad de iteraciones*
 
 # Análisis de los Resultados
 En esta sección, se realiza un análisis de los resultados obtenidos en la sección anterior.
@@ -745,35 +808,41 @@ A pesar de ello, al aumentar el tamaño de la imagen, la utilización de la vers
 
 ### Tamaño de bloque
 
-Como ilusta la figura X, existe una clara relación entre el speedup y el tamaño de los bloques. 
+Como ilusta la *figura 8*, existe una clara relación entre el speedup y el tamaño de los bloques. 
 
-Se observa que para bloques de $2$ x $2$, el speedup se ve acotado. A partir de los 16 nodos. Esto se debe a que contamos con un único nodo master, y al tener una granularidad muy fina, es decir tareas pequeñas y muchas tareas, el programa paralelo pasa mucho tiempo realizando comunicaciones, y el master se satura, convirtiéndose en un cuello de botella.
+Se observa que el peor speedup se obtiene para bloques de $2 \times 2$, seguido por bloques de $128 \times 128$. Es de interés analizar esto ya que a pesar de que ambos presenten el peor rendimeinto, los motivos son muy distintos.
 
-Los tamaños de $4$ x $4$ y de $8$ x $8$ presentan mejoras en comparación a $2$ x $2$.
+- Bloque de tamaño $2 \times 2$: El bajo rendimiento se debe a el modelo de algoritmo paralelo seleccionado, y la alta granulaidad de las tareas. Un bloque de este tamaño contiene tan solo $4$ pixeles. En este experimento, se ha renderizado una imagen de resolución $1080 \times 1080$, lo cuál hace un total de $1166400$ pixeles. Considerando que por cada bloque se renderizan $4$ pixeles, entonces se crean $1166400/4=291600$ tareas. Lo cuál implica un total de $291600 \times 2=583200$ comunicaciones (Esto sebe a que los worker solicitan la tarea y luego envían el resultado). Por lo tanto, el bajo rendimiento se debe a que hay demasiada granularidad, la cuál implica muchas comunicaciones, y probablemente un master saturado.
+- Bloque de tamaño $128 \times 128$: Nos encontramos con el caso opuesto al anterior, la granularidad es muy baja, las tareas son muy grandes. Que las tareas sean grandes implica un bajo aprovechamiento de la asignación dinámica de tareas, lo cuál hace que algunos nodos se queden ociosos, ya que distintas tareas tardan más en computarse. Este problema se ha planteado en la sección de [Asignación de tareas y balanceo de carga](#asignación-de-tareas-y-balanceo-de-carga). Realizando un análisis similar al anterior, cada bloque renderiza $128 \times 128=16384$ pixeles, entonces se crean $1166400/16384 ≃ 72$ tareas, lo cuál implica $144$ comunicaciones. Claramente $144$ comunicaciones son muy pocas, y no se aprovecha del todo la asignación dinámica, lo cuál hace que presente un rendimiento similar a un algoritmo de asignación estática.
 
-La configuración óptima para el tamaño de bloque resulta ser $32$ x $32$, un total de $1024$ pixeles por nodo. Este es el punto en el cuál se logra un banance entre tamaño de bloque, cantidad de nodos y tiempos de comunicaciones.
+En cuanto a los tamaños de $4 \times 4$ y $64 \times 64$, es correcto decir que está sucediendo algo similar a los casos anteriores, pero en menor medida:
 
-Nótese que al aumentar el tamaño de los bloques, para $64$ x $64$ y especialmente $128$ x $128$, los tiempos de ejecución aumentan y el speedup se reduce.
+- Bloque de tamaño $4 \times 4$: Cuenta con $16$ pixeles, lo cuál es más que para $2 \times 2$, haciendo que se reduzcan la cantidad de comunicaciones y la sobrecarga del master, pero sigue sin ser suficiente.
+- Bloque de tamaño $64 \times 64$: Cuenta con $4096$ pixeles, es decir, 4 veces menos que para $128 \times 128$. Representa una mejora, pero no se aprovecha del todo la asignación dinámica de tareas.
 
-En cuanto a la eficiencia, nos encontramos la misma situación presentada en el análisis comparativo anterior cuando $N_{nodos}=2$, siendo incluso más claro.
+Luego, nos encontramos con los tamaños de $8 \times 8$, $16 \times 16$ y $32 \times 32$. $8 \times 8$ y $32 \times 32$ presentaron un resultado prácticamente idéntico, con un speedup medio de $22.23358286347971$ y $22.206063258055412$ respectivamente. Pero indicutiblemente, los mejores resultados, tanto en términos de speedup como eficiencia se obtuvieron con un tamaño de bloque de $16 \times 16$.
+
+Otro factor importante a analizar, presente tanto en la Figura 8 como en la Figura 9, es el aumento en la dispersión de las gráficas a medida que se incrementa la cantidad de nodos.
+
+Este comportamiento resulta coherente, ya que al aumentar el número de nodos, la ejecución del programa se aleja progresivamente de su versión secuencial. Esto penaliza especialmente a aquellas configuraciones que no logran encontrar un equilibrio adecuado entre la cantidad de comunicaciones y el tamaño de las tareas asignadas a cada nodo.
 
 ## Cantidad de iteraciones
 
-A pesar de que el algoritmo de tiempo de escape utilizado por el fractal de Mandelbrot pueda terminar con una menor cantidad de iteraciones que la cantidad de iteraciones máximas, establecida por el parámetro, se puede observar un comportamiento lineal en los tiempos de ejecución, ilustrados en la *figura 8*. 
+A pesar de que el algoritmo de tiempo de escape utilizado por el fractal de Mandelbrot pueda terminar con una menor cantidad de iteraciones que la cantidad de iteraciones máximas, establecida por el parámetro, se puede observar un comportamiento lineal en los tiempos de ejecución, ilustrados en la *figura 10*. 
 
 Este comportamiento lineal se debe a que en la imagen que se ha renderizado, existe una gran proporción de pixeles que llegan al límite de iteraciones máximo establecido por el parámtro. Estos pixeles son los que toman el color negro en las siguientes imágenes comparativas.
 
 Parte del renderizado de factales, consiste en poder determinar que número de iteraciones utilizar, tratando de que este se minimize con el objetivo de reducir los tiemps de cómputo, pero maximizando la calidad de imagen. Es por este motivo que se ha renderizado la imagen correspondiente a cada número de iteraciones planteado:
 
-| ![](imgs/renders/img_200.png){ width=120px } | ![](imgs/renders/img_500.png){ width=120px } | ![](imgs/renders/img_1000.png){ width=120px } | ![](imgs/renders/img_2000.png){ width=120px } |
+| ![](imgs/experiments/iterations/renders/img_200.png){ width=120px } | ![](imgs/experiments/iterations/renders/img_500.png){ width=120px } | ![](imgs/experiments/iterations/renders/img_1000.png){ width=120px } | ![](imgs/experiments/iterations/renders/img_2000.png){ width=120px } |
 |:-------------------------------------------:|:--------------------------------------------:|:----------------------------------------------:|:----------------------------------------------:|
 | 200 iteraciones                              | 500 iteraciones                               | 1000 iteraciones                                | 2000 iteraciones                                |
 
-| ![](imgs/renders/img_3000.png){ width=120px } | ![](imgs/renders/img_4000.png){ width=120px } | ![](imgs/renders/img_5000.png){ width=120px } | ![](imgs/renders/img_10000.png){ width=120px } |
+| ![](imgs/experiments/iterations/renders/img_3000.png){ width=120px } | ![](imgs/experiments/iterations/renders/img_4000.png){ width=120px } | ![](imgs/experiments/iterations/renders/img_5000.png){ width=120px } | ![](imgs/experiments/iterations/renders/img_10000.png){ width=120px } |
 |:-------------------------------------------:|:--------------------------------------------:|:----------------------------------------------:|:----------------------------------------------:|
 | 3000 iteraciones                              | 4000 iteraciones                               | 5000 iteraciones                                | 10000 iteraciones                                |
 
-| ![](imgs/renders/img_15000.png){ width=120px } | ![](imgs/renders/img_20000.png){ width=120px } | ![](imgs/renders/img_40000.png){ width=120px } | 
+| ![](imgs/experiments/iterations/renders/img_15000.png){ width=120px } | ![](imgs/experiments/iterations/renders/img_20000.png){ width=120px } | ![](imgs/experiments/iterations/renders/img_40000.png){ width=120px } | 
 |:-------------------------------------------:|:--------------------------------------------:|:----------------------------------------------:|
 | 15000 iteraciones                              | 20000 iteraciones                               | 40000 iteraciones                                | 
 

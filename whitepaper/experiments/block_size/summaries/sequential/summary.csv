@@ -1,0 +1,2 @@
+Command,Runs,Average Time (s),Std Dev (s)
+/home/debian/DistributedFractals/build/sequential -i 20000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 --color_mode 5 --output_disabled -w 1080 -h 1080 -w 1080 -h 1080,10,89.60659603270032,0.020723353358982382
