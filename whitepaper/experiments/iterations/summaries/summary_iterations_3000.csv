@@ -1,0 +1,2 @@
+Command,Runs,Average Time (s),Std Dev (s)
+mpirun -np 32 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 3000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 --color_mode 5 -w 1080 -h 1080 --output_disabled,10,1.4084850567989633,0.021316243515446965

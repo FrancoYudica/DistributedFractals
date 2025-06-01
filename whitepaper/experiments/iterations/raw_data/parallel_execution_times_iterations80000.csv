@@ -1,0 +1,10 @@
+mpirun -np 32 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 80000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 --color_mode 5 --output_disabled -w 1080 -h 1080,13.290130566994776
+mpirun -np 32 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 80000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 --color_mode 5 --output_disabled -w 1080 -h 1080,13.135065890004626
+mpirun -np 32 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 80000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 --color_mode 5 --output_disabled -w 1080 -h 1080,14.525666738001746
+mpirun -np 32 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 80000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 --color_mode 5 --output_disabled -w 1080 -h 1080,13.324229158999515
+mpirun -np 32 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 80000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 --color_mode 5 --output_disabled -w 1080 -h 1080,13.599286227996345
+mpirun -np 32 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 80000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 --color_mode 5 --output_disabled -w 1080 -h 1080,13.58359551698959
+mpirun -np 32 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 80000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 --color_mode 5 --output_disabled -w 1080 -h 1080,13.562324451006134
+mpirun -np 32 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 80000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 --color_mode 5 --output_disabled -w 1080 -h 1080,13.823216472999775
+mpirun -np 32 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 80000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 --color_mode 5 --output_disabled -w 1080 -h 1080,13.49741368299874
+mpirun -np 32 -hostfile /home/debian/hostfile /home/debian/fractal_mpi -i 80000 -s 4 -cx -0.7454286 -cy 0.1130089 -z 327000 -t 0 --color_mode 5 --output_disabled -w 1080 -h 1080,14.018832514004316

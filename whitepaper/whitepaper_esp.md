@@ -425,22 +425,31 @@ Primero, se plantea un estudio comparativo entre la versión secuencial y la par
 
 Luego, se analiza en profundidad el comportamiento de la versión paralela frente a diferentes configuraciones de parámetros.
 
-Es importante aclarar que cada una de las mediciones se basa en el tiempo de ejecución medio, el cuál se obtuvo a partir del promedio de al menos 10 ejecuciones, con el objetivo de asegurar resultados representativos y confiables. Además, ya que el fin de los experimentos radica en el cómputo del buffer con los colores de los pixeles, se ha eliminado de la experimentación el guardado de la imagen.
+Es importante aclarar que cada una de las mediciones se basa en el tiempo de ejecución medio, el cuál se obtuvo a partir del promedio de al menos 10 ejecuciones, con el objetivo de asegurar resultados representativos y confiables.
 
-## Versión secuencial contra paralela
+## Parámetros utilizados
 
-Con el objetivo de realizar una comparación exhaustiva entre la versión secuencial y la versión paralela de la aplicación, se evaluó el rendimiento medio de ambas bajo los siguientes parámetros fijos:
+Los siguientes parámetros se mantienen constantes a lo largo de todos los experimentos.
 
 | Parámetro | Valor |
 | --------- | ----- |  
-| `iterations`           |   $20000$    |
 | `samples`              | $4$       |
 | `cx`| $-0.7454286$ |
 | `cy`| $0.1130089$ |
 | `zoom`| $327000$ |
 | `color_mode`| $5$ |
 | `type`  |       $Mandelbrot$  |
-| `block size` (Aplica a la versión paralela) |       $32$  |
+| `output_disabled` |    -     |
+
+Nótese que se utiliza el parámetro `output_disabled` ya que el fin de los experimentos radica en el cómputo del buffer con los colores de los pixeles. El proceso de creación de imágenes PNG y su escritura en el disco puede tomar una considerable cantidad de tiempo, especialmente en ejecuciones rápidas.
+
+## Versión secuencial contra paralela
+
+Con el objetivo de realizar una comparación exhaustiva entre la versión secuencial y la versión paralela de la aplicación, se han considerado dos tipos de atributos, la resolución de la imagen y el tamaño de los bloques.
+
+Los siguientes experimentos se ejecutan utilizando diferentes cantidades de procesos MPI: $[2, 4, 8, 16, 32]$, con el fin de evaluar la **eficiencia** y el **speedup** de la versión paralela, en comparación con la versión secuencial.
+
+### Resolución de imagen
 
 Un factor determinante es la resolución de la imagen, especificada por los parámetros width y height. Para simplificar, se utilizaron imágenes cuadradas con $width = height$. Se realizaron ejecuciones para los siguientes tamaños:
 
@@ -451,26 +460,53 @@ Un factor determinante es la resolución de la imagen, especificada por los par�
 | 2 | $1080$ x $1080$|
 | 3 | $1920$ x $1920$|
 
-Con el fin de evaluar la **eficiencia** y el **speedup** de la versión paralela, en comparación con la versión secuencial, cada combinación de los parámetros anteriores se ejecutó utilizando diferentes cantidades de procesos MPI: $[2, 4, 8, 16, 32]$.
+Además de los parámetros establecidos anteriormente, se ha fijado:
 
-## Análisis de versión paralela
+| Parámetro | Valor |
+| --------- | ----- |  
+| `block_size`           |   $32$    |
+| `iterations`           |   $20000$    |
 
-Existen otros parámetros relevantes, además del tamaño de imagen, que se han considerado fundamentales para el análisis. A continuación, se detallan los parámetros estudiados junto con la justificación de su inclusión y los distintos valores sobre los cuales se realizaron las mediciones:
+### Tamaño de bloque
+Permite analizar el impacto del tamaño de bloque en el balanceo de carga entre nodos, con el objetivo de encontrar un valor óptimo.
 
-| Parámetro | Justificación | Valores |
-| - | - | - |
-| `block_size`| Permite analizar el impacto del tamaño de bloque en el balanceo de carga entre nodos, con el objetivo de encontrar un valor óptimo. |$[2, 4, 8, 16, 32, 64, 128]$
-| `iteraciones` | Permite observar cómo afecta el aumento en el número máximo de iteraciones al tiempo de ejecución, y analizar si su comportamiento es lineal, logarítmico o exponencial.| $[100, 500, 1000]$|
+Parámetros extra constantes:
 
-Estos experimentos se realizaron con 32 nodos computacionales.
+| Parámetro | Valor |
+| --------- | ----- |  
+| `width`           |   $1080$    |
+| `height`           |   $1080$    |
+| `iterations`           |   $20000$    |
 
-Es importante aclarar que no se realiza una comparación directa entre los fractales de Julia y Mandelbrot. Esto se debe a que el tiempo de ejecución total está determinado por la cantidad de píxeles que alcanzan el número máximo de iteraciones. Ambos fractales poseen subconjuntos de puntos que pertenecen al conjunto en distintas ubicaciones, es decir, puntos que siempre alcanzarán dicho máximo. Compararlos carece de sentido, ya que el resultado depende fuertemente de la posición de la cámara y del nivel de zoom.
+Se ha fijado la resolución ya que en este caso nos interesa estudiar el impacto del tamaño de bloque.
+
+Los tamaños de bloque evaluados son $[2, 4, 8, 16, 32, 64, 128]$
+
+## Cantidad de iteraciones
+
+Resulta de especial interés estudiar cómo impacta la cantidad de iteraciones no solo en los tiempos de ejecución, sino también en la calidad de las imágenes generadas.
+
+La experimentación enfocada en la cantidad de iteraciones permite observar cómo influye el incremento del número máximo de iteraciones en el tiempo de ejecución, y analizar si este comportamiento es lineal, logarítmico o exponencial.
+
+Este análisis se realiza exclusivamente sobre la versión paralela, dejando de lado la versión secuencial, dado que los experimentos previos han sido suficientes para la comparación, y este experimento en particular no aporta información adicional relevante.
+
+Las iteraciones evaluadas son $[200, 500, 1000, 2000, 3000, 4000, 5000, 10000, 15000, 20000]$
+
+Parámetros extra constantes:
+
+| Parámetro | Valor |
+| --------- | ----- |  
+| `width`           |   $1080$    |
+| `height`           |   $1080$    |
+| `block_size`           |   $32$    |
+| `np` (Cantidad de nodos)           |   $32$    |
+
 
 ## Consideraciones sobre experimentos
 
 Con el fin de garantizar la validez de los resultados, se han tomado en cuenta los siguientes criterios:
 
-- Todas las corridas se realizan sobre la misma configuración de hardware, un cluster de nodos Debian con CPU de cuatro núcleos físicos, los cuales forman un total de 32 nodos computacionales. 
+- Todas las ejecuciones se realizan sobre la misma configuración de hardware, un cluster de nodos Debian con CPU de cuatro núcleos físicos, los cuales forman un total de 32 nodos computacionales. 
 
 - Misma versión de **OpenMPI (4.1.4)**. 
 - Las compilaciones se efectúan con optimización `-O3`.
@@ -488,6 +524,18 @@ A continuación se muestra el rendimiento de ambas versiones en función del tam
 
 ### Tamaño de imagen
 Se estudió el efecto de modificar la resolución de imagen en el tiempo de ejecución.
+
+#### Tabla de datos de ejecución secuencial
+A modo de comparación, se incluye el tiempo de ejecución para la versión secuencial con cada resolución.
+
+| Resolución | Tiempo promedio (s) | Desviación estándar (s) |
+| --- | --- | --- |
+| 32x32 | 0.07977260379984731 | 0.00043435765082315455 |
+| 64x64 | 0.31759674040004027 | 0.002131164715677036 |
+| 128x128 | 1.2609421436000048 | 0.0013148213508798747 |
+| 512x512 | 20.132811490099993 | 0.009180779629399193 |
+| 1080x1080 | 89.59314089329982 | 0.024588972955427328 |
+| 1920x1920 | 283.25439927300033 | 0.04803506827399954 |
 
 #### Tabla de datos de ejecución paralela
 Se presenta el tiempo promedio y la desviación estándar para distintas resoluciones y cantidades de nodos.
@@ -525,17 +573,6 @@ Se presenta el tiempo promedio y la desviación estándar para distintas resoluc
 | 16 | 1920x1920 |20.056586532099754 | 0.025654280626253977 |
 | 32 | 1920x1920 |11.296893179300605 | 0.25224913775009544 |
 
-#### Tabla de datos de ejecución secuencial
-A modo de comparación, se incluye el tiempo de ejecución para la versión secuencial con cada resolución.
-
-| Resolución | Tiempo promedio (s) | Desviación estándar (s) |
-| --- | --- | --- |
-| 32x32 | 0.07977260379984731 | 0.00043435765082315455 |
-| 64x64 | 0.31759674040004027 | 0.002131164715677036 |
-| 128x128 | 1.2609421436000048 | 0.0013148213508798747 |
-| 512x512 | 20.132811490099993 | 0.009180779629399193 |
-| 1080x1080 | 89.59314089329982 | 0.024588972955427328 |
-| 1920x1920 | 283.25439927300033 | 0.04803506827399954 |
 
 #### Tabla de datos de speedup y eficiencia
 
@@ -574,7 +611,7 @@ A partir de los tiempos anteriores, se calculó el Speedup y la Eficiencia de la
 | 16 | 1920x1920 | 14.122762057225598 | 0.8826726285765999 |
 | 32 | 1920x1920 | 25.073654745360415 | 0.783551710792513 |
 
-### Gráficos de rendimiento
+#### Gráficos de rendimiento
 A continuación, se presentan gráficos realizados con los datos obtenidos previamente.
 
 ![](experiments/image_size/imgs/combined_time.png){ width=100%  }
@@ -586,23 +623,78 @@ A continuación, se presentan gráficos realizados con los datos obtenidos previ
 ![](experiments/image_size/imgs/image_size_combined_efficiency.png){ width=100%}
   **Figura 7:** *Eficiencia para cada configuración de cantidad de nodos y resolución de imagen*
 
+### Tamaño de bloque
+Se estudió el efecto de modificar el tamaño de bloque en el tiempo de ejecución.
+
+#### Tabla de datos de ejecución paralela
+| Cantidad de nodos | Tamaño de bloque | Tiempo promedio (s) | Desviación estándar (s) |
+| --- | --- | --- | --- |
+| 2 | 2x2 | 91.43973352199973 | 0.05611679641446187 |
+| 4 | 2x2 | 31.363201925400062 | 0.035844511996024966 |
+| 8 | 2x2 | 17.032129470899235 | 0.16132378141367337 |
+| 16 | 2x2 | 9.80977562420012 | 0.135481889137545 |
+| 32 | 2x2 | 7.282809931899829 | 0.41415118461081607 |
+| 2 | 4x4 | 90.62620872690096 | 0.030289694627595516 |
+| 4 | 4x4 | 30.74810164060109 | 0.028864040552125478 |
+| 8 | 4x4 | 14.44186259309863 | 0.021789357986847967 |
+| 16 | 4x4 | 7.489232776599965 | 0.02892393616505963 |
+| 32 | 4x4 | 4.734652727498178 | 0.1061245533777847 |
+| 2 | 8x8 | 90.39643993430218 | 0.04501368269027079 |
+| 4 | 8x8 | 30.60676306569949 | 0.021960356024083506 |
+| 8 | 8x8 | 13.767168696501177 | 0.016930315679874557 |
+| 16 | 8x8 | 6.886950576501112 | 0.023923186072850967 |
+| 32 | 8x8 | 4.030236448300275 | 0.028466196545113925 |
+| 2 | 16x16 | 90.33003026119987 | 0.0241139508851428 |
+| 4 | 16x16 | 30.56708972500055 | 0.02466749615701291 |
+| 8 | 16x16 | 13.5533268640007 | 0.019474163858620858 |
+| 16 | 16x16 | 6.769189039500634 | 0.011171972498731777 |
+| 32 | 16x16 | 3.9328893263009377 | 0.029974776402533564 |
+| 2 | 32x32 | 90.32909833449958 | 0.0367866529867054 |
+| 4 | 32x32 | 30.55001384190109 | 0.025399354470591846 |
+| 8 | 32x32 | 13.534426990599604 | 0.023568102796302857 |
+| 16 | 32x32 | 6.729872261199489 | 0.02568826934816551 |
+| 32 | 32x32 | 4.0352310534013665 | 0.06224605207022667 |
+| 2 | 64x64 | 90.31254809760067 | 0.018955403618388288 |
+| 4 | 64x64 | 30.53957045689749 | 0.014845691365458883 |
+| 8 | 64x64 | 13.52947120099925 | 0.023050388169619195 |
+| 16 | 64x64 | 6.8264736725002875 | 0.04820564927923986 |
+| 32 | 64x64 | 4.748673433499789 | 0.2314093086447298 |
+| 2 | 128x128 | 90.3150229341998 | 0.027878257268597707 |
+| 4 | 128x128 | 30.56140734679939 | 0.02336154178751105 |
+| 8 | 128x128 | 14.937172039599682 | 0.019059549888477616 |
+| 16 | 128x128 | 8.014758754597278 | 0.07856331140741309 |
+| 32 | 128x128 | 6.913615914300317 | 0.6075389399688722 |
 
 
-## Versión paralela con distintos parámetros
-Esta sección explora cómo afectan distintos parámetros internos al rendimiento de la versión paralela.
-
-### Tamaño de bloques
-Se evaluó el impacto del tamaño de bloques en el rendimiento del sistema.
-
-
-### Cantidad de iteraciones
+## Cantidad de iteraciones
 Se estudió el efecto de modificar el número de iteraciones en el tiempo de ejecución.
 
+### Tabla de datos
 
-# Analisis de los Resultados
+| Iteraciones | Tiempo promedio (s) | Desviación estándar (s) |
+| --- | --- | --- |
+| 200 | 0.8658388962008757 | 0.031467115018176055 |
+| 500 | 0.9789770936957212 | 0.020520204910293226 |
+| 1000 | 1.068946530300309 | 0.020387310065660757 |
+| 2000 | 1.2362676242002635 | 0.021568939323107487 |
+| 3000 | 1.4084850567989633 | 0.021316243515446965 |
+| 4000 | 1.5473312993985018 | 0.020788707928570592 |
+| 5000 | 1.6892066827014787 | 0.042628523113125386 |
+| 10000 | 2.454260219701973 | 0.034755324130547174 |
+| 15000 | 3.2485190514998976 | 0.037265794864773556 |
+| 20000 | 4.026260491098219 | 0.058440292592556196 |
+| 40000 | 7.153266767101013 | 0.08296469529306266 |
+#### Gráfico de rendimiento
+
+![](experiments/iterations/imgs/iterations_time.png){ width=100%}
+  **Figura 8:** *Tiempo de ejecución medio por cantidad de iteraciones*
+
+# Análisis de los Resultados
 En esta sección, se realiza un análisis de los resultados obtenidos en la sección anterior.
 
 ## Análisis de versión secuencial contra paralela
+
+### Tamaño de imagen
 La *figura 5*, ilustra claramente que existe una mejora significativa al usar el algoritmo paralelo. Se puede observar que las versiones paralelas y secuenciasles toman aproximadamente el mismo tiempo cuando la cantidad de nodos es de 2, ya que solo un procesador trabaja. Luego, a medida que aumenta la cantidad de nodos, el tiempo paralelo decrece logarítmicamente, lo cuál se ve con mayor claridad en grandes resoluciones, especialmente $1920$ x $1920$. Es decir que se pueden obtener los mismos resultados en menor tiempo, tal como era esperado.
 
 En cuanto a la *figura 6*, se observa que existe una relación entre el speedup obtenido y la resolución de la imagen. Si la imagen a renderizar cuenta con muy pocos pixeles, tal como la resolución 128x128, entonces podemos decir que no resulta conviente la utilización del algoritmo paralelo. Esto se debe a la sección secuencial inicial presente en la versión paralela, la cuál corresponde a la inicialización de mpi, a través de `MPI_Init`, toma aproximadamente 350ms. Al aumentar la resolución, aumenta la cantidad de pixeles a renderizar, haciendo que aumente la porción paralelizable, y es por este motivo que el speedup aumenta al renderizar imágenes con más pixeles, se aprovecha el paralelismo.
@@ -651,11 +743,7 @@ Sin embargo, existe un umbral a partir del cual no resulta conveniente emplear l
 
 A pesar de ello, al aumentar el tamaño de la imagen, la utilización de la versión paralela se vuelve cada vez más justificada y eficiente.
 
-## Análisis de versión paralela
-
-En la sección anterior, se ha comprobado que la utilización de la versión paralela brinda excelentes resultados. En esta sección se realizará un análsis con el fin de entender el impacto de los parámetros de tamaño de bloque e iteraciones sobre el tiempo de ejecución.
-
-### Tamaño de los bloques
+### Tamaño de bloque
 
 Como ilusta la figura X, existe una clara relación entre el speedup y el tamaño de los bloques. 
 
@@ -668,6 +756,44 @@ La configuración óptima para el tamaño de bloque resulta ser $32$ x $32$, un 
 Nótese que al aumentar el tamaño de los bloques, para $64$ x $64$ y especialmente $128$ x $128$, los tiempos de ejecución aumentan y el speedup se reduce.
 
 En cuanto a la eficiencia, nos encontramos la misma situación presentada en el análisis comparativo anterior cuando $N_{nodos}=2$, siendo incluso más claro.
+
+## Cantidad de iteraciones
+
+A pesar de que el algoritmo de tiempo de escape utilizado por el fractal de Mandelbrot pueda terminar con una menor cantidad de iteraciones que la cantidad de iteraciones máximas, establecida por el parámetro, se puede observar un comportamiento lineal en los tiempos de ejecución, ilustrados en la *figura 8*. 
+
+Este comportamiento lineal se debe a que en la imagen que se ha renderizado, existe una gran proporción de pixeles que llegan al límite de iteraciones máximo establecido por el parámtro. Estos pixeles son los que toman el color negro en las siguientes imágenes comparativas.
+
+Parte del renderizado de factales, consiste en poder determinar que número de iteraciones utilizar, tratando de que este se minimize con el objetivo de reducir los tiemps de cómputo, pero maximizando la calidad de imagen. Es por este motivo que se ha renderizado la imagen correspondiente a cada número de iteraciones planteado:
+
+| ![](imgs/renders/img_200.png){ width=120px } | ![](imgs/renders/img_500.png){ width=120px } | ![](imgs/renders/img_1000.png){ width=120px } | ![](imgs/renders/img_2000.png){ width=120px } |
+|:-------------------------------------------:|:--------------------------------------------:|:----------------------------------------------:|:----------------------------------------------:|
+| 200 iteraciones                              | 500 iteraciones                               | 1000 iteraciones                                | 2000 iteraciones                                |
+
+| ![](imgs/renders/img_3000.png){ width=120px } | ![](imgs/renders/img_4000.png){ width=120px } | ![](imgs/renders/img_5000.png){ width=120px } | ![](imgs/renders/img_10000.png){ width=120px } |
+|:-------------------------------------------:|:--------------------------------------------:|:----------------------------------------------:|:----------------------------------------------:|
+| 3000 iteraciones                              | 4000 iteraciones                               | 5000 iteraciones                                | 10000 iteraciones                                |
+
+| ![](imgs/renders/img_15000.png){ width=120px } | ![](imgs/renders/img_20000.png){ width=120px } | ![](imgs/renders/img_40000.png){ width=120px } | 
+|:-------------------------------------------:|:--------------------------------------------:|:----------------------------------------------:|
+| 15000 iteraciones                              | 20000 iteraciones                               | 40000 iteraciones                                | 
+
+Existe una diferencia notable en los resultados. Estos resultados varían tanto en las formas como en los colores y el ruido en la imagen. Cabe aclarar que con ruido se refiere a frecuencia de variación de color de pixeles adyacentes.
+
+En cuanto a los colores, la diferencia radica en que el color se asigna al mapear la cantidad de iteraciones a las que llegó el pixel a una paleta de colores. Al aumentar o disminuir la cantidad de iteraciones máximas, el mapeo del número de iteraciones a un valor normalizado también cambia. Por ejemplo, supongamos que la función del fractal de Mandelbrot determina que un pixel $P=(P_X, P_Y)$ no pertenece al conjunto con $300$ iteraciones.
+
+- $IteracionesMax = 1000$, entonces $t=300/1000=0.3$
+- $IteracionesMax = 40000$, entonces $t=300/40000=0.00075$
+
+Siendo $t$ el valor utilizado para muestrear la paleta de colores y asignarle el color al pixel $P$.
+
+Ahora, si analizamos las formas, especialmente las imágenes obtenidas con $200$, $500$ y cualquier otra con muchas iteraciones, tal como la de $20000$, se puede observar que las secciones coloreadas en negro difieren y son mayores a menor cantidad de iteraciones. Esto se debe a que $200$, y $500$ iteraciones son muy pocas para el zoom utilizado, haciendo que el algoritmo considere a ciertos puntos como pertenecientes al conjunto de Mandelbrot, cuando en realidad no pertenecen.
+
+Esto nos dice que existe una relación directa entre el zoom utilizado y la cantidad de iteraciones máximas. Haciendo que se requieran más iteraciones a mayor zoom.
+
+El ruido es otro factor muy notable en las imágenes con una baja cantidad de iteraciones. Los píxeles cercanos al borde del conjunto de Mandelbrot son muy sensibles a pequeñas variaciones en la cantidad máxima de iteraciones. Con un valor bajo de iteraciones, muchos de estos píxeles se consideran escapados prematuramente, incluso si en realidad pertenecen al conjunto o están muy cerca de él. Esto provoca una coloración inconsistente entre píxeles vecinos, lo que genera una apariencia ruidosa. Aumentar la cantidad de iteraciones reduce esta incertidumbre y suaviza la imagen.
+
+A pesar de que la imagen más precisa de todas es la de $40000$ iteraciones, se considera que para estas configuraciones de cámara, las imágenes de $15000$ y $20000$ iteraciones son las ideales, al balancear los tiempos de ejecución, $3.2485190514998976$ segundos y 
+$4.026260491098219$ segundos respectivamente, y la calidad de imagen obtenida.
 
 # Conclusiones
 
