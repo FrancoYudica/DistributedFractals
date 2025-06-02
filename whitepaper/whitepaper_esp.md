@@ -150,14 +150,14 @@ En la figura 3 se pueden observar resultados mucho más interesantes. Al mirar c
   **Figura 4:** *Mapeo de iteraciones a colores con transición suave.*
 
 
-Para renderizar la figura 4, se ha utilizado el número de iteraciones, en conjunto con $|z_n|$,  lo cual permite realizar un mapeo continuo a la paleta de colores, eliminando el efecto de *banding*. El desarrollo matemático se encuentra en la referencia [\[5\]](#fractal-rendering).
+Para renderizar la figura 4, se ha utilizado el número de iteraciones, en conjunto con $|z_n|$,  lo cuál permite realizar un mapeo continuo a la paleta de colores, eliminando el efecto de *banding*. El desarrollo matemático se encuentra en la referencia [\[5\]](#fractal-rendering).
 
 
 
 
 # Desarrollo
 
-El algoritmo para el desarrollo de dichas imagenes se resume en, la obtencion del color correspondiente segun la formula de fractal aplicada a cada pixel de la imagen. Para la cual se desarrollo una funcion de renderizado **render_block**;
+El algoritmo para el desarrollo de dichas imagenes se resume en, la obtencion del color correspondiente segun la formula de fractal aplicada a cada pixel de la imagen. Para la cuál se desarrollo una funcion de renderizado **render_block**;
 
 ```python
 def render_block(x_inicial, y_inicial, ancho, alto):
@@ -204,7 +204,7 @@ El renderizado de fractales es un problema naturalmente paralelizable. Cada píx
 ## Secciones secuenciales y paralelizables
 El algoritmo presenta tanto secciones secuenciales como paralelizables.
 
-Las secciones secuenciales incluyen la etapa de inicialización, en la cual se configura el entorno de ejecución, se inicializa la biblioteca MPI y se definen las tareas o bloques de la imagen que serán distribuidos a los procesos workers. La etapa de finalización también es secuencial, ya que implica recopilar los bloques renderizados, ensamblar la imagen final y guardarla en disco. Estas etapas requieren acceso centralizado a ciertos recursos y coordinación general, lo que limita su paralelización.
+Las secciones secuenciales incluyen la etapa de inicialización, en la cuál se configura el entorno de ejecución, se inicializa la biblioteca MPI y se definen las tareas o bloques de la imagen que serán distribuidos a los procesos workers. La etapa de finalización también es secuencial, ya que implica recopilar los bloques renderizados, ensamblar la imagen final y guardarla en disco. Estas etapas requieren acceso centralizado a ciertos recursos y coordinación general, lo que limita su paralelización.
 
 Por otro lado, la sección paralelizable corresponde al renderizado de los bloques de imagen. Dado que cada bloque puede ser procesado de forma independiente, esta etapa se distribuye entre los distintos procesos para acelerar significativamente el tiempo total de ejecución.
 
@@ -280,7 +280,7 @@ def master(num_procs, settings):
 
 ```
 
-La función master comienza reservando un búfer para la imagen completa y dividiendo el área de renderizado en bloques de tamaño fijo, que se almacenan en una lista de tareas. A continuación, mantiene dos contadores: uno para las tareas enviadas y otro para las tareas completadas. En un bucle principal, espera mensajes de los masteres; cuando recibe una petición de trabajo, comprueba si aún quedan bloques sin asignar y, en caso afirmativo, envía el siguiente bloque, o bien envía una señal de terminación si ya no hay más. Cuando recibe el resultado de un bloque, copia los píxeles de ese fragmento en la posición correspondiente del búfer global y actualiza el contador de tareas completadas. Este proceso se repite hasta que todas las tareas han sido procesadas, momento en el cual el master envía una señal de terminación a cada worker, detiene el temporizador y muestra el tiempo total de cómputo. Finalmente, invoca al manejador de salida para guardar el búfer como imagen.
+La función master comienza reservando un búfer para la imagen completa y dividiendo el área de renderizado en bloques de tamaño fijo, que se almacenan en una lista de tareas. A continuación, mantiene dos contadores: uno para las tareas enviadas y otro para las tareas completadas. En un bucle principal, espera mensajes de los masteres; cuando recibe una petición de trabajo, comprueba si aún quedan bloques sin asignar y, en caso afirmativo, envía el siguiente bloque, o bien envía una señal de terminación si ya no hay más. Cuando recibe el resultado de un bloque, copia los píxeles de ese fragmento en la posición correspondiente del búfer global y actualiza el contador de tareas completadas. Este proceso se repite hasta que todas las tareas han sido procesadas, momento en el cuál el master envía una señal de terminación a cada worker, detiene el temporizador y muestra el tiempo total de cómputo. Finalmente, invoca al manejador de salida para guardar el búfer como imagen.
 
 ## Pseudocódigo de `worker`
 
@@ -320,7 +320,7 @@ def worker(rank, config_imagen, config_fractal, camara):
             break
 ```
 
-La función worker arranca enviando al master una petición de tarea y se bloquea hasta recibir una respuesta. Cuando llega una tarea, el worker crea un búfer para la sección asignada, invoca render_block para rellenarlo con los píxeles fractales correspondientes y luego devuelve tanto la descripción de la tarea como su contenido al proceso master. Este ciclo de petición–procesamiento–envío se repite hasta que el master indica la terminación, momento en el cual el worker sale del bucle y finaliza su ejecución.
+La función worker arranca enviando al master una petición de tarea y se bloquea hasta recibir una respuesta. Cuando llega una tarea, el worker crea un búfer para la sección asignada, invoca render_block para rellenarlo con los píxeles fractales correspondientes y luego devuelve tanto la descripción de la tarea como su contenido al proceso master. Este ciclo de petición–procesamiento–envío se repite hasta que el master indica la terminación, momento en el cuál el worker sale del bucle y finaliza su ejecución.
 
 ## Parámetros de Funcionamiento
 
@@ -441,7 +441,7 @@ Los siguientes parámetros se mantienen constantes a lo largo de todos los exper
 | `type`  |       $Mandelbrot$  |
 | `output_disabled` |    -     |
 
-Nótese que se utiliza el parámetro `output_disabled` ya que el fin de los experimentos radica en el cómputo del buffer con los colores de los pixeles. El proceso de creación de imágenes PNG y su escritura en el disco puede tomar una considerable cantidad de tiempo, especialmente en ejecuciones rápidas.
+Nótese que se utiliza el parámetro `output_disabled` ya que el fin de los experimentos radica en el cómputo del buffer con los colores de los píxeles. El proceso de creación de imágenes PNG y su escritura en el disco puede tomar una considerable cantidad de tiempo, especialmente en ejecuciones rápidas.
 
 ## Versión secuencial contra paralela
 
@@ -455,10 +455,10 @@ Un factor determinante es la resolución de la imagen, especificada por los par�
 
 |Caso| Resolución|
 | ----   |    -    |
-| 0 | $128$ x $128$|
-| 1 | $512$ x $512$|
-| 2 | $1080$ x $1080$|
-| 3 | $1920$ x $1920$|
+| 0 | $128 \times 128$|
+| 1 | $512 \times 512$|
+| 2 | $1080 \times 1080$|
+| 3 | $1920 \times 1920$|
 
 Además de los parámetros establecidos anteriormente, se ha fijado:
 
@@ -484,13 +484,16 @@ Los tamaños de bloque evaluados son $[2, 4, 8, 16, 32, 64, 128]$
 
 ## Cantidad de iteraciones
 
-Resulta de especial interés estudiar cómo impacta la cantidad de iteraciones no solo en los tiempos de ejecución, sino también en la calidad de las imágenes generadas.
+Una parte fundamental del renderizado de fractales consiste en determinar el número adecuado de iteraciones a utilizar. El objetivo es minimizar este valor para reducir los tiempos de cómputo, sin comprometer la calidad de la imagen generada. Por esta razón, en este experimento se renderizarán imágenes utilizando distintas cantidades máximas de iteraciones.
 
-La experimentación enfocada en la cantidad de iteraciones permite observar cómo influye el incremento del número máximo de iteraciones en el tiempo de ejecución, y analizar si este comportamiento es lineal, logarítmico o exponencial.
+Los valores evaluados para el número máximo de iteraciones son: 
+$$
+[200, 500, 1000, 2000, 3000, 4000, 5000, 10000, 15000, 20000]
+$$
 
-Este análisis se realiza exclusivamente sobre la versión paralela, dejando de lado la versión secuencial, dado que los experimentos previos han sido suficientes para la comparación, y este experimento en particular no aporta información adicional relevante.
+Este análisis resulta especialmente relevante para entender cómo impacta la cantidad de iteraciones tanto en el tiempo de ejecución como en la calidad visual de los fractales. Además, permite observar cómo varía el tiempo de procesamiento al aumentar el número máximo de iteraciones, y evaluar si dicha relación sigue un comportamiento lineal, logarítmico o exponencial.
 
-Las iteraciones evaluadas son $[200, 500, 1000, 2000, 3000, 4000, 5000, 10000, 15000, 20000]$
+Cabe destacar que este experimento se realiza exclusivamente sobre la versión paralela del algoritmo, dejando de lado la versión secuencial. Esto se debe a que los experimentos anteriores ya han proporcionado información suficiente para su comparación, y este estudio particular no aporta datos adicionales relevantes para dicha versión.
 
 Parámetros extra constantes:
 
@@ -747,7 +750,7 @@ Se estudió el efecto de modificar el número de iteraciones en el tiempo de eje
 | 20000 | 4.026260491098219 | 0.058440292592556196 |
 | 40000 | 7.153266767101013 | 0.08296469529306266 |
 
-#### Gráfico de rendimiento
+### Gráfico de rendimiento
 
 ![](imgs/experiments/iterations/iterations_time.png){ width=100%}
   **Figura 10:** *Tiempo de ejecución medio por cantidad de iteraciones*
@@ -758,11 +761,16 @@ En esta sección, se realiza un análisis de los resultados obtenidos en la secc
 ## Análisis de versión secuencial contra paralela
 
 ### Tamaño de imagen
-La *figura 5*, ilustra claramente que existe una mejora significativa al usar el algoritmo paralelo. Se puede observar que las versiones paralelas y secuenciasles toman aproximadamente el mismo tiempo cuando la cantidad de nodos es de 2, ya que solo un procesador trabaja. Luego, a medida que aumenta la cantidad de nodos, el tiempo paralelo decrece logarítmicamente, lo cuál se ve con mayor claridad en grandes resoluciones, especialmente $1920$ x $1920$. Es decir que se pueden obtener los mismos resultados en menor tiempo, tal como era esperado.
+La *figura 5*, ilustra claramente que existe una mejora significativa al usar el algoritmo paralelo. 
 
-En cuanto a la *figura 6*, se observa que existe una relación entre el speedup obtenido y la resolución de la imagen. Si la imagen a renderizar cuenta con muy pocos pixeles, tal como la resolución 128x128, entonces podemos decir que no resulta conviente la utilización del algoritmo paralelo. Esto se debe a la sección secuencial inicial presente en la versión paralela, la cuál corresponde a la inicialización de mpi, a través de `MPI_Init`, toma aproximadamente 350ms. Al aumentar la resolución, aumenta la cantidad de pixeles a renderizar, haciendo que aumente la porción paralelizable, y es por este motivo que el speedup aumenta al renderizar imágenes con más pixeles, se aprovecha el paralelismo.
+Se puede observar que las versiones paralelas y secuenciales toman aproximadamente el mismo tiempo cuando la cantidad de nodos es de 2. Esto no debería sorprender considerando el modelo de algoritmo paralelo que se ha seleccionado, siendo este el master-worker. Al haber dos nodos, uno toma el rol de master y el otro de worker, pero en realidad solo un nodo se encarga del renderizado, siendo este el worker. Nos encontramos con un escenario donde un nodo trabaja (worker) mientras el otro espera los resultados y envía nuevas tareas a demanda (master), lo cuál provoca un comportamiento similar al de la versión secuencial, más los tiempos de comunicaciones entre nodos.
 
-Al considerar la *figura 7*, se observa que a mayor cantidad de pixeles, es decir, en imágenes de mayor resolución, el valor que toma la eficiencia con dos nodos es de 0.5. Esto no debería sorprender considerando el modelo de algoritmo paralelo que se ha seleccionado, siendo este el master-worker. Al haber dos nodos, uno toma el rol de master y el otro de worker, pero en realidad solo un nodo se encarga del renderizado.
+Luego, a medida que aumenta la cantidad de nodos, el tiempo paralelo decrece logarítmicamente, lo cuál se ve con mayor claridad en grandes resoluciones, especialmente $1920 \times 1920$. Es decir que se pueden obtener los mismos resultados en menor tiempo, tal como era esperado.
+
+En cuanto a la *figura 6*, se observa que existe una relación entre el speedup obtenido y la resolución de la imagen. Si la imagen a renderizar cuenta con muy pocos píxeles, tal como la resolución 128x128, entonces podemos decir que no resulta conviente la utilización del algoritmo paralelo. Esto se debe a la sección secuencial inicial presente en la versión paralela, la cuál corresponde a la inicialización de mpi, a través de `MPI_Init`, toma aproximadamente 350ms. Al aumentar la resolución, aumenta la cantidad de píxeles a renderizar, haciendo que aumente la porción paralelizable, y es por este motivo que el speedup aumenta al renderizar imágenes con más píxeles, se aprovecha el paralelismo.
+
+Al considerar la *figura 7*, se observa que a mayor cantidad de píxeles, es decir, en imágenes de mayor resolución, la eficiencia con dos nodos es de 0.5. El hecho que provoca tal resutado, es que solo un nodo trabaja, como se ha detallado al inicio de esta sección.
+
 En este contexto, si asumimos que el tiempo secuencial es igual al tiempo de cómputo:
 $$
 T_{Secuencial}=T_{Paralelo}
@@ -787,22 +795,22 @@ Para las versiones de $32 \times 32$, $64 \times 64$ y $128 \times 128$, la efic
 
 Por otro lado, al analizar la resolución de $512 \times 512$, la eficiencia máxima se obtiene con $N_{\text{Nodos}} = 8$, alcanzando un valor de eficiencia de:
 $$
-Eficiencia(8)=0.6968431808338712
+Eficiencia(8)=0.697
 $$
 De manera similar, para una resolución de $1080 \times 1080$, la eficiencia máxima también se da con $N_{\text{Nodos}} = 8$, con un valor de:
 $$
-Eficiencia(8)=0.824014912954018
+Eficiencia(8)=0.824
 $$
 Finalmente, para una resolución de $1920 \times 1920$, el punto máximo de eficiencia se alcanza con $N_{\text{Nodos}} = 16$, alcanzando:
 $$
-Eficiencia(16)=0.8826726285765999
+Eficiencia(16)=0.883
 $$
 
-Si relacionamos los gráficos de speedup y eficiencia, se puede observar que la relación de orden entre las distintas resoluciones de imagen y su rendimiento se mantiene. Esto se debe a que la eficiencia se calcula a partir de el speedup y la cantidad de nodos, siendo este un factor constante.
+Si relacionamos los gráficos de speedup y eficiencia, se puede observar que la relación de orden entre las distintas resoluciones de imagen y su rendimiento se mantiene. Esto se debe a que la eficiencia se calcula a partir del speedup y la cantidad de nodos, siendo este un factor constante.
 
-Es claro que la versión paralela no alcanzará el speedup superlineal, pero si tiende a alcanzar un speedup lineal. Hay una fuerte relación entre la porción paralelizable, la cuál aumenta al renderizar mayor cantidad de pixeles. 
+Es claro que la versión paralela no alcanzará el speedup superlineal, pero si tiende a alcanzar un speedup lineal. Hay una fuerte relación entre la porción paralelizable, la cuál aumenta al renderizar mayor cantidad de píxeles. 
 
-Sin embargo, existe un umbral a partir del cual no resulta conveniente emplear la versión paralela, ya que los tiempos secuenciales comienzan a representar una proporción significativa en relación con la parte paralelizable del problema.
+Sin embargo, existe un umbral a partir del cuál no resulta conveniente emplear la versión paralela, ya que los tiempos secuenciales comienzan a representar una proporción significativa en relación con la parte paralelizable del problema.
 
 A pesar de ello, al aumentar el tamaño de la imagen, la utilización de la versión paralela se vuelve cada vez más justificada y eficiente.
 
@@ -812,15 +820,15 @@ Como ilusta la *figura 8*, existe una clara relación entre el speedup y el tama
 
 Se observa que el peor speedup se obtiene para bloques de $2 \times 2$, seguido por bloques de $128 \times 128$. Es de interés analizar esto ya que a pesar de que ambos presenten el peor rendimeinto, los motivos son muy distintos.
 
-- Bloque de tamaño $2 \times 2$: El bajo rendimiento se debe a el modelo de algoritmo paralelo seleccionado, y la alta granulaidad de las tareas. Un bloque de este tamaño contiene tan solo $4$ pixeles. En este experimento, se ha renderizado una imagen de resolución $1080 \times 1080$, lo cuál hace un total de $1166400$ pixeles. Considerando que por cada bloque se renderizan $4$ pixeles, entonces se crean $1166400/4=291600$ tareas. Lo cuál implica un total de $291600 \times 2=583200$ comunicaciones (Esto sebe a que los worker solicitan la tarea y luego envían el resultado). Por lo tanto, el bajo rendimiento se debe a que hay demasiada granularidad, la cuál implica muchas comunicaciones, y probablemente un master saturado.
-- Bloque de tamaño $128 \times 128$: Nos encontramos con el caso opuesto al anterior, la granularidad es muy baja, las tareas son muy grandes. Que las tareas sean grandes implica un bajo aprovechamiento de la asignación dinámica de tareas, lo cuál hace que algunos nodos se queden ociosos, ya que distintas tareas tardan más en computarse. Este problema se ha planteado en la sección de [Asignación de tareas y balanceo de carga](#asignación-de-tareas-y-balanceo-de-carga). Realizando un análisis similar al anterior, cada bloque renderiza $128 \times 128=16384$ pixeles, entonces se crean $1166400/16384 ≃ 72$ tareas, lo cuál implica $144$ comunicaciones. Claramente $144$ comunicaciones son muy pocas, y no se aprovecha del todo la asignación dinámica, lo cuál hace que presente un rendimiento similar a un algoritmo de asignación estática.
+- Bloque de tamaño $2 \times 2$: El bajo rendimiento se debe a el modelo de algoritmo paralelo seleccionado, y la alta granulaidad de las tareas. Un bloque de este tamaño contiene tan solo $4$ píxeles. En este experimento, se ha renderizado una imagen de resolución $1080 \times 1080$, lo cuál hace un total de $1166400$ píxeles. Considerando que por cada bloque se renderizan $4$ píxeles, entonces se crean $1166400/4=291600$ tareas. Lo cuál implica un total de $291600 \times 2=583200$ comunicaciones (Esto se debe a que los worker solicitan la tarea y luego envían el resultado). Por lo tanto, el bajo rendimiento se debe a que hay demasiada granularidad, la cuál implica muchas comunicaciones, y probablemente un master saturado.
+- Bloque de tamaño $128 \times 128$: Nos encontramos con el caso opuesto al anterior, la granularidad es muy baja, las tareas son muy grandes. Que las tareas sean grandes implica un bajo aprovechamiento de la asignación dinámica de tareas, lo cuál hace que algunos nodos se queden ociosos, ya que distintas tareas tardan más en computarse. Este problema se ha planteado en la sección de [Asignación de tareas y balanceo de carga](#asignación-de-tareas-y-balanceo-de-carga). Realizando un análisis similar al anterior, cada bloque renderiza $128 \times 128=16384$ píxeles, entonces se crean $1166400/16384 ≃ 72$ tareas, lo cuál implica $144$ comunicaciones. Claramente $144$ comunicaciones son muy pocas, y no se aprovecha del todo la asignación dinámica, lo cuál hace que presente un rendimiento similar a un algoritmo de asignación estática.
 
 En cuanto a los tamaños de $4 \times 4$ y $64 \times 64$, es correcto decir que está sucediendo algo similar a los casos anteriores, pero en menor medida:
 
-- Bloque de tamaño $4 \times 4$: Cuenta con $16$ pixeles, lo cuál es más que para $2 \times 2$, haciendo que se reduzcan la cantidad de comunicaciones y la sobrecarga del master, pero sigue sin ser suficiente.
-- Bloque de tamaño $64 \times 64$: Cuenta con $4096$ pixeles, es decir, 4 veces menos que para $128 \times 128$. Representa una mejora, pero no se aprovecha del todo la asignación dinámica de tareas.
+- Bloque de tamaño $4 \times 4$: Cuenta con $16$ píxeles, lo cuál es más que para $2 \times 2$, haciendo que se reduzcan la cantidad de comunicaciones y la sobrecarga del master, pero sigue sin ser suficiente.
+- Bloque de tamaño $64 \times 64$: Cuenta con $4096$ píxeles, es decir, 4 veces menos que para $128 \times 128$. Representa una mejora, pero no se aprovecha del todo la asignación dinámica de tareas.
 
-Luego, nos encontramos con los tamaños de $8 \times 8$, $16 \times 16$ y $32 \times 32$. $8 \times 8$ y $32 \times 32$ presentaron un resultado prácticamente idéntico, con un speedup medio de $22.23358286347971$ y $22.206063258055412$ respectivamente. Pero indicutiblemente, los mejores resultados, tanto en términos de speedup como eficiencia se obtuvieron con un tamaño de bloque de $16 \times 16$.
+Luego, nos encontramos con los tamaños de $8 \times 8$, $16 \times 16$ y $32 \times 32$. $8 \times 8$ y $32 \times 32$ presentaron un resultado prácticamente idéntico, con un speedup medio de $22.234$ y $22.206$ respectivamente. Pero indiscutiblemente, los mejores resultados, tanto en términos de speedup como eficiencia se obtuvieron con un tamaño de bloque de $16 \times 16$.
 
 Otro aspecto importante a analizar, presente tanto en la Figura 8 como en la Figura 9, es el aumento en la dispersión de las gráficas a medida que se incrementa la cantidad de nodos.
 
@@ -836,9 +844,9 @@ En definitiva, una escalabilidad efectiva no se logra únicamente con más nodos
 
 A pesar de que el algoritmo de tiempo de escape utilizado por el fractal de Mandelbrot pueda terminar con una menor cantidad de iteraciones que la cantidad de iteraciones máximas, establecida por el parámetro, se puede observar un comportamiento lineal en los tiempos de ejecución, ilustrados en la *figura 10*. 
 
-Este comportamiento lineal se debe a que en la imagen que se ha renderizado, existe una gran proporción de pixeles que llegan al límite de iteraciones máximo establecido por el parámtro. Estos pixeles son los que toman el color negro en las siguientes imágenes comparativas.
+Este comportamiento lineal se debe a que en la imagen que se ha renderizado, existe una gran proporción de píxeles que llegan al límite de iteraciones máximo establecido por el parámetro. Estos píxeles son los que toman el color negro en las siguientes imágenes comparativas.
 
-Parte del renderizado de factales, consiste en poder determinar que número de iteraciones utilizar, tratando de que este se minimize con el objetivo de reducir los tiemps de cómputo, pero maximizando la calidad de imagen. Es por este motivo que se ha renderizado la imagen correspondiente a cada número de iteraciones planteado:
+El renderizado se realizó utilizando distintas cantidades de iteraciones máximas, con el objetivo de evaluar su impacto en la calidad de imagen y el tiempo de ejecución:
 
 | ![](imgs/experiments/iterations/renders/img_200.png){ width=120px } | ![](imgs/experiments/iterations/renders/img_500.png){ width=120px } | ![](imgs/experiments/iterations/renders/img_1000.png){ width=120px } | ![](imgs/experiments/iterations/renders/img_2000.png){ width=120px } |
 |:-------------------------------------------:|:--------------------------------------------:|:----------------------------------------------:|:----------------------------------------------:|
@@ -852,7 +860,7 @@ Parte del renderizado de factales, consiste en poder determinar que número de i
 |:-------------------------------------------:|:--------------------------------------------:|:----------------------------------------------:|
 | 15000 iteraciones                              | 20000 iteraciones                               | 40000 iteraciones                                | 
 
-Existe una diferencia notable en los resultados. Estos resultados varían tanto en las formas como en los colores y el ruido en la imagen. Cabe aclarar que con ruido se refiere a frecuencia de variación de color de pixeles adyacentes.
+Existe una diferencia notable en los resultados. Estos resultados varían tanto en las formas como en los colores y el ruido en la imagen. Cabe aclarar que con ruido se refiere a frecuencia de variación de color de píxeles adyacentes.
 
 En cuanto a los colores, la diferencia radica en que el color se asigna al mapear la cantidad de iteraciones a las que llegó el pixel a una paleta de colores. Al aumentar o disminuir la cantidad de iteraciones máximas, el mapeo del número de iteraciones a un valor normalizado también cambia. Por ejemplo, supongamos que la función del fractal de Mandelbrot determina que un pixel $P=(P_X, P_Y)$ no pertenece al conjunto con $300$ iteraciones.
 
@@ -867,8 +875,8 @@ Esto nos dice que existe una relación directa entre el zoom utilizado y la cant
 
 El ruido es otro factor muy notable en las imágenes con una baja cantidad de iteraciones. Los píxeles cercanos al borde del conjunto de Mandelbrot son muy sensibles a pequeñas variaciones en la cantidad máxima de iteraciones. Con un valor bajo de iteraciones, muchos de estos píxeles se consideran escapados prematuramente, incluso si en realidad pertenecen al conjunto o están muy cerca de él. Esto provoca una coloración inconsistente entre píxeles vecinos, lo que genera una apariencia ruidosa. Aumentar la cantidad de iteraciones reduce esta incertidumbre y suaviza la imagen.
 
-A pesar de que la imagen más precisa de todas es la de $40000$ iteraciones, se considera que para estas configuraciones de cámara, las imágenes de $15000$ y $20000$ iteraciones son las ideales, al balancear los tiempos de ejecución, $3.2485190514998976$ segundos y 
-$4.026260491098219$ segundos respectivamente, y la calidad de imagen obtenida.
+A pesar de que la imagen más precisa de todas es la de $40000$ iteraciones, se considera que para estas configuraciones de cámara, las imágenes de $15000$ y $20000$ iteraciones son las ideales, al balancear los tiempos de ejecución, $3.249$ segundos y 
+$4.026$ segundos respectivamente, y la calidad de imagen obtenida.
 
 En definitiva, se observa una diferencia significativa en las imágenes generadas al variar la cantidad máxima de iteraciones en la visualización del conjunto de Mandelbrot. Estas diferencias se manifiestan en los colores, las formas y el nivel de ruido presente. La cantidad de iteraciones influye directamente en la precisión del mapeo de colores, en la fidelidad de las formas observadas, especialmente en niveles altos de zoom, y en la suavidad de los bordes. Iteraciones bajas producen imágenes más ruidosas y con regiones negras más extensas, producto de clasificaciones erróneas.
 
