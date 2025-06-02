@@ -72,6 +72,11 @@ def render_frame(
 def lerp(a: Decimal, b: Decimal, t: Decimal):
     return a + (b - a) * t
 
+def ease_in_out_power(t, p=2.0):
+    if t < 0.5:
+        return 0.5 * pow(2 * t, p)
+    else:
+        return 1 - 0.5 * pow(2 * (1 - t), p)
 
 def main():
     parser = argparse.ArgumentParser(description="Batch render fractals at different zoom levels")
@@ -89,6 +94,7 @@ def main():
     parser.add_argument('--net_interface', type=str, default='')
     parser.add_argument('--iterations_base', type=int, default=512)
     parser.add_argument('--iterations_scale', type=int, default=64)
+    parser.add_argument('--frames_smooth', type=int, default=1, help='Amount of frames where camera speed smooths in and out')
 
     args, cpp_args = parser.parse_known_args()
 
@@ -108,13 +114,19 @@ def main():
     # Saves as many images as zoom levels
     for frame in range(args.frames):
         
-        t = Decimal(frame / (args.frames - 1))
+        t_linear = frame / (args.frames - 1)
+
+        # Transforms linear t
+        ratio = float(args.frames_smooth) / args.frames
+        t = ease_in_out_power(t_linear, 1 + ratio)
+        t = Decimal(t)
 
         z0 = Decimal(args.z0)
         z1 = Decimal(args.z1)
 
         zoom = get_zoom_exponential(t, z0, z1)
-        # At each frame:
+
+        # Interpolates camera positions (cx0, cy0), (cx1, cy1)
         scale = zoom / z0
         max_scale = z1 / z0
 
@@ -124,9 +136,10 @@ def main():
         cx = lerp(Decimal(args.cx0), Decimal(args.cx1), s)
         cy = lerp(Decimal(args.cy0), Decimal(args.cy1), s)
         
+        # Computes iterations based on zoom
         iterations = get_iterations(
             zoom,
-            Decimal(512),
+            Decimal(args.iterations_base),
             Decimal(args.iterations_scale))
 
         output_name = os.path.join(frames_dir, f"frame_{frame}.png")
