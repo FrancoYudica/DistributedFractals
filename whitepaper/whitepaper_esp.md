@@ -2,6 +2,7 @@
 # pandoc whitepaper_esp.md -o whitepaper.pdf --pdf-engine=xelatex --include-in-header=header.tex --number-sections
 geometry: top=5cm, left=4cm, right=4cm, bottom=4cm
 figures-latex-placement: H
+fontsize: 10pt
 ---
 \begin{flushleft}
 {\fontsize{16pt}{16pt}\selectfont \textbf{Renderizado de fractales con MPI}}
@@ -129,25 +130,25 @@ Al igual que en el caso del fractal de Julia, el criterio de escape se basa en s
 Existen distintos métodos para colorear fractales, siendo el más básico el blanco y negro. En este esquema, los píxeles cuya posición, al ser utilizada como punto de partida en la iteración del fractal, tienden al infinito, se colorean de blanco. Por el contrario, aquellos que no divergen se colorean de negro.
 
 ![](imgs/mandelbrot_black_white.png){ width=60% .center }
-  **Figura 1:** *Representación en blanco y negro del conjunto de Mandelbrot.*
+  Figura 1: *Representación en blanco y negro del conjunto de Mandelbrot.
 
 Sin embargo, este método binario puede resultar limitado para visualizar la complejidad del sistema dinámico. Por ello, se utilizan técnicas más avanzadas como el coloreo por tiempo de escape (escape time coloring), donde se asignan colores según la cantidad de iteraciones que tarda un punto en escapar de un cierto radio. Esto permite generar imágenes con ricos gradientes de color que reflejan la velocidad de divergencia y destacan la estructura del borde del conjunto. [\[5\]](#fractal-rendering).
 
 ![](imgs/mandelbrot_grayscale.png){ width=60% .center }
-  **Figura 2:** *Representación en escala de grises del conjunto de Mandelbrot.*
+  Figura 2: Representación en escala de grises del conjunto de Mandelbrot.
 
 
 Pero también es posible mapear el número de iteraciones a una paleta de colores. Nótese que los puntos pertenecientes al conjunto de Mandelbrot toman un color uniforme, ya que alcanzan el número máximo de iteraciones sin divergir.
 
 ![](imgs/mandelbrot_colored.png){ width=60% .center }
-  **Figura 3:** *Mapeo de iteraciones a paleta de colores del conjunto de Mandelbrot.*
+  Figura 3: Mapeo de iteraciones a paleta de colores del conjunto de Mandelbrot.
 
 
 
 En la figura 3 se pueden observar resultados mucho más interesantes. Al mirar con detalle, se aprecian transiciones abruptas entre los colores, un efecto comúnmente denominado *banding* en computación gráfica. Esto se debe a que el mapeo del color se realiza únicamente en función de la cantidad de iteraciones, que es un valor discreto.
 
 ![](imgs/mandelbrot_colored_bandless.png){ width=60% .center }
-  **Figura 4:** *Mapeo de iteraciones a colores con transición suave.*
+  Figura 4: Mapeo de iteraciones a colores con transición suave.
 
 
 Para renderizar la figura 4, se ha utilizado el número de iteraciones, en conjunto con $|z_n|$,  lo cuál permite realizar un mapeo continuo a la paleta de colores, eliminando el efecto de *banding*. El desarrollo matemático se encuentra en la referencia [\[5\]](#fractal-rendering).
@@ -320,7 +321,7 @@ def worker(rank, config_imagen, config_fractal, camara):
             break
 ```
 
-La función worker arranca enviando al master una petición de tarea y se bloquea hasta recibir una respuesta. Cuando llega una tarea, el worker crea un búfer para la sección asignada, invoca render_block para rellenarlo con los píxeles fractales correspondientes y luego devuelve tanto la descripción de la tarea como su contenido al proceso master. Este ciclo de petición–procesamiento–envío se repite hasta que el master indica la terminación, momento en el cuál el worker sale del bucle y finaliza su ejecución.
+La función worker empieza enviando al master una petición de tarea y se bloquea hasta recibir una respuesta. Cuando llega una tarea, el worker crea un búfer para la sección asignada, invoca render_block para rellenarlo con los píxeles fractales correspondientes y luego devuelve tanto la descripción de la tarea como su contenido al proceso master. Este ciclo de petición–procesamiento–envío se repite hasta que el master indica la terminación, momento en el cuál el worker sale del bucle y finaliza su ejecución.
 
 ## Parámetros de Funcionamiento
 
@@ -366,6 +367,7 @@ make
 
 La aplicación admite los siguientes parámetros de entrada:
 
+
 | Parámetro | Descripción | Valor por defecto |
 | ------------------------- | --------------------------------------------------------------- | ----------------- |
 | `--width` | Ancho de la imagen (píxeles) | 800 |
@@ -382,6 +384,7 @@ La aplicación admite los siguientes parámetros de entrada:
 | `--Julia-cx` | Componente real de la constante $C$ (solo Julia) | 0.285 |
 | `--Julia-cy` | Componente imaginaria de la constante $C$ (solo Julia) | 0.01 |
 
+Tabla 1: Parámetros de entrada de los programas.
 
 ### Ejecución Secuencial
 
@@ -440,6 +443,7 @@ Los siguientes parámetros se mantienen constantes a lo largo de todos los exper
 | `color_mode`| $5$ |
 | `type`  |       $Mandelbrot$  |
 | `output_disabled` |    -     |
+Tabla 2: Parámetros constantes en los experimentos.
 
 Nótese que se utiliza el parámetro `output_disabled` ya que el fin de los experimentos radica en el cómputo del buffer con los colores de los píxeles. El proceso de creación de imágenes PNG y su escritura en el disco puede tomar una considerable cantidad de tiempo, especialmente en ejecuciones rápidas.
 
@@ -459,6 +463,7 @@ Un factor determinante es la resolución de la imagen, especificada por los par�
 | 1 | $512 \times 512$|
 | 2 | $1080 \times 1080$|
 | 3 | $1920 \times 1920$|
+Tabla 3: Resoluciones utilizadas en los experimentos.
 
 Además de los parámetros establecidos anteriormente, se ha fijado:
 
@@ -466,17 +471,18 @@ Además de los parámetros establecidos anteriormente, se ha fijado:
 | --------- | ----- |  
 | `block_size`           |   $32$    |
 | `iterations`           |   $20000$    |
+Tabla 4: Parámetros extra constantes.
 
 ### Tamaño de bloque
 Permite analizar el impacto del tamaño de bloque en el balanceo de carga entre nodos, con el objetivo de encontrar un valor óptimo.
 
-Parámetros extra constantes:
 
 | Parámetro | Valor |
 | --------- | ----- |  
 | `width`           |   $1080$    |
 | `height`           |   $1080$    |
 | `iterations`           |   $20000$    |
+Tabla 5: Parámetros extra constantes.
 
 Se ha fijado la resolución ya que en este caso nos interesa estudiar el impacto del tamaño de bloque.
 
@@ -495,14 +501,13 @@ Este análisis resulta especialmente relevante para entender cómo impacta la ca
 
 Cabe destacar que este experimento se realiza exclusivamente sobre la versión paralela del algoritmo, dejando de lado la versión secuencial. Esto se debe a que los experimentos anteriores ya han proporcionado información suficiente para su comparación, y este estudio particular no aporta datos adicionales relevantes para dicha versión.
 
-Parámetros extra constantes:
-
 | Parámetro | Valor |
 | --------- | ----- |  
 | `width`           |   $1080$    |
 | `height`           |   $1080$    |
 | `block_size`           |   $32$    |
 | `np` (Cantidad de nodos)           |   $32$    |
+Tabla 6: Parámetros extra constantes.
 
 
 ## Consideraciones sobre experimentos
@@ -523,12 +528,15 @@ Con este riguroso control de variables, los resultados obtenidos reflejan de for
 En esta sección se presentarán los resultados obtenidos al realizar los experimentos planteados en la sección de diseño de experimentos. Es por este motivo que seguirá la misma estructura planteada anteriormente. Se presentarán tablas de datos y gráficos, los cuales serán analizados en detalle en la sección de análisis de resultados.
 
 ## Versión secuencial contra paralela
+
 A continuación se muestra el rendimiento de ambas versiones en función del tamaño de la imagen y la cantidad de nodos utilizados.
 
 ### Tamaño de imagen
+
 Se estudió el efecto de modificar la resolución de imagen en el tiempo de ejecución.
 
 #### Tabla de datos de ejecución secuencial
+
 A modo de comparación, se incluye el tiempo de ejecución para la versión secuencial con cada resolución.
 
 | Resolución | Tiempo promedio (s) | Desviación estándar (s) |
@@ -539,8 +547,10 @@ A modo de comparación, se incluye el tiempo de ejecución para la versión secu
 | 512x512 | 20.132811490099993 | 0.009180779629399193 |
 | 1080x1080 | 89.59314089329982 | 0.024588972955427328 |
 | 1920x1920 | 283.25439927300033 | 0.04803506827399954 |
+Tabla 7: Tiempo promedio y desviación estándar en segundos para cada configuración de resolución sobre versión secuencial.
 
 #### Tabla de datos de ejecución paralela
+
 Se presenta el tiempo promedio y la desviación estándar para distintas resoluciones y cantidades de nodos.
 
 | Cantidad de nodos | Resolución | Tiempo promedio (s) | Desviación estándar (s) |
@@ -575,6 +585,7 @@ Se presenta el tiempo promedio y la desviación estándar para distintas resoluc
 | 8 | 1920x1920 |41.52969608500025 | 0.017873206091913493 |
 | 16 | 1920x1920 |20.056586532099754 | 0.025654280626253977 |
 | 32 | 1920x1920 |11.296893179300605 | 0.25224913775009544 |
+Tabla 8: Tiempo promedio y desviación estándar en segundos para cada configuración de resolución sobre versión paralela.
 
 
 #### Tabla de datos de speedup y eficiencia
@@ -613,18 +624,19 @@ A partir de los tiempos anteriores, se calculó el Speedup y la Eficiencia de la
 | 8 | 1920x1920 | 6.820526658640936 | 0.852565832330117 |
 | 16 | 1920x1920 | 14.122762057225598 | 0.8826726285765999 |
 | 32 | 1920x1920 | 25.073654745360415 | 0.783551710792513 |
+Tabla 9: Speedup y eficiencia para cada configuración de resolución y cantidad de nodos de versión paralela.
 
 #### Gráficos de rendimiento
 A continuación, se presentan gráficos realizados con los datos obtenidos previamente.
 
 ![](imgs/experiments/image_size/combined_time.png){ width=100%  }
-  **Figura 5:** *Tiempo medio paralelo y secuencial para cada configuración de cantidada de nodos y resolución de imagen*
+  Figura 5: Tiempo medio paralelo y secuencial para cada configuración de cantidada de nodos y resolución de imagen
 
 ![](imgs/experiments/image_size/image_size_combined_speedup.png){ width=100% }
-  **Figura 6:** *Speedup para cada configuración de cantidad de nodos y resolución de imagen*
+  Figura 6: Speedup para cada configuración de cantidad de nodos y resolución de imagen
 
 ![](imgs/experiments/image_size/image_size_combined_efficiency.png){ width=100%}
-  **Figura 7:** *Eficiencia para cada configuración de cantidad de nodos y resolución de imagen*
+  Figura 7: Eficiencia para cada configuración de cantidad de nodos y resolución de imagen
 
 ### Tamaño de bloque
 Se estudió el efecto de modificar el tamaño de bloque en el tiempo de ejecución.
@@ -636,7 +648,7 @@ A continuación se presentan los datos obtenidos a partir de las ejecuciones de 
 | Tiempo promedio (s) | Desviación estándar (s) |
 | --------------------| ----------------------- |
 | 89.60659603270032   | 0.020723353358982382    |
-
+Tabla 10: Tiempo promedio y desviación estándar en segundos de la versión secuencial.
 
 #### Tabla de datos de ejecución paralela
 
@@ -677,16 +689,17 @@ A continuación se presentan los datos obtenidos a partir de las ejecuciones de 
 | 8 | 128x128 | 14.937172039599682 | 0.019059549888477616 |
 | 16 | 128x128 | 8.014758754597278 | 0.07856331140741309 |
 | 32 | 128x128 | 6.913615914300317 | 0.6075389399688722 |
+Tabla 11: Tiempo promedio y desviación estándar en segundos de la versión secuencial para cada configuración de cantidad de nodos y tamaño de bloque.
 
 #### Gráficos de rendimiento
 
 A continuación, se presentan gráficos realizados con los datos obtenidos previamente.
 
 ![](imgs/experiments/block_size/combined_speedup.png){ width=100% }
-  **Figura 8:** *Speedup para cada configuración de cantidad de nodos y tamaño de bloque*
+  Figura 8: Speedup para cada configuración de cantidad de nodos y tamaño de bloque
 
 ![](imgs/experiments/block_size/combined_efficiency.png){ width=100%}
-  **Figura 9:** *Eficiencia para cada configuración de cantidad de nodos y tamño de bloque*
+  Figura 9: Eficiencia para cada configuración de cantidad de nodos y tamño de bloque
 
 
 #### Tabla de datos de speedup y eficiencia
@@ -730,6 +743,7 @@ A partir de los tiempos anteriores, se calculó el Speedup y la Eficiencia de la
 | 8 | 128x128 | 5.998899644132491 | 0.7498624555165614 |
 | 16 | 128x128 | 11.180198777823705 | 0.6987624236139816 |
 | 32 | 128x128 | 12.960887203374362 | 0.4050277251054488 |
+Tabla 12: Speedup y eficiencia para cada configuración de tamaño de bloque y cantidad de nodos de versión paralela.
 
 ## Cantidad de iteraciones
 Se estudió el efecto de modificar el número de iteraciones en el tiempo de ejecución.
@@ -750,10 +764,12 @@ Se estudió el efecto de modificar el número de iteraciones en el tiempo de eje
 | 20000 | 4.026260491098219 | 0.058440292592556196 |
 | 40000 | 7.153266767101013 | 0.08296469529306266 |
 
+Tabla 13: Tiempo promedio y desviación estándar en segundos de la versión paralela para distintas iteraciones máximas.
+
 ### Gráfico de rendimiento
 
 ![](imgs/experiments/iterations/iterations_time.png){ width=100%}
-  **Figura 10:** *Tiempo de ejecución medio por cantidad de iteraciones*
+  Figura 10: Tiempo de ejecución medio por cantidad de iteraciones
 
 # Análisis de los Resultados
 En esta sección, se realiza un análisis de los resultados obtenidos en la sección anterior.
@@ -789,9 +805,9 @@ $$
 
 Lo cuál demuestra matemáticamente que el valor de eficiencia obtenido con 2 nodos es correcto.
 
-Además, si consideramos las gráficas correspondientes a las distintas resoluciones mostradas en la Figura 7, podemos afirmar que el punto máximo de eficiencia depende tanto de la resolución de la imagen como de la cantidad de nodos utilizados.
+Además, si consideramos las gráficas correspondientes a las distintas resoluciones mostradas en la *figura 7*, podemos afirmar que el punto máximo de eficiencia depende tanto de la resolución de la imagen como de la cantidad de nodos utilizados.
 
-Para las versiones de $32 \times 32$, $64 \times 64$ y $128 \times 128$, la eficiencia máxima se alcanza con $N_{\text{Nodos}} = 2$. Esto no debería sorprender, ya que, al observar nuevamente la Figura 6, se puede ver que estas resoluciones mantienen un speedup constante a partir de $N_{\text{Nodos}} = 2$.
+Para las versiones de $32 \times 32$, $64 \times 64$ y $128 \times 128$, la eficiencia máxima se alcanza con $N_{\text{Nodos}} = 2$. Esto no debería sorprender, ya que, al observar nuevamente la *figura 6*, se puede ver que estas resoluciones mantienen un speedup constante a partir de $N_{\text{Nodos}} = 2$.
 
 Por otro lado, al analizar la resolución de $512 \times 512$, la eficiencia máxima se obtiene con $N_{\text{Nodos}} = 8$, alcanzando un valor de eficiencia de:
 $$
@@ -830,7 +846,7 @@ En cuanto a los tamaños de $4 \times 4$ y $64 \times 64$, es correcto decir que
 
 Luego, nos encontramos con los tamaños de $8 \times 8$, $16 \times 16$ y $32 \times 32$. $8 \times 8$ y $32 \times 32$ presentaron un resultado prácticamente idéntico, con un speedup medio de $22.234$ y $22.206$ respectivamente. Pero indiscutiblemente, los mejores resultados, tanto en términos de speedup como eficiencia se obtuvieron con un tamaño de bloque de $16 \times 16$.
 
-Otro aspecto importante a analizar, presente tanto en la Figura 8 como en la Figura 9, es el aumento en la dispersión de las gráficas a medida que se incrementa la cantidad de nodos.
+Otro aspecto importante a analizar, presente tanto en la *figura 8* como en la *figura 9*, es el aumento en la dispersión de las gráficas a medida que se incrementa la cantidad de nodos.
 
 Este comportamiento es coherente, ya que al aumentar el número de nodos, la ejecución del programa se aleja progresivamente de su versión secuencial. Esto penaliza especialmente a aquellas configuraciones que no logran equilibrar adecuadamente la cantidad de comunicaciones con el tamaño de las tareas asignadas a cada nodo. Además, cuando se utilizan bloques de tamaño reducido, como $2 \times 2$, un mayor número de nodos implica un incremento en la cantidad de comunicaciones con el nodo maestro, lo que a su vez eleva los tiempos de respuesta.
 
@@ -859,6 +875,7 @@ El renderizado se realizó utilizando distintas cantidades de iteraciones máxim
 | ![](imgs/experiments/iterations/renders/img_15000.png){ width=120px } | ![](imgs/experiments/iterations/renders/img_20000.png){ width=120px } | ![](imgs/experiments/iterations/renders/img_40000.png){ width=120px } | 
 |:-------------------------------------------:|:--------------------------------------------:|:----------------------------------------------:|
 | 15000 iteraciones                              | 20000 iteraciones                               | 40000 iteraciones                                | 
+Tabla 14: Imágenes renderizadas con distintas cantidades de iteraciones.
 
 Existe una diferencia notable en los resultados. Estos resultados varían tanto en las formas como en los colores y el ruido en la imagen. Cabe aclarar que con ruido se refiere a frecuencia de variación de color de píxeles adyacentes.
 
@@ -893,7 +910,7 @@ Asimismo, el análisis del número de iteraciones permitió evidenciar su doble 
 Finalmente, se identificó una posible limitación en el diseño actual del algoritmo paralelo: la figura del master como punto central de coordinación puede convertirse en un cuello de botella bajo ciertas configuraciones. Como línea de trabajo futura, se propone el desarrollo de una versión multihilo del master, capaz de atender a múltiples workers de manera concurrente, con el objetivo de reducir la espera ociosa y mejorar la escalabilidad del sistema.
 
 
-# Bibliografía
+# Referencias
 
 **[1]** https://solarianprogrammer.com/2013/02/28/Mandelbrot-set-cpp-11/
 

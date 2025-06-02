@@ -8,8 +8,30 @@
   \end{center}%
 }
 \usepackage{titlesec}
-\titlespacing*{\paragraph}{0pt}{1.5ex plus .2ex minus .2ex}{1em}
-\titleformat{\paragraph}[hang]{\bfseries}{\theparagraph}{1em}{}
+\usepackage{sectsty}
+\usepackage{anyfontsize}
+
+% Redefinimos el formato de paragraph
+\titleformat{\section}
+  {\fontsize{14pt}{16pt}\bfseries}
+  {\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\fontsize{12pt}{14pt}\bfseries}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\fontsize{10pt}{12pt}\bfseries}
+  {\thesubsubsection}{1em}{}
+
+% Este es el cambio clave: redefinimos \paragraph completamente
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+  {1.5ex \@plus .2ex \@minus .2ex}% Espacio antes del título
+  {0.8em}% Espacio después del título
+  {\normalfont\fontsize{10pt}{12pt}\bfseries\raggedright}}
+\makeatother
+
 
 \usepackage{fontspec}
 \setmainfont{TeX Gyre Termes}
