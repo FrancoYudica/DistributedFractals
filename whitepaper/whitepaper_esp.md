@@ -364,7 +364,6 @@ make
 
 ### Parámetros de Entrada
 
-
 La aplicación admite los siguientes parámetros de entrada:
 
 
@@ -387,7 +386,6 @@ La aplicación admite los siguientes parámetros de entrada:
 Tabla 1: Parámetros de entrada de los programas.
 
 ### Ejecución Secuencial
-
 
 La versión secuencial de la aplicación permite generar imágenes fractales utilizando un único proceso de cómputo. El ejecutable asociado se denomina `sequential`.
 
@@ -476,7 +474,6 @@ Tabla 4: Parámetros extra constantes.
 ### Tamaño de bloque
 Permite analizar el impacto del tamaño de bloque en el balanceo de carga entre nodos, con el objetivo de encontrar un valor óptimo.
 
-
 | Parámetro | Valor |
 | --------- | ----- |  
 | `width`           |   $1080$    |
@@ -486,7 +483,38 @@ Tabla 5: Parámetros extra constantes.
 
 Se ha fijado la resolución ya que en este caso nos interesa estudiar el impacto del tamaño de bloque.
 
-Los tamaños de bloque evaluados son $[2, 4, 8, 16, 32, 64, 128]$
+Los tamaños de bloque evaluados son:
+
+$$
+[2 \times 2, 4 \times 4, 8 \times 8, 16 \times 16, 32 \times 32, 64 \times 64, 128 \times 128]
+$$
+
+## Experimentación de balanceo de carga mediante herramientas de *Profiling*
+
+Este experimento tiene como objetivo realizar un análisis cuantitativo del tiempo de ejecución de los distintos componentes del programa paralelo, con especial foco en el balanceo de carga entre procesos. Para ello, se emplean herramientas especializadas de profiling, como *Score-P* [\[10\]](#score-p) para la recolección de datos y *Vampir* [\[11\]](#vampir) para su visualización y análisis detallado.
+
+Es importante aclarar que este experimento se basa en una única ejecución por cada una de las configuraciones evaluadas, con el propósito de analizar casos aislados y particulares, permitiendo una interpretación más detallada del comportamiento del programa bajo cada escenario.
+
+Se analiza el comportamiento del programa variando el tamaño de bloque utilizado: 
+$$
+[2 \times 2, 16 \times 16, 128 \times 128]
+$$
+
+Se presta especial atención a los métodos que involucran comunicaciones, como las llamadas a MPI, y al procedimiento `render_block`, descrito anteriormente en la sección de pseudocódigo paralelo.
+
+Para cada función ejecutada se registran y estudian las siguientes métricas clave:
+- Tiempo promedio.
+- Cantidad de invocaciones.
+
+| Parámetro | Valor |
+| --------- | ----- |  
+| `width`           |   $1080$    |
+| `height`           |   $1080$    |
+| `np` (Cantidad de nodos)           |   $8$    |
+Tabla 6: Parámetros extra constantes.
+
+Cabe destacar que se ha optado por utilizar 8 nodos con el objetivo de facilitar la interpretación de los datos y simplificar el proceso de recolección. Además, el propósito de este experimento no es evaluar métricas clásicas como el speedup o la eficiencia paralela, sino analizar cómo distintas configuraciones del tamaño de bloque afectan el balanceo de carga entre procesos.
+
 
 ## Cantidad de iteraciones
 
@@ -507,7 +535,7 @@ Cabe destacar que este experimento se realiza exclusivamente sobre la versión p
 | `height`           |   $1080$    |
 | `block_size`           |   $32$    |
 | `np` (Cantidad de nodos)           |   $32$    |
-Tabla 6: Parámetros extra constantes.
+Tabla 7: Parámetros extra constantes.
 
 
 ## Consideraciones sobre experimentos
@@ -547,7 +575,7 @@ A modo de comparación, se incluye el tiempo de ejecución para la versión secu
 | 512x512 | 20.132811490099993 | 0.009180779629399193 |
 | 1080x1080 | 89.59314089329982 | 0.024588972955427328 |
 | 1920x1920 | 283.25439927300033 | 0.04803506827399954 |
-Tabla 7: Tiempo promedio y desviación estándar en segundos para cada configuración de resolución sobre versión secuencial.
+Tabla 8: Tiempo promedio y desviación estándar en segundos para cada configuración de resolución sobre versión secuencial.
 
 #### Tabla de datos de ejecución paralela
 
@@ -585,7 +613,7 @@ Se presenta el tiempo promedio y la desviación estándar para distintas resoluc
 | 8 | 1920x1920 |41.52969608500025 | 0.017873206091913493 |
 | 16 | 1920x1920 |20.056586532099754 | 0.025654280626253977 |
 | 32 | 1920x1920 |11.296893179300605 | 0.25224913775009544 |
-Tabla 8: Tiempo promedio y desviación estándar en segundos para cada configuración de resolución sobre versión paralela.
+Tabla 9: Tiempo promedio y desviación estándar en segundos para cada configuración de resolución sobre versión paralela.
 
 
 #### Tabla de datos de speedup y eficiencia
@@ -624,7 +652,7 @@ A partir de los tiempos anteriores, se calculó el Speedup y la Eficiencia de la
 | 8 | 1920x1920 | 6.820526658640936 | 0.852565832330117 |
 | 16 | 1920x1920 | 14.122762057225598 | 0.8826726285765999 |
 | 32 | 1920x1920 | 25.073654745360415 | 0.783551710792513 |
-Tabla 9: Speedup y eficiencia para cada configuración de resolución y cantidad de nodos de versión paralela.
+Tabla 10: Speedup y eficiencia para cada configuración de resolución y cantidad de nodos de versión paralela.
 
 #### Gráficos de rendimiento
 A continuación, se presentan gráficos realizados con los datos obtenidos previamente.
@@ -648,7 +676,7 @@ A continuación se presentan los datos obtenidos a partir de las ejecuciones de 
 | Tiempo promedio (s) | Desviación estándar (s) |
 | --------------------| ----------------------- |
 | 89.60659603270032   | 0.020723353358982382    |
-Tabla 10: Tiempo promedio y desviación estándar en segundos de la versión secuencial.
+Tabla 11: Tiempo promedio y desviación estándar en segundos de la versión secuencial.
 
 #### Tabla de datos de ejecución paralela
 
@@ -689,7 +717,7 @@ Tabla 10: Tiempo promedio y desviación estándar en segundos de la versión sec
 | 8 | 128x128 | 14.937172039599682 | 0.019059549888477616 |
 | 16 | 128x128 | 8.014758754597278 | 0.07856331140741309 |
 | 32 | 128x128 | 6.913615914300317 | 0.6075389399688722 |
-Tabla 11: Tiempo promedio y desviación estándar en segundos de la versión secuencial para cada configuración de cantidad de nodos y tamaño de bloque.
+Tabla 12: Tiempo promedio y desviación estándar en segundos de la versión secuencial para cada configuración de cantidad de nodos y tamaño de bloque.
 
 #### Gráficos de rendimiento
 
@@ -743,7 +771,7 @@ A partir de los tiempos anteriores, se calculó el Speedup y la Eficiencia de la
 | 8 | 128x128 | 5.998899644132491 | 0.7498624555165614 |
 | 16 | 128x128 | 11.180198777823705 | 0.6987624236139816 |
 | 32 | 128x128 | 12.960887203374362 | 0.4050277251054488 |
-Tabla 12: Speedup y eficiencia para cada configuración de tamaño de bloque y cantidad de nodos de versión paralela.
+Tabla 13: Speedup y eficiencia para cada configuración de tamaño de bloque y cantidad de nodos de versión paralela.
 
 ## Cantidad de iteraciones
 Se estudió el efecto de modificar el número de iteraciones en el tiempo de ejecución.
@@ -764,7 +792,97 @@ Se estudió el efecto de modificar el número de iteraciones en el tiempo de eje
 | 20000 | 4.026260491098219 | 0.058440292592556196 |
 | 40000 | 7.153266767101013 | 0.08296469529306266 |
 
-Tabla 13: Tiempo promedio y desviación estándar en segundos de la versión paralela para distintas iteraciones máximas.
+Tabla 14: Tiempo promedio y desviación estándar en segundos de la versión paralela para distintas iteraciones máximas.
+
+## Balanceo de carga mediante herramientas de *Profiling*
+
+Se presentan los datos recopilados a través de *Score-P*. Se involucran los promedios de todos los nodos, tanto en tiempo (segundos) como en cantidad de invocaciones por función.
+
+### Tamaño de bloque $2 \times 2$
+
+| Rutina | Total (Segundos) | Promedio | Varianza | Desviación estándar |
+| --- | --- | --- | --- | --- |
+| MPI_Init | 1.96143 | 0.24518 | 1.48667e-05 | 0.00386 |
+| MPI_Comm_rank | 2.2664e-05 | 0.00000 | 5.71630e-15 | 0.00000 |
+| MPI_Comm_size | 8.53949e-06 | 0.00000 | 1.19236e-14 | 0.00000 |
+| MPI_Bcast | 0.0347405 | 0.00434 | 3.05655e-06 | 0.00175 |
+| MPI_Finalize | 0.420225 | 0.05253 | 4.49685e-04 | 0.02121 |
+| MPI_Send | 0.451702 | 0.05646 | 5.23487e-04 | 0.02288 |
+| MPI_Probe | 6.28315 | 0.78539 | 1.01581e-01 | 0.31872 |
+| MPI_Recv | 0.451702 | 0.05646 | 5.23487e-04 | 0.02288 |
+| render_block | 146.615 | 18.32690 | 5.48377e+01 | 7.40525 |
+
+Tabla 15: Estadísticas de cada rutina basadas en el tiempo
+
+| Rutina | Total (Invocaciones) | Promedio | Varianza | Desviación estándar |
+| --- | --- | --- | --- | --- |
+| MPI_Init | 8.0 | 1.00000 | 0.00000e+00 | 0.00000 |
+| MPI_Comm_rank | 8.0 | 1.00000 | 0.00000e+00 | 0.00000 |
+| MPI_Comm_size | 8.0 | 1.00000 | 0.00000e+00 | 0.00000 |
+| MPI_Bcast | 72.0 | 9.00000 | 0.00000e+00 | 0.00000 |
+| MPI_Finalize | 8.0 | 1.00000 | 0.00000e+00 | 0.00000 |
+| MPI_Send | 874807.0 | 109351.00000 | 1.95300e+09 | 44192.75959 |
+| MPI_Probe | 291607.0 | 36450.90000 | 2.17007e+08 | 14731.15746 |
+| MPI_Recv | 874807.0 | 109351.00000 | 1.95300e+09 | 44192.75959 |
+| render_block | 291600.0 | 36450.00000 | 2.16996e+08 | 14730.78409 |
+Tabla 16: Estadísticas de cada rutina basadas en la cantidad de invocaciones
+
+### Tamaño de bloque $16 \times 16$
+
+| Rutina | Total (Segundos) | Promedio | Varianza | Desviación estándar |
+| --- | --- | --- | --- | --- |
+| MPI_Init | 1.956 | 0.24450 | 1.62173e-05 | 0.00403 |
+| MPI_Comm_rank | 1.91757e-05 | 0.00000 | 2.21643e-15 | 0.00000 |
+| MPI_Comm_size | 6.39489e-06 | 0.00000 | 3.24449e-15 | 0.00000 |
+| MPI_Bcast | 0.0216631 | 0.00271 | 1.18622e-06 | 0.00109 |
+| MPI_Finalize | 0.268119 | 0.03351 | 1.83219e-04 | 0.01354 |
+| MPI_Send | 0.0475489 | 0.00594 | 5.91193e-06 | 0.00243 |
+| MPI_Probe | 0.188083 | 0.02351 | 9.46839e-05 | 0.00973 |
+| MPI_Recv | 0.0475489 | 0.00594 | 5.91193e-06 | 0.00243 |
+| render_block | 137.457 | 17.18210 | 4.81999e+01 | 6.94261 |
+Tabla 17: Estadísticas de cada rutina basadas en el tiempo
+
+| Rutina | Total (Invocaciones) | Promedio | Varianza | Desviación estándar |
+| --- | --- | --- | --- | --- |
+| MPI_Init | 8.0 | 1.00000 | 0.00000e+00 | 0.00000 |
+| MPI_Comm_rank | 8.0 | 1.00000 | 0.00000e+00 | 0.00000 |
+| MPI_Comm_size | 8.0 | 1.00000 | 0.00000e+00 | 0.00000 |
+| MPI_Bcast | 72.0 | 9.00000 | 0.00000e+00 | 0.00000 |
+| MPI_Finalize | 8.0 | 1.00000 | 0.00000e+00 | 0.00000 |
+| MPI_Send | 13879.0 | 1734.88000 | 5.11631e+05 | 715.28386 |
+| MPI_Probe | 4631.0 | 578.87500 | 5.69581e+04 | 238.65896 |
+| MPI_Recv | 13879.0 | 1734.88000 | 5.11631e+05 | 715.28386 |
+| render_block | 4624.0 | 578.00000 | 5.67929e+04 | 238.31261 |
+Tabla 18: Estadísticas de cada rutina basadas en la cantidad de invocaciones
+
+### Tamaño de bloque $128 \times 128$
+
+| Rutina | Total (Segundos) | Promedio | Varianza | Desviación estándar |
+| --- | --- | --- | --- | --- |
+| MPI_Init | 2.01492 | 0.25187 | 1.35331e-05 | 0.00368 |
+| MPI_Comm_rank | 1.93651e-05 | 0.00000 | 1.07870e-15 | 0.00000 |
+| MPI_Comm_size | 5.02335e-06 | 0.00000 | 5.77806e-15 | 0.00000 |
+| MPI_Bcast | 0.0354399 | 0.00443 | 3.17999e-06 | 0.00178 |
+| MPI_Finalize | 15.1912 | 1.89890 | 2.01620e+00 | 1.41993 |
+| MPI_Send | 0.00402743 | 0.00050 | 1.37961e-07 | 0.00037 |
+| MPI_Probe | 0.127127 | 0.01589 | 7.55630e-05 | 0.00869 |
+| MPI_Recv | 0.00402743 | 0.00050 | 1.37961e-07 | 0.00037 |
+| render_block | 135.033 | 16.87910 | 4.79528e+01 | 6.92480 |
+Tabla 19: Estadísticas de cada rutina basadas en el tiempo
+
+| Rutina | Total (Invocaciones) | Promedio | Varianza | Desviación estándar |
+| --- | --- | --- | --- | --- |
+| MPI_Init | 8.0 | 1.00000 | 0.00000e+00 | 0.00000 |
+| MPI_Comm_rank | 8.0 | 1.00000 | 0.00000e+00 | 0.00000 |
+| MPI_Comm_size | 8.0 | 1.00000 | 0.00000e+00 | 0.00000 |
+| MPI_Bcast | 72.0 | 9.00000 | 0.00000e+00 | 0.00000 |
+| MPI_Finalize | 8.0 | 1.00000 | 0.00000e+00 | 0.00000 |
+| MPI_Send | 250.0 | 31.25000 | 3.18500e+02 | 17.84657 |
+| MPI_Probe | 88.0 | 11.00000 | 3.74286e+01 | 6.11789 |
+| MPI_Recv | 250.0 | 31.25000 | 3.18500e+02 | 17.84657 |
+| render_block | 81.0 | 10.12500 | 3.44107e+01 | 5.86606 |
+Tabla 20: Estadísticas de cada rutina basadas en la cantidad de invocaciones
+
 
 ### Gráfico de rendimiento
 
@@ -783,7 +901,7 @@ Se puede observar que las versiones paralelas y secuenciales toman aproximadamen
 
 Luego, a medida que aumenta la cantidad de nodos, el tiempo paralelo decrece logarítmicamente, lo cuál se ve con mayor claridad en grandes resoluciones, especialmente $1920 \times 1920$. Es decir que se pueden obtener los mismos resultados en menor tiempo, tal como era esperado.
 
-En cuanto a la *figura 6*, se observa que existe una relación entre el speedup obtenido y la resolución de la imagen. Si la imagen a renderizar cuenta con muy pocos píxeles, tal como la resolución 128x128, entonces podemos decir que no resulta conviente la utilización del algoritmo paralelo. Esto se debe a la sección secuencial inicial presente en la versión paralela, la cuál corresponde a la inicialización de mpi, a través de `MPI_Init`, toma aproximadamente 350ms. Al aumentar la resolución, aumenta la cantidad de píxeles a renderizar, haciendo que aumente la porción paralelizable, y es por este motivo que el speedup aumenta al renderizar imágenes con más píxeles, se aprovecha el paralelismo.
+En cuanto a la *figura 6*, se observa que existe una relación entre el speedup obtenido y la resolución de la imagen. Si la imagen a renderizar cuenta con muy pocos píxeles, tal como la resolución 128x128, entonces podemos decir que no resulta conviente la utilización del algoritmo paralelo. Esto se debe a la sección secuencial inicial presente en la versión paralela, la cuál corresponde a la inicialización de mpi, a través de `MPI_Init`, toma aproximadamente 250ms. Al aumentar la resolución, aumenta la cantidad de píxeles a renderizar, haciendo que aumente la porción paralelizable, y es por este motivo que el speedup aumenta al renderizar imágenes con más píxeles, se aprovecha el paralelismo.
 
 Al considerar la *figura 7*, se observa que a mayor cantidad de píxeles, es decir, en imágenes de mayor resolución, la eficiencia con dos nodos es de 0.5. El hecho que provoca tal resutado, es que solo un nodo trabaja, como se ha detallado al inicio de esta sección.
 
@@ -791,18 +909,14 @@ En este contexto, si asumimos que el tiempo secuencial es igual al tiempo de có
 $$
 T_{Secuencial}=T_{Paralelo}
 $$
-
 Entonces el speeup:
-
 $$
 Speedup(2)=T_{Secuencial}/T_{Paralelo}=1
 $$
 Luego, calculando la eficiencia
-
 $$
 Eficiencia(2)=Speedup(2)/N_{nodos}=1/2
 $$
-
 Lo cuál demuestra matemáticamente que el valor de eficiencia obtenido con 2 nodos es correcto.
 
 Además, si consideramos las gráficas correspondientes a las distintas resoluciones mostradas en la *figura 7*, podemos afirmar que el punto máximo de eficiencia depende tanto de la resolución de la imagen como de la cantidad de nodos utilizados.
@@ -831,30 +945,41 @@ Sin embargo, existe un umbral a partir del cuál no resulta conveniente emplear 
 A pesar de ello, al aumentar el tamaño de la imagen, la utilización de la versión paralela se vuelve cada vez más justificada y eficiente.
 
 ### Tamaño de bloque
+Como ilusta la *figura 8*, existe una clara relación entre el speedup y el tamaño de los bloques. Lo mismo sucede en la *figura 9*, en cuanto a la eficiencia.
 
-Como ilusta la *figura 8*, existe una clara relación entre el speedup y el tamaño de los bloques. 
+Se observa que el peor speedup se obtiene para bloques de $2 \times 2$, seguido por bloques de $128 \times 128$. Estos casos serán analizados con detalle en la siguiente sección.
 
-Se observa que el peor speedup se obtiene para bloques de $2 \times 2$, seguido por bloques de $128 \times 128$. Es de interés analizar esto ya que a pesar de que ambos presenten el peor rendimeinto, los motivos son muy distintos.
+En función del gráfico de speedup, se puede decir que el rendimiento del programa depende de la granularidad de las tareas. Tareas más chicas implican una mayor cantidad de comunicaciones, mientras que tareas grandes hacen que algunos nodos se queden ociosos, ya que el cómputo requerido para cada tarea no es equitativo.
 
-- Bloque de tamaño $2 \times 2$: El bajo rendimiento se debe a el modelo de algoritmo paralelo seleccionado, y la alta granulaidad de las tareas. Un bloque de este tamaño contiene tan solo $4$ píxeles. En este experimento, se ha renderizado una imagen de resolución $1080 \times 1080$, lo cuál hace un total de $1166400$ píxeles. Considerando que por cada bloque se renderizan $4$ píxeles, entonces se crean $1166400/4=291600$ tareas. Lo cuál implica un total de $291600 \times 2=583200$ comunicaciones (Esto se debe a que los worker solicitan la tarea y luego envían el resultado). Por lo tanto, el bajo rendimiento se debe a que hay demasiada granularidad, la cuál implica muchas comunicaciones, y probablemente un master saturado.
-- Bloque de tamaño $128 \times 128$: Nos encontramos con el caso opuesto al anterior, la granularidad es muy baja, las tareas son muy grandes. Que las tareas sean grandes implica un bajo aprovechamiento de la asignación dinámica de tareas, lo cuál hace que algunos nodos se queden ociosos, ya que distintas tareas tardan más en computarse. Este problema se ha planteado en la sección de [Asignación de tareas y balanceo de carga](#asignación-de-tareas-y-balanceo-de-carga). Realizando un análisis similar al anterior, cada bloque renderiza $128 \times 128=16384$ píxeles, entonces se crean $1166400/16384 ≃ 72$ tareas, lo cuál implica $144$ comunicaciones. Claramente $144$ comunicaciones son muy pocas, y no se aprovecha del todo la asignación dinámica, lo cuál hace que presente un rendimiento similar a un algoritmo de asignación estática.
+Se pude observar que el tamaño que logra el balance es el de $16 \times 16$. 
 
-En cuanto a los tamaños de $4 \times 4$ y $64 \times 64$, es correcto decir que está sucediendo algo similar a los casos anteriores, pero en menor medida:
-
-- Bloque de tamaño $4 \times 4$: Cuenta con $16$ píxeles, lo cuál es más que para $2 \times 2$, haciendo que se reduzcan la cantidad de comunicaciones y la sobrecarga del master, pero sigue sin ser suficiente.
-- Bloque de tamaño $64 \times 64$: Cuenta con $4096$ píxeles, es decir, 4 veces menos que para $128 \times 128$. Representa una mejora, pero no se aprovecha del todo la asignación dinámica de tareas.
-
-Luego, nos encontramos con los tamaños de $8 \times 8$, $16 \times 16$ y $32 \times 32$. $8 \times 8$ y $32 \times 32$ presentaron un resultado prácticamente idéntico, con un speedup medio de $22.234$ y $22.206$ respectivamente. Pero indiscutiblemente, los mejores resultados, tanto en términos de speedup como eficiencia se obtuvieron con un tamaño de bloque de $16 \times 16$.
+Los tamaños de $8 \times 8$, $16 \times 16$ y $32 \times 32$. $8 \times 8$ y $32 \times 32$ presentaron un resultado prácticamente idéntico, con un speedup medio de $22.234$ y $22.206$ respectivamente. Pero indiscutiblemente, los mejores resultados, tanto en términos de speedup como eficiencia se obtuvieron con un tamaño de bloque de $16 \times 16$.
 
 Otro aspecto importante a analizar, presente tanto en la *figura 8* como en la *figura 9*, es el aumento en la dispersión de las gráficas a medida que se incrementa la cantidad de nodos.
 
 Este comportamiento es coherente, ya que al aumentar el número de nodos, la ejecución del programa se aleja progresivamente de su versión secuencial. Esto penaliza especialmente a aquellas configuraciones que no logran equilibrar adecuadamente la cantidad de comunicaciones con el tamaño de las tareas asignadas a cada nodo. Además, cuando se utilizan bloques de tamaño reducido, como $2 \times 2$, un mayor número de nodos implica un incremento en la cantidad de comunicaciones con el nodo maestro, lo que a su vez eleva los tiempos de respuesta.
 
-El comportamiento observado evidencia que la escalabilidad del sistema depende fuertemente del equilibrio entre la granularidad de las tareas y la sobrecarga de comunicación. A medida que se incrementa la cantidad de nodos, este equilibrio se vuelve más crítico, ya que se amplifican tanto los beneficios como las deficiencias del esquema de distribución adoptado.
+Por lo tanto, se puede concluir que para los parámetros seleccionados y la cantidad de nodos, el tamaño de bloque óptimo es el de $16 \times 16$, al obtener el mayor speedup y eficiencia.
+
+## Análisis de balanceo de carga mediante herramientas de *Profiling*
+Es de interés analizar las tablas de datos obtenidas a través del *profiling* mediante *Score-P* [\[10\]](#score-p) para los casos más extremos, siendo estos $2 \times 2$ y $128 \times 128$, pero también el caso óptimo $16 \times 16$, con el fin justificar cuantitativamente su rendimiento.
+
+- Bloque de tamaño $2 \times 2$: El bajo rendimiento se debe a el modelo de algoritmo paralelo seleccionado, y la alta granulaidad de las tareas. Un bloque de este tamaño contiene tan solo $4$ píxeles. En la *tabla 16*, se puede observar que se realizaron $291600$ llamadas a la función `render_block`, lo cuál nos dice que se creó esa cantidad de tareas. Este valor resulta coherente, ya que se ha renderizado una imagen de resolución $1080 \times 1080$, lo cuál resulta $1166400$ píxeles, y por cada tarea se renderizan $2 \times 2=4$ píxeles, y esto implica la creación de $1166400/4=291600$ tareas. Además, se han realizado $874807$ llamadas a `MPI_Send` y `MPI_Recv`, las cuales en conjunto con `MPI_Probe` tomaron un tiempo total de $7.187$ segundos. Por lo tanto, el bajo rendimiento se debe a que hay demasiada granularidad, la cuál implica muchas comunicaciones, y probablemente un master saturado.
+
+- Bloque de tamaño $128 \times 128$: Nos encontramos con el caso opuesto al anterior, la granularidad es muy baja, las tareas son muy grandes. Que las tareas sean grandes implica un bajo aprovechamiento de la asignación dinámica de tareas, lo cuál hace que algunos nodos se queden ociosos, ya que distintas tareas tardan más en computarse. Este problema se ha planteado en la sección de [Asignación de tareas y balanceo de carga](#asignación-de-tareas-y-balanceo-de-carga). Realizando un análisis similar al anterior, al considerar la *tabla 20*, se puede observar que se han creado $81$ tareas y se realizaron tan solo $250$ llamadas a `MPI_Send` y `MPI_Recv`, las cuales con conjunto con `MPI_Probe` tomaron un tiempo total de $135ms$, un tiempo significativamente menor al de la configuración $2 \times 2$. Claramente $81$ tareas son muy pocas, y no se aprovecha del todo la asignación dinámica, lo cuál hace que presente un rendimiento similar a un algoritmo de asignación estática.
+
+- Bloque de tamaño $16 \times 16$: Las *tablas 17 y 18* correspondientes exhiben los mejores resultados, se crearon $4624$ tareas, se realizaron $13879$ llamadas a `MPI_Send` y `MPI_Recv`, las cuales en conjunto con `MPI_Probe` formaron un tiempo total de comunicaciones de $283ms$. Esto representa un balance entre las configuraciones analizadas previamente.
+
+Otra métrica interesante es la desviación estándar de la función `render_block` la cuál es mayor tanto en tiempo como en cantidad de iteraciones a menor tamaño de bloque. Si se renderizan pocos píxeles adyacentes ($2 \times 2$), se puede dar el caso donde estos toman mucho tiempo, al llegar al número de iteraciones máximas, o muy poco tiempo, al no pertenecer al conjunto del fractal. En cambio, al considerar tamaños de bloque grandes ($128 \times 128$), es más probable que se encuentren píxeles que toman mucho tiempo pero también algunos que toman muy poco, haciendo que se logre una especie de promedio entre estos, y en definitiva reduciendo la desviación estándar.
+
+Esto es coherente con las suposiciones realizadas inicialmente al diseñar el modelo de asignación dinámica de tareas bajo demanda. Y es este el motivo por el cuál, contar con una desviación estándar relativamente alta, como en el caso de $16 \times 16$ resulta beneficioso.
+
+Entonces, comportamiento observado evidencia que la escalabilidad del sistema depende fuertemente del equilibrio entre la granularidad de las tareas y la sobrecarga de comunicación. A medida que se incrementa la cantidad de nodos, este equilibrio se vuelve más crítico, ya que se amplifican tanto los beneficios como las deficiencias del esquema de distribución adoptado.
 
 Un buen balance de carga no solo mejora el speedup, sino que también permite una asignación dinámica más eficiente, reduciendo tiempos ociosos y evitando cuellos de botella.
 
 En definitiva, una escalabilidad efectiva no se logra únicamente con más nodos, sino mediante una correcta configuración del sistema que permita distribuir el trabajo de forma uniforme y con un costo de coordinación razonable. Esto reafirma la importancia de ajustar adecuadamente el tamaño de los bloques en función del modelo de ejecución y la arquitectura utilizada.
+
 
 ## Cantidad de iteraciones
 
@@ -875,7 +1000,7 @@ El renderizado se realizó utilizando distintas cantidades de iteraciones máxim
 | ![](imgs/experiments/iterations/renders/img_15000.png){ width=120px } | ![](imgs/experiments/iterations/renders/img_20000.png){ width=120px } | ![](imgs/experiments/iterations/renders/img_40000.png){ width=120px } | 
 |:-------------------------------------------:|:--------------------------------------------:|:----------------------------------------------:|
 | 15000 iteraciones                              | 20000 iteraciones                               | 40000 iteraciones                                | 
-Tabla 14: Imágenes renderizadas con distintas cantidades de iteraciones.
+Figura 11: Imágenes renderizadas con distintas cantidades de iteraciones.
 
 Existe una diferencia notable en los resultados. Estos resultados varían tanto en las formas como en los colores y el ruido en la imagen. Cabe aclarar que con ruido se refiere a frecuencia de variación de color de píxeles adyacentes.
 
@@ -930,11 +1055,9 @@ Finalmente, se identificó una posible limitación en el diseño actual del algo
 
 **[9]** <a id="Julia-fatou"></a>https://en.wikipedia.org/wiki/Julia_set 
 
-## Proyectos de referencia
+**[10]** <a id="score-p"></a>https://www.vi-hps.org/projects/score-p/
 
-**[8]** https://github.com/lucaszm7/Mandel2Us
-
-**[9]** https://github.com/Sudo-Rahman/Fractalium
+**[11]** <a id="vampir"></a>https://vampir.eu/
 
 # Anexo - Código fuente
 
