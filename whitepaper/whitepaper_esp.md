@@ -6,21 +6,13 @@ fontsize: 10pt
 ---
 \begin{flushleft}
 {\fontsize{16pt}{16pt}\selectfont \textbf{Renderizado de fractales con MPI}}
+\end{flushleft}
+
+\begin{flushleft}
+{\fontsize{12pt}{12pt}\selectfont \textbf{Franco Yudica y Martín Farrés}}
+\end{flushleft}
 
 Trabajo Integrador Final: Programación Paralela y Distribuida
-\end{flushleft}
-
-\begin{flushleft}
-{\fontsize{12pt}{12pt}\selectfont \textbf{Autores}}
-\end{flushleft}
-
-\begin{flushleft}
-\begin{itemize}
-  \item Franco Yudica
-  \item Martín Farrés
-\end{itemize}
-\end{flushleft}
-
 
 *Abstract: Este trabajo presenta el desarrollo de una implementación paralela de renderizado de fractales bidimensionales, mostrando sus diferencias con la versión secuencial. Además se detalla sobre los experimentos realizados para determinar el rendimiento de la aplicación, en conjutno con conclusiones sobre tales resultados.*
 
