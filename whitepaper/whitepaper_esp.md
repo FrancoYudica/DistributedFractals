@@ -29,7 +29,7 @@ En primer lugar, se describe el proceso secuencial de renderizado de fractales, 
 
 A continuación, se presentan los experimentos realizados para evaluar el rendimiento del sistema, analizando métricas como el speedup, la eficiencia y la escalabilidad en diferentes configuraciones. Se incluyen también comparaciones visuales y tiempos de renderizado, acompañados de una discusión sobre los resultados.
 
-Finalmente, se exponen las conclusiones obtenidas a partir del análisis, resaltando las ventajas y limitaciones del enfoque propuesto. Se sugieren además posibles líneas de mejora, incluyendo la exploración de técnicas avanzadas como el uso de GPUs, algoritmos adaptativos de muestreo y representación dinámica en tiempo real.
+Finalmente, se exponen las conclusiones obtenidas a partir del análisis, resaltando las ventajas y limitaciones del enfoque propuesto. Se sugieren además posibles líneas de mejora, incluyendo la exploración de técnicas de paralelización mediante el uso de hilos.
 
 # Marco teórico
 
@@ -765,26 +765,6 @@ A partir de los tiempos anteriores, se calculó el Speedup y la Eficiencia de la
 | 32 | 128x128 | 12.960887203374362 | 0.4050277251054488 |
 Tabla 13: Speedup y eficiencia para cada configuración de tamaño de bloque y cantidad de nodos de versión paralela.
 
-## Cantidad de iteraciones
-Se estudió el efecto de modificar el número de iteraciones en el tiempo de ejecución.
-
-### Tabla de datos
-
-| Iteraciones | Tiempo promedio (s) | Desviación estándar (s) |
-| --- | --- | --- |
-| 200 | 0.8658388962008757 | 0.031467115018176055 |
-| 500 | 0.9789770936957212 | 0.020520204910293226 |
-| 1000 | 1.068946530300309 | 0.020387310065660757 |
-| 2000 | 1.2362676242002635 | 0.021568939323107487 |
-| 3000 | 1.4084850567989633 | 0.021316243515446965 |
-| 4000 | 1.5473312993985018 | 0.020788707928570592 |
-| 5000 | 1.6892066827014787 | 0.042628523113125386 |
-| 10000 | 2.454260219701973 | 0.034755324130547174 |
-| 15000 | 3.2485190514998976 | 0.037265794864773556 |
-| 20000 | 4.026260491098219 | 0.058440292592556196 |
-| 40000 | 7.153266767101013 | 0.08296469529306266 |
-
-Tabla 14: Tiempo promedio y desviación estándar en segundos de la versión paralela para distintas iteraciones máximas.
 
 ## Balanceo de carga mediante herramientas de *Profiling*
 
@@ -875,6 +855,26 @@ Tabla 19: Estadísticas de cada rutina basadas en el tiempo
 | render_block | 81.0 | 10.12500 | 3.44107e+01 | 5.86606 |
 Tabla 20: Estadísticas de cada rutina basadas en la cantidad de invocaciones
 
+## Cantidad de iteraciones
+Se estudió el efecto de modificar el número de iteraciones en el tiempo de ejecución.
+
+### Tabla de datos
+
+| Iteraciones | Tiempo promedio (s) | Desviación estándar (s) |
+| --- | --- | --- |
+| 200 | 0.8658388962008757 | 0.031467115018176055 |
+| 500 | 0.9789770936957212 | 0.020520204910293226 |
+| 1000 | 1.068946530300309 | 0.020387310065660757 |
+| 2000 | 1.2362676242002635 | 0.021568939323107487 |
+| 3000 | 1.4084850567989633 | 0.021316243515446965 |
+| 4000 | 1.5473312993985018 | 0.020788707928570592 |
+| 5000 | 1.6892066827014787 | 0.042628523113125386 |
+| 10000 | 2.454260219701973 | 0.034755324130547174 |
+| 15000 | 3.2485190514998976 | 0.037265794864773556 |
+| 20000 | 4.026260491098219 | 0.058440292592556196 |
+| 40000 | 7.153266767101013 | 0.08296469529306266 |
+
+Tabla 14: Tiempo promedio y desviación estándar en segundos de la versión paralela para distintas iteraciones máximas.
 
 ### Gráfico de rendimiento
 
@@ -1020,7 +1020,7 @@ En este trabajo se analizó el comportamiento computacional del conjunto de Mand
 
 Los resultados experimentales muestran que la versión paralela ofrece mejoras significativas en el tiempo de ejecución frente a la versión secuencial, especialmente a medida que aumentan el tamaño de la imagen y la complejidad del problema. Se observó que la eficiencia paralela mejora con la resolución, alcanzando su punto óptimo con una mayor cantidad de nodos en configuraciones de alta demanda computacional.
 
-El estudio sobre el tamaño de los bloques evidenció la importancia crítica de este parámetro, dado su impacto directo en los tiempos de ejecución y su estrecha relación con el modelo master-worker adoptado en la paralelización.
+El estudio sobre el tamaño de los bloques evidenció la importancia crítica de este parámetro, dado su impacto directo en los tiempos de ejecución y su estrecha relación con el modelo master-worker adoptado en la paralelización, en conjunto con el modelo de asignación dinámica de tareas bajo demanda.
 
 Asimismo, el análisis del número de iteraciones permitió evidenciar su doble impacto: por un lado, en la calidad visual de las imágenes generadas y, por otro, en el rendimiento general del sistema. Esto sugiere la necesidad de elegir cuidadosamente un valor que logre un equilibrio adecuado entre fidelidad visual y eficiencia computacional.
 
