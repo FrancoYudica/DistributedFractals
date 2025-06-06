@@ -25,7 +25,7 @@ int main(int argc, char** argv)
         LOG("- Block size(" << settings.block_size << ")");
         LOG("- Camera(x=" << (double)settings.camera.x << ", y=" << (double)settings.camera.y << ", zoom=" << (double)settings.camera.zoom << ")");
         LOG("- Max Iterations(" << settings.fractal.max_iterations << ")");
-        LOG("- Type(" << (int)settings.fractal.type);
+        LOG("- Type(" << (int)settings.fractal.type << ")");
     }
 
     MPI_Bcast(&run_program, 1, MPI_C_BOOL, 0, MPI_COMM_WORLD);
@@ -68,6 +68,7 @@ int main(int argc, char** argv)
     else {
         worker(
             rank,
+            settings.block_size,
             settings.image,
             settings.camera,
             settings.fractal);

@@ -80,6 +80,7 @@ endif()
 add_executable(fractal_mpi 
     src/parallel/main.cpp 
     src/parallel/master.cpp 
+    src/parallel/worker_task.cpp 
     src/parallel/worker.cpp)
 target_link_libraries(fractal_mpi PRIVATE fractal_common MPI::MPI_CXX)
 

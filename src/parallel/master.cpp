@@ -6,80 +6,64 @@
 #include "parallel/master.h"
 #include "common/output_handler.h"
 #include "common/logging.h"
+#include <string.h>
 
 void master(
-    int num_procs,
+    uint32_t num_procs,
     const Settings& settings)
 {
     std::chrono::time_point start = std::chrono::high_resolution_clock::now();
 
     uint8_t* image = new uint8_t[settings.image.width * settings.image.height * 3];
 
-    int width = settings.image.width, height = settings.image.height;
-    int block_size = settings.block_size;
-    int blocks_x = (width + settings.block_size - 1) / block_size;
-    int blocks_y = (height + block_size - 1) / block_size;
-    int block_count = blocks_x * blocks_y;
-
-    std::vector<WorkerTask> worker_tasks;
-
-    // Splits the image into blocks, creating the WorkerTasks
-    for (int by = 0; by < blocks_y; ++by) {
-        for (int bx = 0; bx < blocks_x; ++bx) {
-            int x = bx * block_size;
-            int y = by * block_size;
-            int w = std::min(block_size, width - x);
-            int h = std::min(block_size, height - y);
-            worker_tasks.push_back(WorkerTask { x, y, w, h });
-        }
-    }
-
-    int sent_task_count = 0;
-    int completed_task_count = 0;
-    MPI_Status status;
-    uint32_t recv_buffer_size = block_size * block_size * 3;
+    uint64_t num_tasks = get_num_tasks(settings.image.width, settings.image.height, settings.block_size);
+    uint32_t sent_task_count = 0;
+    uint32_t completed_task_count = 0;
+    uint32_t recv_buffer_size = settings.block_size * settings.block_size * 3;
     uint8_t* recv_buffer = new uint8_t[recv_buffer_size];
 
-    while (completed_task_count < block_count) {
+    while (completed_task_count < num_tasks) {
+        MPI_Status status;
         MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-        int source = status.MPI_SOURCE;
+        uint32_t source = status.MPI_SOURCE;
 
         if (status.MPI_TAG == Tag::REQUEST) {
             MPI_Recv(NULL, 0, MPI_BYTE, source, Tag::REQUEST, MPI_COMM_WORLD, &status);
-
-            if (sent_task_count < worker_tasks.size()) {
-                WorkerTask t = worker_tasks[sent_task_count++];
-                MPI_Send(&t, sizeof(WorkerTask), MPI_BYTE, source, Tag::TASK, MPI_COMM_WORLD);
+            if (sent_task_count < num_tasks) {
+                // Sends task to worker
+                uint64_t task_id = sent_task_count++;
+                MPI_Send(&task_id, 1, MPI_INT64_T, source, Tag::TASK, MPI_COMM_WORLD);
             } else {
                 MPI_Send(NULL, 0, MPI_BYTE, source, Tag::TERMINATE, MPI_COMM_WORLD);
             }
 
         } else if (status.MPI_TAG == Tag::RESULT) {
-
-            // Receives worker task
-            WorkerTask result;
-            MPI_Recv(&result, sizeof(WorkerTask), MPI_BYTE, source, Tag::RESULT, MPI_COMM_WORLD, &status);
+            // Receives worker task id
+            uint64_t task_id;
+            MPI_Recv(&task_id, 1, MPI_INT64_T, source, Tag::RESULT, MPI_COMM_WORLD, &status);
+            WorkerTask result = get_task_by_id(
+                task_id,
+                settings.block_size,
+                settings.image.width,
+                settings.image.height);
 
             // Receives subimage buffer
             MPI_Recv(recv_buffer, recv_buffer_size, MPI_BYTE, source, Tag::RESULT, MPI_COMM_WORLD, &status);
 
             // Copies subimage buffer into main image buffer
-            for (int j = 0; j < result.height; ++j) {
-                for (int i = 0; i < result.width; ++i) {
-                    int src_idx = (j * result.width + i) * 3;
-                    int dst_idx = ((result.y + j) * width + (result.x + i)) * 3;
-                    image[dst_idx] = recv_buffer[src_idx];
-                    image[dst_idx + 1] = recv_buffer[src_idx + 1];
-                    image[dst_idx + 2] = recv_buffer[src_idx + 2];
-                }
+            for (uint32_t j = 0; j < result.height; ++j) {
+                uint32_t dest_index = 3 * ((result.y + j) * settings.image.width + result.x);
+                uint8_t* dest_ptr = &image[dest_index];
+                uint8_t* src_ptr = &recv_buffer[j * result.width * 3];
+                memcpy(dest_ptr, src_ptr, result.width * sizeof(uint8_t) * 3);
             }
             ++completed_task_count;
-            LOG_STATUS("Worker " << source << " completed task. " << 100.0 * (float)completed_task_count / worker_tasks.size() << "%");
+            LOG_STATUS("Worker " << source << " completed task. " << 100.0 * (float)completed_task_count / num_tasks << "%");
         }
     }
 
     // Sends termination tag to all workers
-    for (int i = 1; i < num_procs; ++i) {
+    for (uint32_t i = 1; i < num_procs; ++i) {
         MPI_Send(NULL, 0, MPI_BYTE, i, Tag::TERMINATE, MPI_COMM_WORLD);
     }
 

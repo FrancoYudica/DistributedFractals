@@ -23,9 +23,9 @@ void print_help()
     LOG("  --help                                          Show this help message");
 }
 
-bool load_args(int argc, char** argv, Settings& settings)
+bool load_args(uint32_t argc, char** argv, Settings& settings)
 {
-    for (int arg_index = 1; arg_index < argc; ++arg_index) {
+    for (uint32_t arg_index = 1; arg_index < argc; ++arg_index) {
         const char* parameter = argv[arg_index];
 
         // Help command -----------------------------------------------------------------------
@@ -93,7 +93,7 @@ bool load_args(int argc, char** argv, Settings& settings)
             settings.image.height = std::atoi(value);
         } else if (!strcmp(parameter, "-s") || !strcmp(parameter, "--samples")) {
             settings.image.multi_sample_anti_aliasing = std::atoi(value);
-            int n_samples = std::sqrt(settings.image.multi_sample_anti_aliasing);
+            uint32_t n_samples = std::sqrt(settings.image.multi_sample_anti_aliasing);
 
             if (n_samples * n_samples != settings.image.multi_sample_anti_aliasing) {
                 LOG_WARNING("Sample count must be a perfect square");
@@ -111,15 +111,15 @@ bool load_args(int argc, char** argv, Settings& settings)
         } else if (!strcmp(parameter, "-i") || !strcmp(parameter, "--iterations")) {
             settings.fractal.max_iterations = std::atoi(value);
         } else if (!strcmp(parameter, "-t") || !strcmp(parameter, "--type")) {
-            int fractal_type = std::atoi(value);
-            if (fractal_type >= (int)FractalType::INVALID_LAST) {
+            uint32_t fractal_type = std::atoi(value);
+            if (fractal_type >= (uint32_t)FractalType::INVALID_LAST) {
                 LOG_WARNING("Trying to assign an invalid color mode value");
             } else {
                 settings.fractal.type = static_cast<FractalType>(fractal_type);
             }
         } else if (!strcmp(parameter, "--color_mode")) {
-            int color_mode = std::atoi(value);
-            if (color_mode >= (int)ColorMode::INVALID_LAST) {
+            uint32_t color_mode = std::atoi(value);
+            if (color_mode >= (uint32_t)ColorMode::INVALID_LAST) {
                 LOG_WARNING("Trying to assign an invalid color mode value");
             } else {
                 settings.fractal.color_mode = static_cast<ColorMode>(color_mode);

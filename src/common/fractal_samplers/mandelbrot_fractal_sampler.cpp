@@ -1,37 +1,47 @@
 
 #include "../fractal.h"
 #include "../common.h"
+#include <cstdint>
 
 #ifndef USE_MPFR
 const number two(2.0);
 const number four(4.0);
-const number ln_four(1.38629436112);
+const number ln_two(0.69314718056);
 
 float mandelbrot_sampler(
     number world_x,
     number world_y,
     const FractalSettings& settings)
 {
-    number zx(0.0);
-    number zy(0.0);
-    int iter = 0;
+    number zx = 0.0;
+    number zy = 0.0;
+    number zx2 = 0.0;
+    number zy2 = 0.0;
+    uint32_t iter = 0;
 
-    number length_squared = 0.0;
-    number xtemp;
-    while (length_squared < 4.0 && iter < settings.max_iterations) {
-        xtemp = zx * zx - zy * zy + world_x;
+    const number escape_radius_squared = 4.0;
+
+    while (zx2 + zy2 < escape_radius_squared && iter < settings.max_iterations) {
         zy = two * zx * zy + world_y;
-        zx = xtemp;
-        iter++;
-        length_squared = zx * zx + zy * zy;
+        zx = zx2 - zy2 + world_x;
+
+        zx2 = zx * zx;
+        zy2 = zy * zy;
+
+        ++iter;
     }
 
-    // Computes smooth t in range [0.0, max_iterations]
-    number smooth_t = (number)iter - LOG2_NUM(LOG_NUM(length_squared) / ln_four);
+    // Avoid log() of zero or negative
+    number smooth_t = (number)iter;
+    if (zx2 + zy2 > 0.0) {
+        number log_zn = LOG_NUM(zx2 + zy2) / 2.0;
+        number nu = LOG2_NUM(log_zn / ln_two);
+        smooth_t = (number)iter - nu;
+    }
 
-    // Normalizes
     return (float)(smooth_t / (number)settings.max_iterations);
 }
+
 #else
 #include <mpfr.h>
 float mandelbrot_sampler(
@@ -70,7 +80,7 @@ float mandelbrot_sampler(
     // Start with 0 length
     mpfr_set_d(length_squared, 0.0, MPFR_RNDN);
 
-    int iter = 0;
+    uint32_t iter = 0;
 
     // Loop
     while (true) {

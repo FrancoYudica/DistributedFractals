@@ -1,5 +1,6 @@
 #include "../fractal.h"
 #include "../common.h"
+#include <cstdint>
 
 #ifndef USE_MPFR
 const number two(2.0);
@@ -18,7 +19,7 @@ float julia_sampler(
     const number Cy = settings.julia_settings.Cy;
 
     number zx = world_x, zy = world_y;
-    int iter = 0;
+    uint32_t iter = 0;
 
     number length_squared = zx * zx + zy * zy;
     number xtemp;
@@ -70,7 +71,7 @@ float julia_sampler(
     mpfr_set(zx, world_x.n_ptr, MPFR_RNDN);
     mpfr_set(zy, world_y.n_ptr, MPFR_RNDN);
 
-    int iter = 0;
+    uint32_t iter = 0;
 
     while (true) {
         // zx2 = zx * zx

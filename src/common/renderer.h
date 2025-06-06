@@ -9,7 +9,7 @@ void render_block(
     const ImageSettings& image_settings,
     const FractalSettings& fractal_settings,
     const Camera& camera,
-    int x,
-    int y,
-    int width,
-    int height);
+    uint32_t x,
+    uint32_t y,
+    uint32_t width,
+    uint32_t height);

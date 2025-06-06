@@ -6,11 +6,16 @@
 #include "common/renderer.h"
 
 void worker(
-    int rank,
+    uint32_t rank,
+    uint32_t block_size,
     const ImageSettings& image_settings,
     const Camera& camera,
     const FractalSettings& fractal_settings)
 {
+
+    // Creates a buffer to store the partial image pixels
+    uint32_t buffer_len = block_size * block_size * 3;
+    uint8_t* buffer = new uint8_t[buffer_len];
 
     while (true) {
 
@@ -24,13 +29,14 @@ void worker(
 
         // When the tag is task, master sent task
         if (status.MPI_TAG == Tag::TASK) {
-            WorkerTask task;
-            MPI_Recv(&task, sizeof(WorkerTask), MPI_BYTE, 0, Tag::TASK, MPI_COMM_WORLD, &status);
+            uint64_t task_id;
+            MPI_Recv(&task_id, 1, MPI_INT64_T, 0, Tag::TASK, MPI_COMM_WORLD, &status);
 
-            // Creates a buffer to store the partial image pixels
-            // std::vector<uint8_t> buffer(task.width * task.height * 3);
-            uint32_t buffer_length = task.width * task.height * 3;
-            uint8_t* buffer = new uint8_t[buffer_length];
+            auto task = get_task_by_id(
+                task_id,
+                block_size,
+                image_settings.width,
+                image_settings.height);
 
             // Renders the block into buffer
             render_block(
@@ -44,13 +50,14 @@ void worker(
                 task.height);
 
             // Sends task and buffer with contents
-            MPI_Send(&task, sizeof(WorkerTask), MPI_BYTE, 0, Tag::RESULT, MPI_COMM_WORLD);
-            MPI_Send(buffer, buffer_length, MPI_BYTE, 0, Tag::RESULT, MPI_COMM_WORLD);
-            delete buffer;
+            MPI_Send(&task_id, 1, MPI_INT64_T, 0, Tag::RESULT, MPI_COMM_WORLD);
+            MPI_Send(buffer, buffer_len, MPI_BYTE, 0, Tag::RESULT, MPI_COMM_WORLD);
 
         } else if (status.MPI_TAG == Tag::TERMINATE) {
             MPI_Recv(NULL, 0, MPI_BYTE, 0, Tag::TERMINATE, MPI_COMM_WORLD, &status);
             break;
         }
     }
+
+    delete buffer;
 }
