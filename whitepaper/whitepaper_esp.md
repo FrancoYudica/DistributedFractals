@@ -449,10 +449,12 @@ Un factor determinante es la resolución de la imagen, especificada por los par�
 
 |Caso| Resolución|
 | ----   |    -    |
-| 0 | $128 \times 128$|
-| 1 | $512 \times 512$|
-| 2 | $1080 \times 1080$|
-| 3 | $1920 \times 1920$|
+| 0 | $32 \times 32$|
+| 1 | $64 \times 64$|
+| 2 | $128 \times 128$|
+| 3 | $512 \times 512$|
+| 4 | $1080 \times 1080$|
+| 5 | $1920 \times 1920$|
 Tabla 3: Resoluciones utilizadas en los experimentos.
 
 Además de los parámetros establecidos anteriormente, se ha fijado:
@@ -514,7 +516,7 @@ Una parte fundamental del renderizado de fractales consiste en determinar el nú
 
 Los valores evaluados para el número máximo de iteraciones son: 
 $$
-[200, 500, 1000, 2000, 3000, 4000, 5000, 10000, 15000, 20000]
+[200, 500, 1000, 2000, 3000, 4000, 5000, 10000, 15000, 20000, 40000]
 $$
 
 Este análisis resulta especialmente relevante para entender cómo impacta la cantidad de iteraciones tanto en el tiempo de ejecución como en la calidad visual de los fractales. Además, permite observar cómo varía el tiempo de procesamiento al aumentar el número máximo de iteraciones, y evaluar si dicha relación sigue un comportamiento lineal, logarítmico o exponencial.
