@@ -1,6 +1,5 @@
 #include <stdint.h>
 #include <chrono>
-#include <vector>
 #include "common/common.h"
 #include "common/renderer.h"
 #include <memory>
@@ -21,7 +20,8 @@ int main(int argc, char** argv)
 
     std::chrono::time_point start = std::chrono::high_resolution_clock::now();
 
-    std::vector<uint8_t> buffer(settings.image.width * settings.image.height * 3);
+    uint32_t buffer_length = settings.image.width * settings.image.height * 3;
+    uint8_t* buffer = new uint8_t[buffer_length];
     render_block(
         buffer,
         settings.image,
@@ -45,6 +45,8 @@ int main(int argc, char** argv)
         settings.image.width,
         settings.image.height,
         settings.output_settings);
+
+    delete buffer;
 
     if (!success) {
         LOG_ERROR("Unable to output image...");

@@ -4,8 +4,9 @@
 #ifndef USE_MPFR
 const number two(2.0);
 const number four(4.0);
+const number ln_four(1.38629436112);
 
-float JuliaFractalSampler::sample(
+float julia_sampler(
     number world_x,
     number world_y,
     const FractalSettings& settings)
@@ -30,14 +31,14 @@ float JuliaFractalSampler::sample(
     }
 
     // Computes smooth t in range [0.0, max_iterations]
-    number smooth_t = (number)iter - LOG2_NUM(LOG_NUM(length_squared) / LOG_NUM(four));
+    number smooth_t = (number)iter - LOG2_NUM(LOG_NUM(length_squared) / ln_four);
 
     // Normalizes
     return (float)(smooth_t / (number)settings.max_iterations);
 }
 #else
 #include <mpfr.h>
-float JuliaFractalSampler::sample(
+float julia_sampler(
     number world_x,
     number world_y,
     const FractalSettings& settings)

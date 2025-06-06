@@ -1,6 +1,5 @@
 #include "worker_task.h"
 #include <mpi/mpi.h>
-#include <vector>
 #include <cstdint>
 #include <cmath>
 #include <chrono>
@@ -14,7 +13,8 @@ void master(
 {
     std::chrono::time_point start = std::chrono::high_resolution_clock::now();
 
-    std::vector<uint8_t> image(settings.image.width * settings.image.height * 3);
+    uint8_t* image = new uint8_t[settings.image.width * settings.image.height * 3];
+
     int width = settings.image.width, height = settings.image.height;
     int block_size = settings.block_size;
     int blocks_x = (width + settings.block_size - 1) / block_size;
@@ -37,6 +37,8 @@ void master(
     int sent_task_count = 0;
     int completed_task_count = 0;
     MPI_Status status;
+    uint32_t recv_buffer_size = block_size * block_size * 3;
+    uint8_t* recv_buffer = new uint8_t[recv_buffer_size];
 
     while (completed_task_count < block_count) {
         MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
@@ -59,17 +61,16 @@ void master(
             MPI_Recv(&result, sizeof(WorkerTask), MPI_BYTE, source, Tag::RESULT, MPI_COMM_WORLD, &status);
 
             // Receives subimage buffer
-            std::vector<uint8_t> buffer(result.width * result.height * 3);
-            MPI_Recv(buffer.data(), buffer.size(), MPI_BYTE, source, Tag::RESULT, MPI_COMM_WORLD, &status);
+            MPI_Recv(recv_buffer, recv_buffer_size, MPI_BYTE, source, Tag::RESULT, MPI_COMM_WORLD, &status);
 
             // Copies subimage buffer into main image buffer
             for (int j = 0; j < result.height; ++j) {
                 for (int i = 0; i < result.width; ++i) {
                     int src_idx = (j * result.width + i) * 3;
                     int dst_idx = ((result.y + j) * width + (result.x + i)) * 3;
-                    image[dst_idx] = buffer[src_idx];
-                    image[dst_idx + 1] = buffer[src_idx + 1];
-                    image[dst_idx + 2] = buffer[src_idx + 2];
+                    image[dst_idx] = recv_buffer[src_idx];
+                    image[dst_idx + 1] = recv_buffer[src_idx + 1];
+                    image[dst_idx + 2] = recv_buffer[src_idx + 2];
                 }
             }
             ++completed_task_count;
@@ -94,6 +95,8 @@ void master(
         settings.image.width,
         settings.image.height,
         settings.output_settings);
+
+    delete image;
 
     if (!success) {
         LOG_ERROR("Unable to output image...");

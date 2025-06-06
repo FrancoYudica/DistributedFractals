@@ -1,16 +1,18 @@
 #include "fractal.h"
 #include "common.h"
+#include "common/logging.h"
 
-std::unique_ptr<FractalSampler> get_fractal_sampler(FractalType type)
+FractalSampler* get_fractal_sampler(FractalType type)
 {
     switch (type) {
     case FractalType::MANDELBROT:
-        return std::make_unique<MandelbrotFractalSampler>();
+        return mandelbrot_sampler;
         break;
 
     case FractalType::JULIA:
-        return std::make_unique<JuliaFractalSampler>();
+        return julia_sampler;
     default:
-        return std::make_unique<MandelbrotFractalSampler>();
+        LOG_WARNING("Received unexpected fractal type: " << (int)type << ". Using Mandelbrot by default");
+        return mandelbrot_sampler;
     }
 }

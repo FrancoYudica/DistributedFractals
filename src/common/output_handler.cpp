@@ -26,20 +26,20 @@ std::shared_ptr<OutputHandler> OutputHandler::factory_create(OutputSettingsMode 
 }
 
 bool DiskOutputHandler::save_output(
-    const std::vector<uint8_t>& image,
+    const uint8_t* image,
     int width,
     int height,
     const OutputSettings& settings)
 {
     return save_image(
         settings.disk_data.output_path,
-        image.data(),
+        image,
         width,
         height);
 }
 
 bool NetworkOutputHandler::save_output(
-    const std::vector<uint8_t>& image,
+    const uint8_t* image,
     int width,
     int height,
     const OutputSettings& settings)
@@ -48,7 +48,7 @@ bool NetworkOutputHandler::save_output(
     std::vector<uint8_t> png_buffer;
     bool success = save_image_to_memory(
         png_buffer,
-        image.data(),
+        image,
         width,
         height);
 

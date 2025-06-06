@@ -15,7 +15,7 @@ public:
 
     /// @brief Persists image
     virtual bool save_output(
-        const std::vector<uint8_t>& image,
+        const uint8_t* image,
         int width,
         int height,
         const OutputSettings& settings)
@@ -34,7 +34,7 @@ public:
     DiskOutputHandler() = default;
 
     bool save_output(
-        const std::vector<uint8_t>& image,
+        const uint8_t* image,
         int width,
         int height,
         const OutputSettings& settings);
@@ -47,7 +47,7 @@ public:
     NetworkOutputHandler() = default;
 
     bool save_output(
-        const std::vector<uint8_t>& image,
+        const uint8_t* image,
         int width,
         int height,
         const OutputSettings& settings);

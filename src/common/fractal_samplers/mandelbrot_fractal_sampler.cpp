@@ -5,8 +5,9 @@
 #ifndef USE_MPFR
 const number two(2.0);
 const number four(4.0);
+const number ln_four(1.38629436112);
 
-float MandelbrotFractalSampler::sample(
+float mandelbrot_sampler(
     number world_x,
     number world_y,
     const FractalSettings& settings)
@@ -15,7 +16,7 @@ float MandelbrotFractalSampler::sample(
     number zy(0.0);
     int iter = 0;
 
-    number length_squared = zx * zx + zy * zy;
+    number length_squared = 0.0;
     number xtemp;
     while (length_squared < 4.0 && iter < settings.max_iterations) {
         xtemp = zx * zx - zy * zy + world_x;
@@ -26,14 +27,14 @@ float MandelbrotFractalSampler::sample(
     }
 
     // Computes smooth t in range [0.0, max_iterations]
-    number smooth_t = (number)iter - LOG2_NUM(LOG_NUM(length_squared) / LOG_NUM(four));
+    number smooth_t = (number)iter - LOG2_NUM(LOG_NUM(length_squared) / ln_four);
 
     // Normalizes
     return (float)(smooth_t / (number)settings.max_iterations);
 }
 #else
 #include <mpfr.h>
-float MandelbrotFractalSampler::sample(
+float mandelbrot_sampler(
     number world_x,
     number world_y,
     const FractalSettings& settings)

@@ -1,32 +1,10 @@
 #pragma once
-#include <functional>
-#include <memory>
 #include "settings/fractal_settings.h"
 #include "common.h"
 
-class FractalSampler {
-public:
-    virtual float sample(
-        number world_x,
-        number world_y,
-        const FractalSettings& settings)
-        = 0;
-};
+typedef float(FractalSampler)(number wx, number wy, const FractalSettings& settings);
 
-class MandelbrotFractalSampler : public FractalSampler {
+float mandelbrot_sampler(number, number, const FractalSettings&);
+float julia_sampler(number, number, const FractalSettings&);
 
-    float sample(
-        number world_x,
-        number world_y,
-        const FractalSettings& settings);
-};
-
-class JuliaFractalSampler : public FractalSampler {
-
-    float sample(
-        number world_x,
-        number world_y,
-        const FractalSettings& settings);
-};
-
-std::unique_ptr<FractalSampler> get_fractal_sampler(FractalType);
+FractalSampler* get_fractal_sampler(FractalType);

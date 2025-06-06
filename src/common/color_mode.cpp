@@ -102,7 +102,7 @@ void rainbow_function(float t, float& r, float& g, float& b)
     b = 0.5 + 0.5 * cos(6.0 * d + 4.0);
 }
 
-ColorFunction get_color_function(ColorMode mode)
+ColorFunction* get_color_function(ColorMode mode)
 {
     switch (mode) {
     case ColorMode::BLACK_WHITE:

@@ -51,7 +51,7 @@ To compile the project:
 ```bash
 mkdir build
 cd build
-cmake ..
+cmake -DCMAKE_CXX_COMPILER=mpicxx -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-O3" ..
 make
 ```
 
