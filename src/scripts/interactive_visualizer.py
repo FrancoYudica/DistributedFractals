@@ -34,8 +34,8 @@ class Camera:
         nx = Decimal(normalized_screen_pos[0])
         ny = Decimal(normalized_screen_pos[1])
         return (
-            nx / self.zoom + self.x,
-            ny / self.zoom + self.y
+            Decimal(0.5) * nx / self.zoom + self.x,
+            Decimal(0.5) * ny / self.zoom + self.y
         )
 
     def to_pixel(self, world_pos):
@@ -130,8 +130,9 @@ def get_screen_points():
 def pixel_to_ndc(pixel):
     return (
         2.0 * pixel[0] / screen.get_width() - 1.0,
-        2.0 * pixel[1] / screen.get_height() - 1.0
+        1.0 - 2.0 * pixel[1] / screen.get_height()  # Flip Y
     )
+
 
 
 def generate_image(
