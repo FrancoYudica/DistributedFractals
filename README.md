@@ -132,6 +132,10 @@ python3 ./interactive_visualizer.py
 
 You can also specify the number of mpi processors with argument `--np <x>` and the rendering executable path `--executable_path <path>`.
 
+## Whitepaper
+
+For the initial version of this project, a detailed whitepaper was created that delves into the implementation intricacies, emphasizing experimentation and the parallel programming architecture behind it. You can access the whitepaper in its dedicated repository, available under the [releases section](https://github.com/FrancoYudica/DistributedFractals-Whitepaper/releases).
+
 ## Samples!
 
 <p align="center">
