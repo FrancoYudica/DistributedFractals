@@ -86,23 +86,25 @@ After the image is generated, the program can output at the following modes:
 
 ## ⚙️ Command-Line Arguments
 
-| Option                                                  | Description                                                                                 |
-| ------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `-od`, `--output_disk <opt filename>`                   | Save output image to disk. Defaults to 'output.png' if no filename is provided              |
-| `-on`, `--output_network <opt ip <opt port> <opt UUID>` | Send output image over TCP. Defaults to IP 0.0.0.0, port 5001 and no UUID if not specified. |
-| `-w`, `--width <int>`                                   | Image width in pixels                                                                       |
-| `-h`, `--height <int>`                                  | Image height in pixels                                                                      |
-| `-s`, `--samples <int>`                                 | Number of MSAA samples                                                                      |
-| `-b`, `--block_size <int>`                              | Block size in pixels per MPI task                                                           |
-| `-z`, `--zoom <float>`                                  | Zoom level of the camera                                                                    |
-| `-cx`, `--camera_x <float>`                             | X position of the camera                                                                    |
-| `-cy`, `--camera_y <float>`                             | Y position of the camera                                                                    |
-| `-i`, `--iterations <int>`                              | Maximum number of fractal iterations                                                        |
-| `-t`, `--type <int>`                                    | Fractal type ID (e.g., 0 = Mandelbrot, 1 = Julia, ...)                                      |
-| `--color_mode <int>`                                    | Color mode ID                                                                               |
-| `--julia-cx <float>`                                    | Real component of Julia set constant `C`                                                    |
-| `--julia-cy <float>`                                    | Imaginary component of Julia set constant `C`                                               |
-| `--help`                                                | Display help message                                                                        |
+| Option(s)               | Argument(s)                 | Description                                                  |
+|-------------------------|-----------------------------|--------------------------------------------------------------|
+| `-od`, `--output_disk`  | `[opt filename]`            | Save output image to disk. Defaults to `output.png`.         |
+| `-on`, `--output_network` | `[opt IP [opt port]]`      | Send output image over TCP. Defaults to IP `0.0.0.0`, port `5001`. |
+| `-w`, `--width`         | `<int>`                     | Image width in pixels.                                       |
+| `-h`, `--height`        | `<int>`                     | Image height in pixels.                                      |
+| `-s`, `--samples`       | `<int>`                     | Number of MSAA samples. Must be a perfect square number      |
+| `-b`, `--block_size`    | `<int>`                     | Size in pixels of the MPI image task.                        |
+| `-z`, `--zoom`          | `<float>`                   | Zoom level of the camera.                                    |
+| `-cx`, `--camera_x`     | `<float>`                   | Camera X position.                                           |
+| `-cy`, `--camera_y`     | `<float>`                   | Camera Y position.                                           |
+| `-i`, `--iterations`    | `<int>`                     | Max iterations for fractal.                                  |
+| `-t`, `--type`          | `<int>`                     | Fractal type ID.                                             |
+| `--color_mode`          | `<int>`                     | Color mode type ID.                                          |
+| `--julia-cx`            | `<float>`                   | Real component of Julia set C constant.                      |
+| `--julia-cy`            | `<float>`                   | Imaginary component of Julia set C constant.                 |
+| `--quiet`               | *(none)*                    | Disables all console messages.                               |
+| `--help`                | *(none)*                    | Show this help message.                                      |
+
 
 ## Interactive visualizer
 
@@ -132,6 +134,10 @@ python3 ./interactive_visualizer.py
 
 You can also specify the number of mpi processors with argument `--np <x>` and the rendering executable path `--executable_path <path>`.
 
+## Video renderer
+
+This project also includes a simple video renderer script that generates a sequence of frames to create a video. It repeatedly executes the compiled binary while interpolating the camera position and zoom level across frames.
+
 ## Whitepaper
 
 For the initial version of this project, a detailed whitepaper was created that delves into the implementation intricacies, emphasizing experimentation and the parallel programming architecture behind it. You can access the whitepaper in its dedicated repository, available under the [releases section](https://github.com/FrancoYudica/DistributedFractals-Whitepaper/releases).
@@ -158,3 +164,12 @@ For the initial version of this project, a detailed whitepaper was created that 
   <img src="https://github.com/user-attachments/assets/7561da1e-d7db-4042-83b8-0a17f7ce16a9" alt="julia_sample0" width="45%"/>
   <img src="https://github.com/user-attachments/assets/5131ed23-f094-4782-b4f5-3e360796d7fc" alt="julia_sample0" width="45%"/>
 </p>
+
+## Video
+
+<div align=center>
+
+[![Watch the video](https://img.youtube.com/vi/RaeWO0s3MXI/0.jpg)](https://www.youtube.com/watch?v=RaeWO0s3MXI)
+
+Watch the video in YouTube!
+</div>

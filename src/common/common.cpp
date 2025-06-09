@@ -9,7 +9,7 @@ void print_help()
     LOG("  -on, --output_network    [opt IP [opt port]]    Send output image over TCP. Defaults to IP 0.0.0.0 and port 5001 if not specified.");
     LOG("  -w,  --width             <int>                  Image width in pixels");
     LOG("  -h,  --height            <int>                  Image height in pixels");
-    LOG("  -s,  --samples           <int>                  Number of MSAA samples");
+    LOG("  -s,  --samples           <int>                  Number of MSAA samples. Must be a perfect square number");
     LOG("  -b,  --block_size        <int>                  Size in pixels of the MPI image task");
     LOG("  -z,  --zoom              <float>                Zoom level of camera");
     LOG("  -cx, --camera_x          <float>                Camera X position");
