@@ -56,7 +56,9 @@ make
 
 ## ▶️ Running the Application
 
-### Parallel (MPI) Execution
+### Running locally
+
+#### Parallel (MPI) Execution
 
 ```bash
 ## To run the distributed version with 8 processes
@@ -68,12 +70,32 @@ mpirun -np 8 ./fractal_mpi
 mpirun -np 4 ./fractal_mpi -w 1080 -h 720 -z 1 -cx -0.7 -cy 0.0 -i 64 -t 0 -s 4 -od mandelbrot.png
 ```
 
-### Sequential Version
+#### Sequential Version
 
 A non-MPI version is also available:
 
 ```bash
 ./sequential
+```
+
+### Running on cluster
+
+To run the program on a cluster using MPI, follow these steps:
+
+1. Create a `hostfile`:
+ This file should contain the IP addresses or hostnames of the cluster nodes, one per line. For example:
+ 
+  ```bash
+    # hostfile
+    192.168.1.1
+    192.168.1.2
+    192.168.1.3
+  ```
+2. Run the program with `mpirun`:
+ Use the `-hostfile` option to specify your custom hostfile:
+
+```bash
+mpirun -np 8 -hostfile hostfile ./fractal_mpi
 ```
 
 ## Output mode
