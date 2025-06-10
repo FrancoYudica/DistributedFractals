@@ -14,7 +14,6 @@
 This project explores the intersection of fractal rendering and distributed computing using the [Message Passing Interface (MPI)](https://www.mpi-forum.org/). The main goals are:
 
 - Efficiently generate complex fractal images using CPU parallelism.
-- Compare performance between sequential and distributed rendering.
 - Provide flexibility via a command-line interface for full customization.
 
 ---
