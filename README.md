@@ -145,25 +145,30 @@ For the initial version of this project, a detailed whitepaper was created that 
 ## Samples!
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/40d67eec-7bf6-479b-9399-f4f84f9a52ef" alt="mandelbrot_sample_4" width="45%"/>
-  <img src="https://github.com/user-attachments/assets/2f84ac84-a359-4c5c-9d81-e06e43479957" alt="mandelbrot_sample3" width="45%"/>
+  <img src="https://github.com/user-attachments/assets/005fee64-f44e-4a69-853c-2708112aa659" alt="mandelbrot_sample_4" width="45%"/>
+  <img src="https://github.com/user-attachments/assets/5e5cb1f3-f7ea-4c4d-b696-9c299812c163" alt="mandelbrot_sample3" width="45%"/>
 </p>
+
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/3d94d4c9-8efd-4bc7-b4d9-68653f33ea39" alt="mandelbrot_sample2" width="45%"/>
-  <img src="https://github.com/user-attachments/assets/11713464-3240-471b-82e3-efc9ac077d0b" alt="mandelbrot_sample1" width="45%"/>
+  <img src="https://github.com/user-attachments/assets/d4c14b7c-2c8d-499c-b026-9dd86e882f14" alt="mandelbrot_sample3" width="90%"/>
 </p>
+
+
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/1fa634cd-6421-469d-b7dd-8860de59cff8" alt="mandelbrot_sample0" width="45%"/>
-  <img src="https://github.com/user-attachments/assets/cb0073a7-d29c-4abc-a5e3-036c7300dede" alt="julia_sample4" width="45%"/>
+  <img src="https://github.com/user-attachments/assets/5a8ac827-8a0f-4eba-917e-a781b46ac175" alt="mandelbrot_sample_4" width="45%"/>
+  <img src="https://github.com/user-attachments/assets/23fe7f5d-d7f3-4372-b008-cf1a4d4dce3d" alt="mandelbrot_sample3" width="45%"/>
 </p>
+
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/df66eed8-cbdd-41e8-897d-2a4832163b02" alt="julia_sample3" width="45%"/>
-  <img src="https://github.com/user-attachments/assets/f4d52548-35fd-4511-897d-92e1dd2b332a" alt="julia_sample1" width="45%"/>
+  <img src="https://github.com/user-attachments/assets/49491bbd-6587-4dd7-9e71-49e50a79139c" alt="mandelbrot_sample3" width="90%"/>
 </p>
+
+
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/7561da1e-d7db-4042-83b8-0a17f7ce16a9" alt="julia_sample0" width="45%"/>
-  <img src="https://github.com/user-attachments/assets/5131ed23-f094-4782-b4f5-3e360796d7fc" alt="julia_sample0" width="45%"/>
+  <img src="https://github.com/user-attachments/assets/d286290b-7377-4edd-a5e8-7bb5effb248c" alt="mandelbrot_sample3" width="45%"/>
+  <img src="https://github.com/user-attachments/assets/d816ceef-0ea1-4711-9289-cfff7910bdec" alt="mandelbrot_sample3" width="45%"/>
 </p>
+
 
 ## Video
 
